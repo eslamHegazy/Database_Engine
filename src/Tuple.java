@@ -24,4 +24,12 @@ public class Tuple implements Serializable {
 		}
 		return str;
 	}
+
+	public Vector getAttributes() {
+		return attributes;
+	}
+
+	public void setAttributes(Vector attributes) {
+		this.attributes = attributes;
+	}
 }

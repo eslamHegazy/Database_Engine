@@ -42,6 +42,7 @@ public class DBApp {
 	}
 	public void insertIntoTable(String strTableName,Hashtable<String,Object>  htblColNameValue) throws Exception  {
 		Table y=null;
+		Object keyValue=null;
 		for(Object x:tables) {
 			 y=(Table)x;
 			if(y.getTableName().equals(strTableName)) {
@@ -64,7 +65,7 @@ public class DBApp {
 					String name=curr[1];
 					String type=curr[2];
 					if(!htblColNameValue.contains(name)) {
-						System.out.println("col name invalid");
+						System.err.println("col name invalid");
 					}else {
 						//String strColType=(String) colTypes.get(i++);
 						Class colType = Class.forName( type );
@@ -77,14 +78,17 @@ public class DBApp {
 							newEntry.addAttribute(htblColNameValue.get(name));
 							if(Boolean.parseBoolean(curr[3])) {
 								y.setPrimaryPos(i);
+								keyValue=htblColNameValue.get(name);
+								
 							}
 						}
 					}
+					i++;
 				}
 			}
 			
 		
-		y.insertSorted(newEntry); //TODO
+		y.insertSorted(newEntry,keyValue); //TODO
 		
 	}
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -95,7 +99,7 @@ public class DBApp {
 		htblColNameType.put("gpa", "java.lang.double");
 		createTable(strTableName, "id", htblColNameType);*/
 		Object x=new String("habdoo");
-		String y="java.lang.Integer";
+		String y="java.lang.String";
 		String strColType=y;
 		Class colType = Class.forName( strColType );
 		Class parameterType = x.getClass();
