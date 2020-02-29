@@ -1,8 +1,5 @@
 package kalabalaDB;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.awt.Polygon;
 import java.io.*;
 import java.util.*;
 
@@ -22,9 +19,11 @@ public class DBApp {
 
 	public void init() {
 	}
-
-	public void printAllPagesInAllTables() throws ClassNotFoundException, IOException {
-		File file = new File("data/AllData.txt");
+	public void printAllPagesInAllTables() throws ClassNotFoundException, IOException{
+		printAllPagesInAllTables("AllData");
+	}
+	public void printAllPagesInAllTables(String fileName) throws ClassNotFoundException, IOException {
+		File file = new File("data/"+fileName+".txt");
 		FileWriter yy = new FileWriter(file);
 		PrintWriter writeFile = new PrintWriter(yy);
 		for (String tblName : tables) {
@@ -55,6 +54,7 @@ public class DBApp {
 				System.out.println("Value of " + key + " is: " + htblColNameType.get(key));
 				writer.append(strTableName + ",");
 				writer.append(key + ",");
+				String typ = htblColNameType.get(key);
 				writer.append(htblColNameType.get(key) + ",");
 				writer.write((strClusteringKey.equals(key)) ? "True," : "False,");
 				writer.write("False" + ",");
@@ -107,6 +107,11 @@ public class DBApp {
 					// String strColType=(String) colTypes.get(i++);
 					Class colType = Class.forName(type);
 					Class parameterType = htblColNameValue.get(name).getClass();
+					System.out.println(colType+" "+parameterType);
+					Class polyOriginal = Class.forName("java.awt.Polygon");
+					if (colType==polyOriginal) {
+						colType = Class.forName("kalabalaDB.Polygons");
+					}
 					if (!colType.equals(parameterType)) {
 						System.err.println("DATA types 8alat");
 						return;
@@ -156,8 +161,8 @@ public class DBApp {
 					key = Date.parse(strClusteringKey);
 				else if (curr[2].equals("java.lang.Boolean"))
 					key = Boolean.parseBoolean(strClusteringKey);
-				else if (curr[2].equals(" java.awt.Polygon"))
-					key = (Comparable) parsePolygon(strClusteringKey);
+				else if (curr[2].equals("java.awt.Polygon"))
+					key = (Comparable) Polygons.parsePolygon(strClusteringKey);
 				else
 					return;
 			}
@@ -259,7 +264,7 @@ public class DBApp {
 	}
 
 	public static void serialize(Table table) throws IOException {
-		FileOutputStream fileOut = new FileOutputStream(table.getTableName() + ".class");
+		FileOutputStream fileOut = new FileOutputStream("data/"+table.getTableName() + ".class");
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		out.writeObject(table);
 		out.close();
@@ -267,7 +272,7 @@ public class DBApp {
 	}
 
 	public static Table deserialize(String tableName) throws IOException, ClassNotFoundException {
-		FileInputStream fileIn = new FileInputStream(tableName + ".class");
+		FileInputStream fileIn = new FileInputStream("data/"+tableName + ".class");
 		ObjectInputStream in = new ObjectInputStream(fileIn);
 		Table xx = (Table) in.readObject();
 		in.close();
@@ -286,45 +291,6 @@ public class DBApp {
 		return metadata;
 	}
 
-	public static String PolygonToString(Polygon P) {
-		String str = "";
-		String x = "{";
-		for (int i = 0; i < P.npoints; i++) {
-			x += P.xpoints[i];
-			if (i != P.npoints - 1)
-				x += "+";
-		}
-		x += "}";
-
-		String y = "{";
-		for (int i = 0; i < P.npoints; i++) {
-			y += P.ypoints[i];
-			if (i != P.npoints - 1)
-				y += "+";
-		}
-		y += "}";
-
-		str = "" + x + " " + y + " " + P.npoints;
-		return str;
-	}
-
-	public static Polygon parsePolygon(String str) {
-		String[] pol = str.split(" ");
-		int npoint = Integer.parseInt(pol[2]);
-		String[] strX = (pol[0].substring(1, pol[0].length() - 1)).split("+");
-		String[] strY = (pol[1].substring(1, pol[1].length() - 1)).split("+");
-
-		int[] x = new int[npoint];
-		int[] y = new int[npoint];
-
-		for (int i = 0; i < npoint; i++) {
-			x[i] = Integer.parseInt(strX[i]);
-			y[i] = Integer.parseInt(strY[i]);
-		}
-
-		return new Polygon(x, y, npoint);
-
-	}
 
 	public String SearchInTable(String strTableName, String strKey) throws Exception {
 		/*
@@ -349,7 +315,7 @@ public class DBApp {
 				else if (curr[2].equals("java.lang.Boolean"))
 					key = Boolean.parseBoolean(strKey);
 				else if (curr[2].equals(" java.awt.Polygon"))
-					key = (Comparable) parsePolygon(strKey);
+					key = (Comparable) Polygons.parsePolygon(strKey);
 				else
 					return "-1";
 			}

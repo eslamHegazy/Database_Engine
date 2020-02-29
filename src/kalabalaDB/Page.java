@@ -119,8 +119,8 @@ public class Page implements Serializable {
 	}
 
 	public void serialize() throws IOException {
-//		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".class");
-		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".ser");
+		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".class");
+//		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".ser");
 		//TODO: Check resulting path
 		//TODO: CHECK THIS SER/CLASS PROBLEM OF BOODY
 		

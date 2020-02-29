@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.Vector;
 
 public class tsttsttst {
-		
+	/*	
 	public static void main(String[] args) throws Exception{
 		Vector<Integer> vector = new Vector<Integer>();
 		vector.add(1);
@@ -71,6 +71,15 @@ public class tsttsttst {
 		
 		
 		System.out.println(toString(vector));
+	}
+*/
+	public static void main(String[] args) throws Exception{
+//		Class c1 = Class.forName("java.awt.Polygon");
+//		System.out.println(c1);
+//		Class c2 = Class.forName(" java.awt.Polygon");
+//		System.out.println(c2);
+		Polygons p = new Polygons();
+		System.out.println(p.getClass());
 	}
 	static String toString(Vector<Integer> v) {
 		StringBuilder sb = new StringBuilder();

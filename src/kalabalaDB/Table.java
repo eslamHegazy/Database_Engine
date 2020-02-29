@@ -69,8 +69,8 @@ public class Table implements Serializable {
 	
 
 	public static Page deserialize(String name) throws IOException, ClassNotFoundException {
-//		FileInputStream fileIn = new FileInputStream("data/"+name + ".class");
-		FileInputStream fileIn = new FileInputStream("data/"+name + ".ser");
+		FileInputStream fileIn = new FileInputStream("data/"+name + ".class");
+//		FileInputStream fileIn = new FileInputStream("data/"+name + ".ser");
 		//TODO: Check resulting path + check class/ ser
 		ObjectInputStream in = new ObjectInputStream(fileIn);
 		Page xx = (Page) in.readObject();
