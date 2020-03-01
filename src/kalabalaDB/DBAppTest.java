@@ -1,16 +1,122 @@
 package kalabalaDB;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Hashtable;
+import java.util.Scanner;
 
 public class DBAppTest {
 	public static void main(String[] args)throws Exception {
 //		clear();
-//		tst1();
-		tst2();
+//		tst1(500);
+//		tst2();
+//		tst1(500);
+//		tst3();
+//		tst4();
+//		tst44();
+//		tst4();
+		tst5();
+
+	}
+	static void tst5() throws DBAppException{
+		showCurrentState("tst5-st");
+		DBApp d = new DBApp();
+		d.init();
+		Scanner sc = new Scanner(System.in);
+//		for (int i=0;i<7;i++) {
+//			String s ="";
+//			Hashtable h = new Hashtable<>();
+//			while(!(s=sc.next()).equals("d")&&!s.equals("D")) {
+//				String col = sc.next().toUpperCase();
+//				String val = sc.next();
+//				h.put(col, val);
+//			}
+//			System.out.println("About to delete");
+//			d.deleteFromTable("T1", h);
+//			showCurrentState("tst5-"+i);
+//		}
+		Hashtable h = new Hashtable<>();
+		h.put("C1","0");
+		System.out.println("About to delete");
+		d.deleteFromTable("T1", h);
+//		showCurrentState("tst5-"+i);
+		showCurrentState("tst5-en");
 	}
 	
+	static void showCurrentState() throws DBAppException {
+		showCurrentState("neww");
+	}
+	static void showCurrentState(String name) throws DBAppException{
+		DBApp D = new DBApp();
+		D.init();
+		D.printAllPagesInAllTables(name);
+	}
+	static void tst44() throws Exception{
+		DBApp d = new DBApp();
+		d.init();
+		d.printAllPagesInAllTables("tst44_st");
+		System.out.println();
+		Hashtable t = new Hashtable<>();
+		t.put("C3", 321.0122121);
+		int key = 3;
+		d.updateTable("T1", ""+key, t);
+		d.printAllPagesInAllTables("tst44_en");
+	}
+	
+	static void tst3() throws Exception{
+		DBApp d = new DBApp();
+		d.init();
+		tst1(d);
+		d.printAllPagesInAllTables("tst1done");
+		d=new DBApp();
+		d.printAllPagesInAllTables("new DBApp");
+		
+	}
+	static void tst4() throws DBAppException, IOException{
+		clear();
+		DBApp d = new DBApp();
+		d.init();
+		Hashtable h = new Hashtable<>();
+		h.put("C1", "java.lang.Integer");
+		h.put("C2", "java.lang.String");
+		h.put("C3", "java.lang.Double");
+		d.createTable("T1", "C1", h);
+		h = new Hashtable<>();
+		for (int i=0;i<12;i++) {
+			h = new Hashtable<>();
+			int C1 = (int)(8*Math.random());
+			String C2 = randomAlphaNumeric(1+(int)(Math.random()*7));
+			double C3 = Math.random()*20;
+			h.put("C1", C1);
+			h.put("C2", C2);
+			h.put("C3", C3);
+			d.insertIntoTable("T1", h);
+		}
+		d.printAllPagesInAllTables("tst4-1");
+		System.out.println();
+		Scanner sc = new Scanner(System.in);
+		PrintWriter out = new PrintWriter("tst4updates.txt");
+		for (int i=0;i<7;i++) {
+			int C1 = sc.nextInt();
+			String nxt = sc.next();
+			h = new Hashtable<>();
+			out.print(i+":\t"+C1+"\t");
+			if (nxt.equals("C2")) {
+				String C2 = sc.next();
+				h.put("C2", C2);
+				out.println(C2);
+			}
+			else {
+				double C3 = sc.nextDouble();
+				h.put("C3", C3);
+				out.println("\t"+C3+"\t");
+			}
+			d.updateTable("T1", ""+C1, h);
+			
+			d.printAllPagesInAllTables("tst4-2-"+i);
+		}
+	}
 	static void clear() {
 		File metadata = new File("data/metadata.csv");
 		metadata.delete();
@@ -31,14 +137,27 @@ public class DBAppTest {
 		}
 		return builder.toString();
 	}
-	static void tst1() throws Exception{//TODO:DBAppException
+
+	static void tst1() throws Exception{
+		DBApp dbApp = new DBApp();
+		tst1(150, dbApp);
+	}
+	static void tst1(DBApp dbApp) throws Exception{
+		tst1(150,dbApp);
+	}
+	static void tst1(int n) throws Exception{
+		DBApp dbApp = new DBApp();
+		tst1(n, dbApp);
+	}
+	static void tst1(int n,DBApp dbApp) throws Exception{//TODO:DBAppException
 		//Testing Many insertions with many duplicate keys in a random order
 //		100 insertions		1 sec
 //		500 insertions 		17 sec
 //		1000 insertions		54 sec
 //		2000 insertions		190 sec
 //		5000 insertions		1030 sec
-		DBApp dbApp = new DBApp();
+//		DBApp dbApp = new DBApp();
+		dbApp.init();
 		Hashtable<String, String> htblColNameType = new Hashtable<>();
 		String strTableName = "Esso Table";
 		htblColNameType.put("the key", "java.lang.Integer");
@@ -49,7 +168,7 @@ public class DBAppTest {
 		File file = new File("Data/tst1_Insertions.txt");
 		PrintWriter out = new PrintWriter(file);
 		long star = System.nanoTime();
-		for (int i=0;i<450;i++) {
+		for (int i=0;i<n;i++) {
 			
 			int key = 12345+(int)(Math.random()*55);
 			double fl = Math.random()*1000000;
@@ -67,7 +186,7 @@ public class DBAppTest {
 		}
 		long end = System.nanoTime();
 		long dur =( end-star)/(long)1e9;
-		System.out.println("Elapsed Time= "+dur+" seconds");
+		System.out.println(n+" insertions, Elapsed Time= "+dur+" seconds");
 		out.close();
 		dbApp.printAllPagesInAllTables();
 	}
@@ -106,6 +225,7 @@ public class DBAppTest {
 		dbApp.printAllPagesInAllTables("tst2_dataAfter");
 		
 	}
+
 	
 	static Polygons randomPolygon(){
 		int npoints = 3+(int)(Math.random()*13);

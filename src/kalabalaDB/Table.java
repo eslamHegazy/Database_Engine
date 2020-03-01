@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Table implements Serializable {
 	private Vector<String> pages = new Vector();
-
+	private int MaximumRowsCountinPage;
 	private Vector<Object>min=new Vector<>();
 	private Vector<Object>max=new Vector<>();
 	private String tableName;
@@ -13,6 +13,14 @@ public class Table implements Serializable {
 
 	public Vector<String> getPages() {
 		return pages;
+	}
+
+	public int getMaximumRowsCountinPage() {
+		return MaximumRowsCountinPage;
+	}
+
+	public void setMaximumRowsCountinPage(int maximumRowsCountinPage) {
+		MaximumRowsCountinPage = maximumRowsCountinPage;
 	}
 
 	public void setPages(Vector<String> pages) {
@@ -68,78 +76,73 @@ public class Table implements Serializable {
 
 	
 
-	public static Page deserialize(String name) throws IOException, ClassNotFoundException {
-		FileInputStream fileIn = new FileInputStream("data/"+name + ".class");
-//		FileInputStream fileIn = new FileInputStream("data/"+name + ".ser");
-		//TODO: Check resulting path + check class/ ser
-		ObjectInputStream in = new ObjectInputStream(fileIn);
-		Page xx = (Page) in.readObject();
-		in.close();
-		fileIn.close();
-		return xx;
+	public static Page deserialize(String name) throws DBAppException {
+		try {
+			FileInputStream fileIn = new FileInputStream("data/"+name + ".class");
+	//		FileInputStream fileIn = new FileInputStream("data/"+name + ".ser");
+			//TODO: Check resulting path + check class/ ser
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			Page xx = (Page) in.readObject();
+			in.close();
+			fileIn.close();
+			return xx;
+		}
+		catch(IOException e) {
+			throw new DBAppException("IO Exception");
+		}
+		catch(ClassNotFoundException e) {
+			throw new DBAppException("Class Not Found Exception");
+		}
 	}
 
 	public static void addInVector(Vector<Object> vs, Object str, int n) {
 		vs.insertElementAt(str, n);
 	}
 
-	public void addInPage(int curr, Tuple x) {
+	public void addInPage(int curr, Tuple x) throws DBAppException {
 //		System.out.println(x+" "+curr);
-		if(curr<pages.size()){
-		String pageName = pages.get(curr);
-		try {
-			Page p=deserialize(pageName);
-			if(p.size()<200){
+		if (curr < pages.size()) {
+			String pageName = pages.get(curr);
+
+			Page p = deserialize(pageName);
+			if (p.size() < MaximumRowsCountinPage) {
 //				System.out.println("blboz2");
 				p.insertIntoPage(x, primaryPos);
 //				System.out.println("blboz3");
-				Object minn= p.getTuples().get(0).getAttributes().get(primaryPos);
-				Object maxx= p.getTuples().get(p.size()-1).getAttributes().get(primaryPos);
+				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
+				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
 				min.remove(curr);
-				addInVector(min,minn, curr);
+				addInVector(min, minn, curr);
 				max.remove(curr);
 				addInVector(max, maxx, curr);
 				p.serialize();
-			}else{
-				//Tuple t=p.getTuples().get(p.size()-1);//element 199
+			} else {
+				// Tuple t=p.getTuples().get(p.size()-1);//element 199
 				p.insertIntoPage(x, primaryPos);
-				Tuple t=p.getTuples().remove(p.size()-1);
-				Object minn= p.getTuples().get(0).getAttributes().get(primaryPos);
-				Object maxx= p.getTuples().get(p.size()-1).getAttributes().get(primaryPos);
+				Tuple t = p.getTuples().remove(p.size() - 1);
+				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
+				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
 				min.remove(curr);
-				addInVector(min,minn, curr);
+				addInVector(min, minn, curr);
 				max.remove(curr);
 				addInVector(max, maxx, curr);
 				p.serialize();
-				addInPage(curr+1, t);
+				addInPage(curr + 1, t);
 			}
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		}else{
-			Page p=new Page();
+		} else {
+			Page p = new Page();
 			p.insertIntoPage(x, primaryPos);
-			Object keyValue= p.getTuples().get(0).getAttributes().get(primaryPos);
+			Object keyValue = p.getTuples().get(0).getAttributes().get(primaryPos);
 			pages.addElement(p.getPageName());
 			min.addElement(keyValue);
 			max.addElement(keyValue);
-			try {
-				p.serialize();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
+			p.serialize();
 
+		}
 
 	}
 
-	public void insertSorted(Tuple x, Object keyV) {
+	public void insertSorted(Tuple x, Object keyV) throws DBAppException{
 		int lower = 0;
 		int upper = min.size();
 		Comparable keyValue=(Comparable) keyV;
@@ -157,30 +160,35 @@ public class Table implements Serializable {
 			p.insertIntoPage(x, primaryPos);
 			pages.addElement(p.getPageName());
 			min.addElement(keyV);
-			max.addElement(keyV);
-			try {
-				p.serialize();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			max.addElement(keyV);	
+			p.serialize();
+
 		}
 	}
 
 	public boolean invalidDelete(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
-			throws Exception {
+			throws DBAppException {
 		Set<String> keys = htblColNameValue.keySet();
 		for (String key : keys) {
 			int i;
 			for (i = 0; i < metaOfTable.size(); i++) {
 				if (metaOfTable.get(i)[1].equals(key)) {
+					try {
 					Class colType = Class.forName(metaOfTable.get(i)[2]);
 					Class parameterType = htblColNameValue.get(key).getClass();
+					Class polyOriginal = Class.forName("java.awt.Polygon");
+					if (colType == polyOriginal) {
+						colType = Class.forName("kalabalaDB.Polygons");
+					}
+					System.out.println(colType+" "+parameterType);
 					if (!colType.equals(parameterType))
 						return true;
 					else
 						break;
-
+					}
+					catch(ClassNotFoundException e) {
+						throw new DBAppException("Class Not Found Exception");
+					}
 				}
 			}
 			if (i < metaOfTable.size())
@@ -216,18 +224,18 @@ public class Table implements Serializable {
 	 * }
 	 */
 	public void deleteInTable(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
-			throws Exception {
+			throws DBAppException {
 
-		if (invalidDelete(htblColNameValue, metaOfTable)) {
-			System.out.println("false operation");
-			return;
-		}
+//		if (invalidDelete(htblColNameValue, metaOfTable)) {
+//			throw new DBAppException("false operation");
+//			//TODO: Is this message appropriate?
+//		}
 		Vector<Integer> attributeIndex = new Vector();
 		Set<String> keys = htblColNameValue.keySet();
 		for (String key : keys) {
 			int i;
 			for (i = 0; i < metaOfTable.size(); i++) {
-				if (metaOfTable.get(i)[1].equals(htblColNameValue.get(key))) {
+				if (metaOfTable.get(i)[1].equals(key)) {
 					break;
 				}
 			}
@@ -237,12 +245,20 @@ public class Table implements Serializable {
 			
 			String pageName = pages.get(i);
 			Page p = deserialize(pageName);
-			FileInputStream fileIn = new FileInputStream("data/"+pageName + ".class");
-			//TODO: Check resulting path
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-			Page xx = (Page) in.readObject();
-			in.close();
-			fileIn.close();
+			try {
+				FileInputStream fileIn = new FileInputStream("data/"+pageName + ".class");
+				//TODO: Check resulting path
+				ObjectInputStream in = new ObjectInputStream(fileIn);
+				Page xx = (Page) in.readObject();
+				in.close();
+				fileIn.close();
+			}
+			catch(ClassNotFoundException e) {
+				throw new DBAppException("Class Not Found Exception");
+			}
+			catch(IOException e) {
+				throw new DBAppException("IO Exception");
+			}
 			p.deleteInPage(htblColNameValue,attributeIndex);
 			if(p.getTuples().size()==0)
 			{
@@ -327,12 +343,4 @@ public class Table implements Serializable {
 	 * }
 	 */
 
-	public static void main(String[] args) throws IOException, ClassNotFoundException {
-
-		FileInputStream fileIn = new FileInputStream("childSer" + ".class");
-		ObjectInputStream in = new ObjectInputStream(fileIn);
-		in.close();
-		File f = new File("childSer" + ".class");
-		f.delete();
-	}
 }

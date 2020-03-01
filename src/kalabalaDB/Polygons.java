@@ -36,12 +36,15 @@ public class Polygons extends Polygon implements Comparable<Polygons>{
 		}
 		return res;
 	}
-	@Override
-	public int compareTo(Polygons o) {
-		Dimension dim = getBounds( ).getSize( );
+
+	public long area() {
+		Dimension dim = getBounds().getSize();
 		long area = dim.width * dim.height;
-		Dimension dimO = o.getBounds( ).getSize( );
-		long areaO= dimO.width * dimO.height;
+		return area;
+	}
+	public int compareTo(Polygons o) {
+		long area = area();
+		long areaO = o.area();
 		if (area>areaO) {
 			return 1;
 		}

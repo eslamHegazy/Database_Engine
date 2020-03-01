@@ -1,7 +1,3 @@
-Esso Table,the key,java.lang.Integer,True,False,
-Esso Table,garbage,java.lang.Integer,False,False,
-Esso Table,Txt,java.lang.String,False,False,
-Esso Table,float qnt,java.lang.Double,False,False,
-Another Table,label,java.lang.String,False,False,
-Another Table,poly,java.awt.Polygon,False,False,
-Another Table,id,java.lang.Integer,True,False,
+T1,C3,java.lang.Double,False,False
+T1,C2,java.lang.String,False,False
+T1,C1,java.lang.Integer,True,False

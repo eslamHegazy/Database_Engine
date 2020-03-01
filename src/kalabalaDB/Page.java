@@ -118,7 +118,11 @@ public class Page implements Serializable {
 		}
 	}
 
-	public void serialize() throws IOException {
+	public void serialize() throws DBAppException {
+		try {
+//		System.out.println("###################################");
+//		System.out.println("page before");
+//		System.out.println(this);
 		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".class");
 //		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".ser");
 		//TODO: Check resulting path
@@ -126,8 +130,13 @@ public class Page implements Serializable {
 		
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		out.writeObject(this);
+
 		out.close();
 		fileOut.close();
+		}
+		catch(IOException e) {
+			throw new DBAppException("IO Exception");
+		}
 	}
 
 	/*
@@ -196,7 +205,7 @@ public class Page implements Serializable {
 		}
 		return sb.toString()+"\n";
 	}
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws DBAppException {
 		Page h = new Page();
 		Tuple abdo = new Tuple();
 		// Vector g = new Vector();
