@@ -1,0 +1,27 @@
+Table T1 has the following pages:
+
+
+Page page0 has the following tuples:
+
+724.5749478332403	ZI9L79	2	Mon Mar 02 07:51:15 EET 2020	
+
+
+
+Page page1 has the following tuples:
+
+548.4071677634101	S5J1QL	7	Mon Mar 02 07:51:15 EET 2020	
+
+
+
+Page page2 has the following tuples:
+
+548.4071677634101	S5J1QL	7	Mon Mar 02 07:51:15 EET 2020	
+
+548.4071677634101	S5J1QL	7	Mon Mar 02 07:51:15 EET 2020	
+
+
+
+
+
+
+

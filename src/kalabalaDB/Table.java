@@ -192,11 +192,9 @@ public class Table implements Serializable {
 				}
 			}
 			if (i < metaOfTable.size())
-				return true;
-
+				return false;
 		}
-		return false;
-
+		return true;
 	}
 
 	/*
@@ -226,10 +224,10 @@ public class Table implements Serializable {
 	public void deleteInTable(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
 			throws DBAppException {
 
-//		if (invalidDelete(htblColNameValue, metaOfTable)) {
-//			throw new DBAppException("false operation");
-//			//TODO: Is this message appropriate?
-//		}
+		if (invalidDelete(htblColNameValue, metaOfTable)) {
+			throw new DBAppException("false operation");
+			//TODO: Is this message appropriate?
+		}
 		Vector<Integer> attributeIndex = new Vector();
 		Set<String> keys = htblColNameValue.keySet();
 		for (String key : keys) {
@@ -239,6 +237,7 @@ public class Table implements Serializable {
 					break;
 				}
 			}
+			System.out.println(i);
 			attributeIndex.add(i);
 		}
 		for (int i = 0; i < pages.size(); i++) {
@@ -279,7 +278,6 @@ public class Table implements Serializable {
 				max.setElementAt(maxx, i);
 				p.serialize();
 			}
-
 		}
 
 	}

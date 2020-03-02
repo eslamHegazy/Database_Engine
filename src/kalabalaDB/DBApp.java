@@ -37,11 +37,17 @@ public class DBApp {
 	public Vector<String> getTablesNames()throws DBAppException{
 		Vector meta = readFile("data/metadata.csv");
 		Vector res = new Vector<>();
+		HashSet<String> hs = new HashSet<>();
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
 			//TODO: If added the headers row to metadata.csv ;;
 			// will need to discard the first row
-			res.add(curr[0]);
+			if (hs.contains(curr[0]))
+				continue;
+			else {
+				res.add(curr[0]);
+				hs.add(curr[0]);
+			}
 		}
 		return res;
 	}
@@ -208,6 +214,7 @@ public class DBApp {
 				if (colType == polyOriginal) {
 					colType = Class.forName("kalabalaDB.Polygons");
 				}
+				System.out.println(colType+" "+parameterType);
 				if (!colType.equals(parameterType)) {
 					throw new DBAppException("Data types do not match with those of the actual column of the table");
 				}
@@ -396,11 +403,12 @@ public class DBApp {
 					else
 						l = m + 1;
 				}
-				p.serialize(); // added by abdo
+//				p.serialize(); // added by abdo
 			}
-			serialize(t); // addd by abdo
+//			serialize(t); // addd by abdo
 	
-			return "-1";
+//			return "-1";
+			throw new DBAppException("Searched for a tuple that does not exist in the table");
 		}
 		catch(ClassCastException e) {
 			throw new DBAppException("Class Cast Exception");

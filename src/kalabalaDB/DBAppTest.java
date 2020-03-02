@@ -16,31 +16,81 @@ public class DBAppTest {
 //		tst4();
 //		tst44();
 //		tst4();
+//		tst5();
+//		tst6();
+//		tst4();
 		tst5();
 
+	}
+	static void tst6() throws DBAppException{
+		DBApp d = new DBApp();
+		d.init();
+		d.printAllPagesInAllTables("tst6-0");
+		Scanner sc = new Scanner(System.in);
+		String s = "";
+		int n =9;
+		for (int i=1;i<=n;i++) {
+			Hashtable h = new Hashtable<>();
+			String strClusteringKey = "";
+			while ( !(s=sc.next()).toLowerCase().equals("u") ) {
+				String coln = s.toUpperCase();
+				String value = sc.next();
+				
+				if (coln.equals("C1")) {
+					strClusteringKey=value;
+				}
+				else {
+					if (coln.equals("C2")) {
+						String C2 = value;
+						h.put("C2", C2);
+//						out.println(C2);
+					}
+					else {
+						double C3 = Double.parseDouble(value);
+						h.put("C3", C3);
+//						out.println("\t"+C3+"\t");
+					}
+//					h.put(coln, value);
+				}
+			}
+			d.updateTable("T1", strClusteringKey, h);
+			d.printAllPagesInAllTables("tst6-"+i);
+		}
+		d.printAllPagesInAllTables("tst6-"+(n+1));
 	}
 	static void tst5() throws DBAppException{
 		showCurrentState("tst5-st");
 		DBApp d = new DBApp();
 		d.init();
 		Scanner sc = new Scanner(System.in);
-//		for (int i=0;i<7;i++) {
-//			String s ="";
-//			Hashtable h = new Hashtable<>();
-//			while(!(s=sc.next()).equals("d")&&!s.equals("D")) {
-//				String col = sc.next().toUpperCase();
-//				String val = sc.next();
-//				h.put(col, val);
-//			}
-//			System.out.println("About to delete");
-//			d.deleteFromTable("T1", h);
-//			showCurrentState("tst5-"+i);
-//		}
-		Hashtable h = new Hashtable<>();
-		h.put("C1","0");
-		System.out.println("About to delete");
-		d.deleteFromTable("T1", h);
-//		showCurrentState("tst5-"+i);
+		for (int i=0;i<7;i++) {
+			String s ="";
+			Hashtable h = new Hashtable<>();
+			while(!(s=sc.next()).equals("d")&&!s.equals("D")) {
+				String col = s.toUpperCase();
+				String val = sc.next();
+//				System.out.println(col+" "+val);
+				if (col.equals("C1")) {
+					int C1 = Integer.parseInt(val);
+					h.put("C1", C1);
+				}
+				else if (col.equals("C2")) {
+					h.put("C2", val);
+				}
+				else {
+					h.put("C3", Double.parseDouble(val));
+				}
+				
+			}
+			System.out.println("About to delete");
+			d.deleteFromTable("T1", h);
+			d.printAllPagesInAllTables("tst5-"+i);
+		}
+//		Hashtable h = new Hashtable<>();
+//		h.put("C1",7);
+//		System.out.println("About to delete");
+//		d.deleteFromTable("T1", h);
+//		showCurrentState("tst5-");
 		showCurrentState("tst5-en");
 	}
 	
@@ -95,25 +145,38 @@ public class DBAppTest {
 		}
 		d.printAllPagesInAllTables("tst4-1");
 		System.out.println();
-		Scanner sc = new Scanner(System.in);
+//		Scanner sc = new Scanner(System.in);
 		PrintWriter out = new PrintWriter("tst4updates.txt");
-		for (int i=0;i<7;i++) {
-			int C1 = sc.nextInt();
-			String nxt = sc.next();
+		for (int i=0;i<18;i++) {
+//			int C1 = sc.nextInt();
+//			String nxt = sc.next();
+			int C1 = (int)(Math.random()*8);
 			h = new Hashtable<>();
 			out.print(i+":\t"+C1+"\t");
-			if (nxt.equals("C2")) {
-				String C2 = sc.next();
-				h.put("C2", C2);
-				out.println(C2);
+			String C2 = randomAlphaNumeric(6);
+			h.put("C2", C2);
+			double C3 = Math.random()*999;
+			h.put("C3", C3);
+//			if (nxt.equals("C2")) {
+//				String C2 = sc.next();
+//				h.put("C2", C2);
+//				out.println(C2);
+//			}
+//			else {
+//				double C3 = sc.nextDouble();
+//				h.put("C3", C3);
+//				out.println("\t"+C3+"\t");
+//			}
+			try {
+				d.updateTable("T1", ""+C1, h);
 			}
-			else {
-				double C3 = sc.nextDouble();
-				h.put("C3", C3);
-				out.println("\t"+C3+"\t");
+			catch(DBAppException e) {
+				e.printStackTrace();
+				i--;
+				continue;
+				
 			}
-			d.updateTable("T1", ""+C1, h);
-			
+				
 			d.printAllPagesInAllTables("tst4-2-"+i);
 		}
 	}
