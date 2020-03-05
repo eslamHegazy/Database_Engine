@@ -1,0 +1,1 @@
+typeSearchIndex = [{"p":"kalabalaDB","l":"DBAppTest"}]

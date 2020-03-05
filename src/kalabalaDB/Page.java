@@ -6,11 +6,16 @@ public class Page implements Serializable {
 	private String pageName;
 	private static  int lastIn = 0;
 
-	public Page() {
+	public Page(String pageName) {
 		tuples = new Vector<Tuple>();
-		pageName = "page" + lastIn;
-		lastIn++;
+		this.pageName = pageName;
 	}
+	
+//	public Page() {
+//		tuples = new Vector<Tuple>();
+//		pageName = "page" + lastIn;
+//		lastIn++;
+//	}
 
 	public Vector<Tuple> getTuples() {
 		return tuples;
@@ -205,6 +210,7 @@ public class Page implements Serializable {
 		}
 		return sb.toString()+"\n";
 	}
+	/*
 	public static void main(String[] args) throws DBAppException {
 		Page h = new Page();
 		Tuple abdo = new Tuple();
@@ -244,5 +250,5 @@ public class Page implements Serializable {
 		}
 
 	}
-
+*/
 }

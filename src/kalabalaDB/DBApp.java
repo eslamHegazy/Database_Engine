@@ -1,6 +1,8 @@
 package kalabalaDB;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class DBApp {
@@ -31,7 +33,7 @@ public class DBApp {
 			throw new DBAppException("IO Exception");
 		}
 		
-		
+
 	}
 	
 	public Vector<String> getTablesNames()throws DBAppException{
@@ -79,9 +81,27 @@ public class DBApp {
 			throw new DBAppException("IO Exception");
 		}
 	}
-
+	public boolean exists(String strTableName) throws DBAppException{
+		try {
+			Vector meta = readFile("data/metadata.csv");
+			for (Object O : meta) {
+				String[] curr = (String[]) O;
+				if (curr[0].equals(strTableName)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		catch (Exception e) {
+			return false;
+		}
+	
+	}
 	public void createTable(String strTableName, String strClusteringKey, Hashtable<String, String> htblColNameType)
 			throws DBAppException {
+		if (exists(strTableName)) {
+			throw new DBAppException("A table with this name already exists in the database!");
+		}
 		Table table = new Table();
 		table.setMaximumRowsCountinPage(MaximumRowsCountinPage);
 		table.setTableName(strTableName);
@@ -90,7 +110,7 @@ public class DBApp {
 
 			Set<String> keys = htblColNameType.keySet();
 			for (String key : keys) {
-				System.out.println("Value of " + key + " is: " + htblColNameType.get(key));
+//				System.out.println("Value of " + key + " is: " + htblColNameType.get(key));
 				writer.append(strTableName + ",");
 				writer.append(key + ",");
 				String typ = htblColNameType.get(key);
@@ -174,11 +194,11 @@ public class DBApp {
 					else if (curr[2].equals("java.lang.Double"))
 						key = Double.parseDouble(strClusteringKey);
 					else if (curr[2].equals("java.util.Date"))
-						key = Date.parse(strClusteringKey);
+						key = parseDate(strClusteringKey);
 					else if (curr[2].equals("java.lang.Boolean"))
 						key = Boolean.parseBoolean(strClusteringKey);
 					else if (curr[2].equals("java.awt.Polygon"))
-						key = (Comparable) Polygons.parsePolygon(strClusteringKey);
+						key = Polygons.parsePolygon(strClusteringKey);
 					else
 						throw new DBAppException("The key has an UNKNOWN TYPE");
 						//TODO: Is the previous line good ? 
@@ -339,6 +359,7 @@ public class DBApp {
 			return metadata;
 		}
 		catch(IOException e) {
+			e.printStackTrace();
 			throw new DBAppException("IO Exception");
 		}
 	}
@@ -414,6 +435,18 @@ public class DBApp {
 			throw new DBAppException("Class Cast Exception");
 		}
 	}
+	
+	static Date parseDate(String strClusteringKey) throws DBAppException {
+		try {
+			SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+			Date d = s.parse(strClusteringKey);
+			return d;
+		}
+		catch (ParseException e) {
+			throw new DBAppException("Parse Exception : Entered a wrong date format");
+		}
+	}
+	
 
 //	public static void main(String[] args) throws DBAppException {
 //		clear();

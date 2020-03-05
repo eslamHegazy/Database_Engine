@@ -14,7 +14,10 @@ public class Table implements Serializable {
 	public Vector<String> getPages() {
 		return pages;
 	}
-
+	public String getNewPageName() {
+		return tableName+pages.size();
+		
+	}
 	public int getMaximumRowsCountinPage() {
 		return MaximumRowsCountinPage;
 	}
@@ -35,6 +38,7 @@ public class Table implements Serializable {
 	public Vector<Object> getMin() {
 		return min;
 	}
+	
 
 	public void setMin(Vector<Object> min) {
 		this.min = min;
@@ -130,7 +134,7 @@ public class Table implements Serializable {
 				addInPage(curr + 1, t);
 			}
 		} else {
-			Page p = new Page();
+			Page p = new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
 			Object keyValue = p.getTuples().get(0).getAttributes().get(primaryPos);
 			pages.addElement(p.getPageName());
@@ -156,7 +160,7 @@ public class Table implements Serializable {
 			}
 		}
 		if(pages.size()==0){
-			Page p=new Page();
+			Page p=new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
 			pages.addElement(p.getPageName());
 			min.addElement(keyV);

@@ -3,7 +3,11 @@ package kalabalaDB;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Hashtable;
+import java.util.Locale;
 import java.util.Scanner;
 
 public class DBAppTest {
@@ -12,16 +16,170 @@ public class DBAppTest {
 //		tst1(500);
 //		tst2();
 //		tst1(500);
+		
+//		clear();
 //		tst3();
+		
 //		tst4();
 //		tst44();
 //		tst4();
 //		tst5();
 //		tst6();
 //		tst4();
+//		tst5();
+//		SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
+//		Date d = s.parse("2010-01-11");
+//		System.out.println(d);
+//		clear();
+//		tst7();
+//		tst8();
+		
+//		tsta();
+		
+//		tstb();
+		
+//		tst9();
+		
+//		SimpleDateFormat da = new SimpleDateFormat("yyyy-MM-dd");
+//		Date d = da.parse("2000-10-02");
+//		System.out.println(d);
+		
 		tst5();
+	}
+	static void tst9() throws DBAppException{
+		String strTableName= "Bol";
+		String strClusteringKey = "A";
+		Hashtable htblColNameType = new Hashtable<>();
+		htblColNameType.put("A", "java.lang.Boolean");
+		htblColNameType.put("B", "java.lang.String");
+		DBApp dbApp = new DBApp();
+		dbApp.init();
+//		dbApp.printAllPagesInAllTables("9A");
+		dbApp.createTable(strTableName, strClusteringKey, htblColNameType);
+		for (int i=0;i<50;i++) {
+			boolean A= (int)(Math.random()*2)==0;
+			String B = randomAlphaNumeric(7);
+			Hashtable h = new Hashtable<>();
+			h.put("A", A);
+			h.put("B", B);
+			dbApp.insertIntoTable(strTableName, h);
+		}
+		dbApp.printAllPagesInAllTables("9dn");
 
 	}
+	static void tsta() throws DBAppException{
+		clear();
+		
+		
+		String strTableName= "A";
+		String strClusteringKey = "1";
+		Hashtable htblColNameType = new Hashtable<>();
+		htblColNameType.put("1", "java.lang.Integer");
+		htblColNameType.put("2", "java.lang.String");
+		DBApp dbApp = new DBApp();
+		dbApp.init();
+//		dbApp.printAllPagesInAllTables("AA");
+		dbApp.createTable(strTableName, strClusteringKey, htblColNameType);
+		for (int i=0;i<15;i++) {
+			Hashtable htblColNameValue = new Hashtable<>();
+			htblColNameValue.put("1", (int)(Math.random()*16));
+			htblColNameValue.put("2", randomAlphaNumeric(4));
+			dbApp.insertIntoTable(strTableName, htblColNameValue);
+		}
+		dbApp.printAllPagesInAllTables("AZ");
+	}
+	static void tstb() throws DBAppException{
+		
+		String strTableName= "B";
+		String strClusteringKey = "1";
+		Hashtable htblColNameType = new Hashtable<>();
+		htblColNameType.put("1", "java.lang.Integer");
+		htblColNameType.put("2", "java.lang.Double");
+		DBApp dbApp = new DBApp();
+		dbApp.init();
+//		dbApp.printAllPagesInAllTables("BA");
+		dbApp.createTable(strTableName, strClusteringKey, htblColNameType);
+		for (int i=0;i<15;i++) {
+			Hashtable htblColNameValue = new Hashtable<>();
+			htblColNameValue.put("1", (int)(Math.random())*16);
+			htblColNameValue.put("2", 20*Math.random());
+			dbApp.insertIntoTable(strTableName, htblColNameValue);
+		}
+		dbApp.printAllPagesInAllTables("BZ");
+	}
+	
+
+	static void tst8() throws  DBAppException{
+		DBApp d = new DBApp();
+		d.init();
+		d.printAllPagesInAllTables("tst8-0");
+		String strTableName = "booleanTest";
+		String strClusteringKey = "C1";
+		Hashtable htblColNameType = new Hashtable<>();
+		htblColNameType.put("C1", "java.lang.Boolean");
+		htblColNameType.put("C2", "java.util.Date");
+		htblColNameType.put("C3", "java.lang.String");
+		d.createTable(strTableName, strClusteringKey, htblColNameType);
+		
+		for (int i=0;i<19;i++) {
+			boolean C1 = ((int)(Math.random()*10)%2==0);
+			Date C2 = randomDate();
+			String C3 = randomAlphaNumeric(6);
+			Hashtable htblColNameValue= new Hashtable<>();
+			htblColNameValue.put("C1", C1);
+			htblColNameValue.put("C2", C2);
+			htblColNameValue.put("C3", C3);
+			d.insertIntoTable(strTableName, htblColNameValue);
+		}
+		d.printAllPagesInAllTables("tst8-1");
+	}
+	
+	
+	static void tst7() throws  DBAppException{
+		DBApp d = new DBApp();
+		d.init();
+//		d.printAllPagesInAllTables("tst7-0");
+		String strTableName = "dateTest";
+		String strClusteringKey = "C1";
+		Hashtable htblColNameType = new Hashtable<>();
+		htblColNameType.put("C1", "java.util.Date");
+		htblColNameType.put("C2", "java.util.Date");
+		htblColNameType.put("C3", "java.lang.String");
+		d.createTable(strTableName, strClusteringKey, htblColNameType);
+		for (int i=0;i<19;i++) {
+			Date C1 = randomDate();
+			Date C2 = randomDate();
+			String C3 = randomAlphaNumeric(6);
+			Hashtable htblColNameValue= new Hashtable<>();
+			htblColNameValue.put("C1", C1);
+			htblColNameValue.put("C2", C2);
+			htblColNameValue.put("C3", C3);
+			d.insertIntoTable(strTableName, htblColNameValue);
+		}
+		d.printAllPagesInAllTables("tst7-1");
+	}
+	
+	static Date randomDate() throws DBAppException{
+		
+		String res = "";
+		int year = 1940+(int)(Math.random()*150);
+		int month = 1+(int)(Math.random()*12);
+		int day = (int)(Math.random()*31);
+		if (month==2) {
+			day = Math.max(day, 28);
+		}
+		else if (month == 4 || month == 6 || month == 9 || month == 11) {
+			day = Math.max(day, 30);
+		}
+		res = String.format("%04d-%02d-%02d", year,month,day);
+		System.out.println(res);
+		Date d = DBApp.parseDate(res);
+		System.out.println(d.toString());
+		return d;
+		
+		
+	}
+	
 	static void tst6() throws DBAppException{
 		DBApp d = new DBApp();
 		d.init();
@@ -70,20 +228,20 @@ public class DBAppTest {
 				String col = s.toUpperCase();
 				String val = sc.next();
 //				System.out.println(col+" "+val);
-				if (col.equals("C1")) {
-					int C1 = Integer.parseInt(val);
-					h.put("C1", C1);
+				if (col.equals("A")) {
+					boolean C1 = Boolean.parseBoolean(val);
+					h.put("A", C1);
 				}
-				else if (col.equals("C2")) {
-					h.put("C2", val);
+				else if (col.equals("B")) {
+					h.put("B", val);
 				}
-				else {
-					h.put("C3", Double.parseDouble(val));
-				}
+//				else {
+//					h.put("C3", Double.parseDouble(val));
+//				}
 				
 			}
 			System.out.println("About to delete");
-			d.deleteFromTable("T1", h);
+			d.deleteFromTable("Bol", h);
 			d.printAllPagesInAllTables("tst5-"+i);
 		}
 //		Hashtable h = new Hashtable<>();
