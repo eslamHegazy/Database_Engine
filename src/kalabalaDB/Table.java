@@ -2,6 +2,9 @@ package kalabalaDB;
 import java.io.*;
 import java.util.*;
 
+import BPTree.BPTree;
+import BPTree.Ref;
+
 public class Table implements Serializable {
 	private Vector<String> pages = new Vector();
 	private int MaximumRowsCountinPage;
@@ -10,6 +13,7 @@ public class Table implements Serializable {
 	private String tableName;
 	private String strClusteringKey;
 	private int primaryPos;
+	private Hashtable<String,BPTree> colNameBTreeIndex;
 
 	public Vector<String> getPages() {
 		return pages;
@@ -103,7 +107,7 @@ public class Table implements Serializable {
 		vs.insertElementAt(str, n);
 	}
 
-	public void addInPage(int curr, Tuple x) throws DBAppException {
+	public void addInPage(int curr, Tuple x,String keyType,String keyColName,int nodeSize) throws DBAppException {
 //		System.out.println(x+" "+curr);
 		if (curr < pages.size()) {
 			String pageName = pages.get(curr);
@@ -112,6 +116,13 @@ public class Table implements Serializable {
 			if (p.size() < MaximumRowsCountinPage) {
 //				System.out.println("blboz2");
 				p.insertIntoPage(x, primaryPos);
+				if(colNameBTreeIndex.containsKey(keyColName)){
+					BPTree bTree=colNameBTreeIndex.get(keyColName);
+					int index=getIndexNumber(p.getPageName(),tableName.length());
+					Ref recordReference = new Ref(index, curr);
+					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+					colNameBTreeIndex.put(keyColName,bTree);
+				}
 //				System.out.println("blboz3");
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
@@ -123,6 +134,13 @@ public class Table implements Serializable {
 			} else {
 				// Tuple t=p.getTuples().get(p.size()-1);//element 199
 				p.insertIntoPage(x, primaryPos);
+				if(colNameBTreeIndex.containsKey(keyColName)){
+					BPTree bTree=colNameBTreeIndex.get(keyColName);
+					int index=getIndexNumber(p.getPageName(),tableName.length());
+					Ref recordReference = new Ref(index, curr);
+					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+					colNameBTreeIndex.put(keyColName,bTree);
+				}
 				Tuple t = p.getTuples().remove(p.size() - 1);
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
@@ -131,11 +149,18 @@ public class Table implements Serializable {
 				max.remove(curr);
 				addInVector(max, maxx, curr);
 				p.serialize();
-				addInPage(curr + 1, t);
+				addInPage(curr + 1, t,keyType,keyColName,nodeSize);
 			}
 		} else {
 			Page p = new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
+			if(colNameBTreeIndex.containsKey(keyColName)){
+				BPTree bTree=colNameBTreeIndex.get(keyColName);
+				int index=getIndexNumber(p.getPageName(),tableName.length());
+				Ref recordReference = new Ref(index, 0);
+				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+				colNameBTreeIndex.put(keyColName,bTree);
+			}
 			Object keyValue = p.getTuples().get(0).getAttributes().get(primaryPos);
 			pages.addElement(p.getPageName());
 			min.addElement(keyValue);
@@ -145,8 +170,18 @@ public class Table implements Serializable {
 		}
 
 	}
+//	public static void createBPTreeGivinType(BPTree bTree,String colType,int nodeSize) throws DBAppException{
+//		switch(colType){
+//		case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
+//		case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
+//		case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
+//		case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
+//		case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
+//		default :throw new DBAppException("I've never seen this colType in my life");
+//		}
+//	}
 
-	public void insertSorted(Tuple x, Object keyV) throws DBAppException{
+	public void insertSorted(Tuple x, Object keyV,String keyType,String keyColName,int nodeSize) throws DBAppException{
 		int lower = 0;
 		int upper = min.size();
 		Comparable keyValue=(Comparable) keyV;
@@ -155,13 +190,20 @@ public class Table implements Serializable {
 			Object minn=(min.get(curr));
 			Object maxx=max.get(curr);
 			if((keyValue.compareTo(minn)>=0&&keyValue.compareTo(maxx)<=0)||(keyValue.compareTo(minn)<0)||curr==pages.size()-1){
-				addInPage(curr, x);
+				addInPage(curr, x,keyType,keyColName,nodeSize);
 				break;
 			}
 		}
 		if(pages.size()==0){
 			Page p=new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
+			if(colNameBTreeIndex.containsKey(keyColName)){
+				BPTree bTree=colNameBTreeIndex.get(keyColName);
+				int index=getIndexNumber(p.getPageName(),tableName.length());
+				Ref recordReference = new Ref(index, 0);
+				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+				colNameBTreeIndex.put(keyColName,bTree);
+			}
 			pages.addElement(p.getPageName());
 			min.addElement(keyV);
 			max.addElement(keyV);	
@@ -285,7 +327,32 @@ public class Table implements Serializable {
 		}
 
 	}
-
+	
+	
+	public void createBTreeIndex(String strColName,BPTree bTree,int colPosition) throws DBAppException{
+		if(colNameBTreeIndex.containsKey(strColName)){
+			throw new DBAppException("BTree index already exists on this column");
+		}else{
+			colNameBTreeIndex.put(strColName,bTree);
+		}
+		for(String str:pages){
+			Page p=deserialize(str);
+			int index=getIndexNumber(p.getPageName(),tableName.length());
+			int i=0;
+			for(Tuple t:p.getTuples()){
+				Ref recordReference = new Ref(index, i);
+				bTree.insert((Comparable) t.getAttributes().get(colPosition), recordReference);
+				i++;
+			}
+			p.serialize();
+		}
+	}
+	public static int getIndexNumber(String pName,int s){
+		String num=pName.substring(s);
+		return Integer.parseInt(num);
+	}
+	
+	
 	/*public void seeAnother(Object keyValue, String pageName, int newPPos) {
 		try {
 			while (newPPos < pages.size()) {

@@ -43,8 +43,8 @@ public class DBAppTest {
 //		SimpleDateFormat da = new SimpleDateFormat("yyyy-MM-dd");
 //		Date d = da.parse("2000-10-02");
 //		System.out.println(d);
-		
-		tst5();
+		//clear();
+		//tst1();
 	}
 	static void tst9() throws DBAppException{
 		String strTableName= "Bol";

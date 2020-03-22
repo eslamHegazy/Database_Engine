@@ -1,1 +1,1 @@
-typeSearchIndex = [{"p":"kalabalaDB","l":"DBAppTest"}]
+typeSearchIndex = [{"p":"kalabalaDB","l":"DBApp"},{"p":"kalabalaDB","l":"DBAppException"},{"p":"kalabalaDB","l":"DBAppTest"},{"p":"kalabalaDB","l":"Page"},{"p":"kalabalaDB","l":"Polygons"},{"p":"kalabalaDB","l":"Table"},{"p":"kalabalaDB","l":"Tuple"}]

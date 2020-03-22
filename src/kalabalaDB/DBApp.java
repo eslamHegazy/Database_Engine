@@ -1,15 +1,18 @@
 package kalabalaDB;
 
+
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import BPTree.BPTree;
+
 public class DBApp {
 	// static Vector tables=new Vector();
 //	public static Vector<String> tables = new Vector();
 	int MaximumRowsCountinPage ;
-	
+	int nodeSize;
 	public static void clear() {
 		File metadata = new File("data/metadata.csv");
 		metadata.delete();
@@ -27,6 +30,7 @@ public class DBApp {
 			bal.load(inStream);
 //			Set s = bal.keySet();
 			MaximumRowsCountinPage = Integer.parseInt(bal.getProperty("MaximumRowsCountinPage"));
+			nodeSize=Integer.parseInt(bal.getProperty("NodeSize"));
 		}
 		catch(IOException e) {
 			System.out.println(e.getStackTrace());
@@ -133,6 +137,8 @@ public class DBApp {
 		Table y = deserialize(strTableName);
 		Object keyValue = null;
 		Tuple newEntry = new Tuple();
+		String keyType="";
+		String keyColName="";
 		int i = 0;
 		Vector meta = readFile("data/metadata.csv");
 		for (Object O : meta) {
@@ -159,6 +165,8 @@ public class DBApp {
 							if (Boolean.parseBoolean(curr[3])) {
 								y.setPrimaryPos(i);
 								keyValue = htblColNameValue.get(name);
+								keyType=type;
+								keyColName=name;
 	
 							}
 						}
@@ -173,7 +181,7 @@ public class DBApp {
 		}
 		
 		newEntry.addAttribute(new Date());
-		y.insertSorted(newEntry, keyValue); // TODO
+		y.insertSorted(newEntry, keyValue,keyType,keyColName,nodeSize); // TODO
 		serialize(y);
 
 	}
@@ -447,7 +455,36 @@ public class DBApp {
 		}
 	}
 	
+	
+	public void createBTreeIndex(String strTableName,String strColName) throws DBAppException{
+		BPTree bTree=null;
+		Vector meta = readFile("data/metadata.csv");
+		String colType="";
+		int colPosition=-1;
+		for (Object O : meta) {
+			String[] curr = (String[]) O;
+			if (curr[0].equals(strTableName)) {
+				colPosition++;
+				if(curr[1].equals(strColName)){
+					colType = curr[2];
+					break;
+				}
+			}
+		}
+		switch(colType){
+			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
+			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
+			case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
+			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
+			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
+			default :throw new DBAppException("I've never seen this colType in my life");
+		}
+		Table table =deserialize(strTableName);
+		table.createBTreeIndex(strColName,bTree,colPosition);
+		serialize(table);
+	}
 
+	
 //	public static void main(String[] args) throws DBAppException {
 //		clear();
 ////		/*
