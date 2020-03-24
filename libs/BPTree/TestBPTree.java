@@ -6,7 +6,7 @@ public class TestBPTree {
 
 	public static void main(String[] args) 
 	{
-		BPTree<Integer> tree = new BPTree<Integer>(3);
+		BPTree<Integer> tree = new BPTree<Integer>(3,"balabizo");
 		Scanner sc = new Scanner(System.in);
 		while(true) 
 		{

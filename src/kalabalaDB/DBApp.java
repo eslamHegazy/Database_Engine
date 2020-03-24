@@ -481,12 +481,12 @@ public class DBApp {
 			}
 		}
 		switch(colType){
-			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
-			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
-			case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
-			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
-			case "java.lang.String":bTree=new BPTree<String>(nodeSize);break;
-			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
+			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize,strTableName);break;
+			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize,strTableName);break;
+			case "java.util.Date":bTree=new BPTree<Date>(nodeSize,strTableName);break;
+			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize,strTableName);break;
+			case "java.lang.String":bTree=new BPTree<String>(nodeSize,strTableName);break;
+			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize,strTableName);break;
 			default :throw new DBAppException("I've never seen this colType in my life");
 		}
 		Table table =deserialize(strTableName);

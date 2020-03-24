@@ -8,7 +8,8 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private BPTreeNode<T>[] children;
+//	private BPTreeNode<T>[] children;
+	private String[]childrenName;
 	/**
 	 * create BPTreeNode given order.
 	 * @param n
@@ -18,7 +19,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	{
 		super(n);
 		keys = new Comparable[n];
-		children = new BPTreeNode[n+1];
+		childrenName = new String[n+1];
 	}
 
 	/**
@@ -27,15 +28,22 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 */
 	public BPTreeNode<T> getChild(int index) 
 	{
-		return children[index];
+		BPTreeNode<T> child=deserializeNode(childrenName[index]);
+		return child;
 	}
 	
+	public BPTreeInnerNode<T> deserializeNode(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	/**
 	 * creating child at specified index
 	 */
 	public void setChild(int index, BPTreeNode<T> child) 
 	{
-		children[index] = child;
+		childrenName[index] = child.nodeName;
+		//child.serializeNode();//TODO can i serialize ,myself??
 	}
 	/**
 	 * get the first child of this node.
@@ -43,7 +51,8 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 */
 	public BPTreeNode<T> getFirstChild()
 	{
-		return children[0];
+		BPTreeNode<T> child=deserializeNode(childrenName[0]);
+		return child;
 	}
 	/**
 	 * get the last child of this node
@@ -51,7 +60,8 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 */
 	public BPTreeNode<T> getLastChild()
 	{
-		return children[numberOfKeys];
+		BPTreeNode<T> child=deserializeNode(childrenName[numberOfKeys]);
+		return child;
 	}
 	/**
 	 * @return the minimum keys values in InnerNode
@@ -73,17 +83,22 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	public PushUp<T> insert(T key, Ref recordReference, BPTreeInnerNode<T> parent, int ptr)
 	{
 		int index = findIndex(key);
-		PushUp<T> pushUp = children[index].insert(key, recordReference, this, index);
+		BPTreeNode<T> b=deserializeNode(childrenName[index]);
+		PushUp<T> pushUp = b.insert(key, recordReference, this, index); //TODO this or name of parent
 		
-		if(pushUp == null)
+		if(pushUp == null) {
+			b.serializeNode();
 			return null;
+		}
 		
 		if(this.isFull())
 		{
 			BPTreeInnerNode<T> newNode = this.split(pushUp);
 			Comparable<T> newKey = newNode.getFirstKey();
 			newNode.deleteAt(0, 0);
-			return new PushUp<T>(newNode, newKey);
+			newNode.serializeNode();
+			b.serializeNode();
+			return new PushUp<T>(newNode, newKey); //TODO recheck
 		}
 		else
 		{
@@ -91,6 +106,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			while (index < numberOfKeys && getKey(index).compareTo(key) < 0)
 				++index;
 			this.insertRightAt(index, pushUp.key, pushUp.newNode);
+			b.serializeNode();
 			return null;
 		}
 	}
@@ -156,6 +172,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		}
 		this.setKey(index, key);
 		numberOfKeys++;
+		
 	}
 	/**insert key and adjust left pointer with given child.
 	 * @param index where key is inserted
@@ -181,28 +198,38 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	/**
 	 * delete key and return true or false if it is deleted or not
 	 */
-	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) 
+	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) //TODO parent
 	{
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
-			if(keys[i].compareTo(key) > 0)
-				done = children[i].delete(key, this, i);
+			if(keys[i].compareTo(key) > 0) {
+				BPTreeNode<T> b=deserializeNode(childrenName[i]);
+				done = b.delete(key, this, i);
+				b.serializeNode();
+			}
 			
-		if(!done)
-			done = children[numberOfKeys].delete(key, this, numberOfKeys);
+		if(!done) {
+			BPTreeNode<T> b=deserializeNode(childrenName[numberOfKeys]);
+			done = b.delete(key, this, numberOfKeys);
+			b.serializeNode();
+		}
 		if(numberOfKeys < this.minKeys())
 		{
 			if(isRoot())
 			{
 				this.getFirstChild().setRoot(true);
+				getFirstChild().serializeNode();
 				this.setRoot(false);
 				return done;
 			}
 			//1.try to borrow
-			if(borrow(parent, ptr))
+			if(borrow(parent, ptr)) {
+				parent.serializeNode();
 				return done;
+			}
 			//2.merge
 			merge(parent, ptr);
+		    parent.serializeNode();
 		}
 		return done;
 	}
@@ -221,9 +248,11 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			if(leftSibling.numberOfKeys > leftSibling.minKeys())
 			{
 				this.insertLeftAt(0, parent.getKey(ptr-1), leftSibling.getLastChild());
+				leftSibling.getLastChild().serializeNode();
 				parent.deleteAt(ptr-1);
 				parent.insertRightAt(ptr-1, leftSibling.getLastKey(), this);
 				leftSibling.deleteAt(leftSibling.numberOfKeys - 1);
+				leftSibling.serializeNode();
 				return true;
 			}
 		}
@@ -235,9 +264,11 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			if(rightSibling.numberOfKeys > rightSibling.minKeys())
 			{
 				this.insertRightAt(this.numberOfKeys, parent.getKey(ptr), rightSibling.getFirstChild());
+				rightSibling.getFirstChild().serializeNode();
 				parent.deleteAt(ptr);
 				parent.insertRightAt(ptr, rightSibling.getFirstKey(), rightSibling);
 				rightSibling.deleteAt(0, 0);
+				rightSibling.serializeNode();
 				return true;
 			}
 		}
@@ -255,7 +286,8 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			//merge with left
 			BPTreeInnerNode<T> leftSibling = (BPTreeInnerNode<T>) parent.getChild(ptr-1);
 			leftSibling.merge(parent.getKey(ptr-1), this);
-			parent.deleteAt(ptr-1);			
+			parent.deleteAt(ptr-1);		
+			leftSibling.serializeNode();
 		}
 		else
 		{
@@ -263,6 +295,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			BPTreeInnerNode<T> rightSibling = (BPTreeInnerNode<T>) parent.getChild(ptr+1);
 			this.merge(parent.getKey(ptr), rightSibling);
 			parent.deleteAt(ptr);
+			rightSibling.serializeNode();
 		}
 	}
 	
@@ -289,10 +322,10 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		for(int i = keyIndex; i < numberOfKeys - 1; ++i)
 		{
 			keys[i] = keys[i+1];
-			children[i+childPtr] = children[i+childPtr+1];
+			childrenName[i+childPtr] = childrenName[i+childPtr+1];
 		}
 		if(childPtr == 0)
-			children[numberOfKeys-1] = children[numberOfKeys];
+			childrenName[numberOfKeys-1] = childrenName[numberOfKeys];
 		numberOfKeys--;
 	}
 	
@@ -302,7 +335,8 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	@Override
 	public GeneralReference search(T key) 
 	{
-		return children[findIndex(key)].search(key);
+		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		return b.search(key);
 	}
 	
 	/**
@@ -311,6 +345,18 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	public void deleteAt(int index) 
 	{
 		deleteAt(index, 1);	
+	}
+
+	@Override
+	public void serializeNode() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected int getFromMetaDataTree(String treeName2) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

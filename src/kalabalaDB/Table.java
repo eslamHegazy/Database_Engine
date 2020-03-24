@@ -18,6 +18,13 @@ public class Table implements Serializable {
 	private int primaryPos;
 	private Hashtable<String,BPTree> colNameBTreeIndex= new Hashtable<>();
 	
+	public  Ref searchWithCluster(Comparable key,BPTree b) {
+		Ref ref=b.searchRequiredReference(key); //NOT IMPLEMENTED
+		if(ref==null) { //returns null if key is the least value in tree
+			return new Ref(Integer.parseInt(pages.get(0).substring(tableName.length())));
+		}
+		return ref;
+	}
 	public void printIndices() {
 		for (String x: colNameBTreeIndex.keySet()) {
 			BPTree  b = colNameBTreeIndex.get(x);
@@ -130,7 +137,7 @@ public class Table implements Serializable {
 				if(colNameBTreeIndex.containsKey(keyColName)){
 					BPTree bTree=colNameBTreeIndex.get(keyColName);
 					int index=getIndexNumber(p.getPageName(),tableName.length());
-					Ref recordReference = new Ref(index, curr);
+					Ref recordReference = new Ref(index);
 					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 					colNameBTreeIndex.put(keyColName,bTree);
 				}
@@ -148,7 +155,7 @@ public class Table implements Serializable {
 				if(colNameBTreeIndex.containsKey(keyColName)){
 					BPTree bTree=colNameBTreeIndex.get(keyColName);
 					int index=getIndexNumber(p.getPageName(),tableName.length());
-					Ref recordReference = new Ref(index, curr);
+					Ref recordReference = new Ref(index);
 					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 					colNameBTreeIndex.put(keyColName,bTree);
 				}
@@ -168,7 +175,7 @@ public class Table implements Serializable {
 			if(colNameBTreeIndex.containsKey(keyColName)){
 				BPTree bTree=colNameBTreeIndex.get(keyColName);
 				int index=getIndexNumber(p.getPageName(),tableName.length());
-				Ref recordReference = new Ref(index, 0);
+				Ref recordReference = new Ref(index);
 				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 				colNameBTreeIndex.put(keyColName,bTree);
 			}
@@ -212,7 +219,7 @@ public class Table implements Serializable {
 			if(colNameBTreeIndex.containsKey(keyColName)){
 				BPTree bTree=colNameBTreeIndex.get(keyColName);
 				int index=getIndexNumber(p.getPageName(),tableName.length());
-				Ref recordReference = new Ref(index, 0);
+				Ref recordReference = new Ref(index);
 				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 				colNameBTreeIndex.put(keyColName,bTree);
 			}
@@ -351,7 +358,7 @@ public class Table implements Serializable {
 			int index=getIndexNumber(p.getPageName(),tableName.length());
 			int i=0;
 			for(Tuple t:p.getTuples()){
-				Ref recordReference = new Ref(index, i);
+				Ref recordReference = new Ref(index);
 				bTree.insert((Comparable) t.getAttributes().get(colPosition), recordReference);
 				i++;
 			}

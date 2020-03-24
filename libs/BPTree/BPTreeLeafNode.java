@@ -9,7 +9,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 */
 	private static final long serialVersionUID = 1L;
 	private GeneralReference[] records;
-	private BPTreeLeafNode<T> next;
+	private String next;
 	//TODO: vector of overflowPagesNames ? DISCUSS IT WITH THE TEAM
 	@SuppressWarnings("unchecked")
 	public BPTreeLeafNode(int n) 
@@ -25,7 +25,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 */
 	public BPTreeLeafNode<T> getNext()
 	{
-		return this.next;
+		return (next==null)?null:deserializeNode(next);
 	}
 	
 	/**
@@ -34,7 +34,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 */
 	public void setNext(BPTreeLeafNode<T> node)
 	{
-		this.next = node;
+		this.next = (node!=null)?node.nodeName:null;
 	}
 	
 	/**
@@ -55,7 +55,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	{
 		records[index] = recordReference;
 	}
-
+    
 	/**
 	 * @return the reference of the last record
 	 */
@@ -125,6 +125,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			BPTreeNode<T> newNode = this.split(key, recordReference);
 			Comparable<T> newKey = newNode.getFirstKey();
 			//TODO: where to serialize what ?
+			newNode.serializeNode();
 			return new PushUp<T>(newNode, newKey);
 		}
 		else
@@ -185,6 +186,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		
 		//set next pointers
 		newNode.setNext(this.getNext());
+		this.getNext().serializeNode();
 		this.setNext(newNode);
 		
 		return newNode;
@@ -350,5 +352,23 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		}
 		s += "]";
 		return s;
+	}
+
+	
+	public BPTreeLeafNode<T> deserializeNode(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected int getFromMetaDataTree(String treeName2) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public void serializeNode() {
+		// TODO Auto-generated method stub
+		
 	}
 }

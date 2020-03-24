@@ -9,20 +9,30 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private int order;
-	private BPTreeNode<T> root;
+	//TODO meta data containing treename accompained with lastin
+	protected String treeName;
+	protected static final long serialVersionUID = 1L;
+	protected int order;
+	protected BPTreeNode<T> root;
+	protected int lastin; 
 	
 	/**
 	 * Creates an empty B+ tree
 	 * @param order the maximum number of keys in the nodes of the tree
 	 */
-	public BPTree(int order) 
-	{
+	public BPTree(int order,String treeName)  
+	{	
 		this.order = order;
+		this.treeName=treeName;
 		root = new BPTreeLeafNode<T>(this.order);
 		root.setRoot(true);
+		root.treeName=this.treeName;
 	}
+	public void updateRef(int oldpage,int newpage,T key) {
+	GeneralReference gf=search(key);
+	gf.updateRef(oldpage, newpage);
+	}
+	
 	
 	/**
 	 * Inserts the specified key associated with the given record in the B+ tree
@@ -106,5 +116,10 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 		}	
 		//	</For Testing>
 		return s;
+	}
+	public Ref searchRequiredReference(Comparable key) { //comparable and T???
+		// TODO Auto-generated method stub
+		search((T)key);
+		return null;
 	}
 }

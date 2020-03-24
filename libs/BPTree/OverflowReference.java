@@ -22,6 +22,7 @@ public class OverflowReference extends GeneralReference {
 	@Override
 	public void updateRef(int oldpage, int newpage) {
 		// TODO 
+		firstPage.updateRef(oldpage, newpage);
 		
 	}
 }

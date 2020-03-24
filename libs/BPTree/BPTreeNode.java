@@ -14,14 +14,23 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	protected int index;		//for printing the tree
 	private boolean isRoot;
 	private static int nextIdx = 0;
+	protected String nodeName;
+	//protected int lastin;
+	protected String treeName;
 
 	public BPTreeNode(int order) 
 	{
 		index = nextIdx++;
 		numberOfKeys = 0;
 		this.order = order;
+		//TODO read lastin from metadata increment it and update the metadata then take the new value
+		int lastin=getFromMetaDataTree(treeName);
+		nodeName=treeName+lastin;
 	}
-	
+	//public abstract BPTreeNode<T> deserializeNode(String string);
+	public abstract void serializeNode();
+	protected abstract int getFromMetaDataTree(String treeName2); //TODO 
+
 	/**
 	 * @return a boolean indicating whether this node is the root of the B+ tree
 	 */

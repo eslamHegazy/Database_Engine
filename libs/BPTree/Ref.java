@@ -10,7 +10,7 @@ public class Ref extends GeneralReference implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private int pageNo;//, indexInPage;
 	
-	public Ref(int pageNo, int indexInPage)
+	public Ref(int pageNo)
 	{
 		this.pageNo = pageNo;
 //		this.indexInPage = indexInPage;
@@ -50,6 +50,7 @@ public class Ref extends GeneralReference implements Serializable{
 	
 	public void updateRef(int oldpage, int newpage) {
 		// TODO:
+		pageNo=newpage;
 		
 	}
 }
