@@ -13,8 +13,16 @@ public class Table implements Serializable {
 	private String tableName;
 	private String strClusteringKey;
 	private int primaryPos;
-	private Hashtable<String,BPTree> colNameBTreeIndex;
-
+	private Hashtable<String,BPTree> colNameBTreeIndex= new Hashtable<>();
+	
+	public void printIndices() {
+		for (String x: colNameBTreeIndex.keySet()) {
+			BPTree  b = colNameBTreeIndex.get(x);
+			System.out.println(x);
+			System.out.println(b);
+			System.out.println();
+		}
+	}
 	public Vector<String> getPages() {
 		return pages;
 	}
@@ -176,7 +184,8 @@ public class Table implements Serializable {
 //		case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
 //		case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
 //		case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
-//		case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
+//		case "java.awt.Polygon
+//	":bTree=new BPTree<Polygons>(nodeSize);break;
 //		default :throw new DBAppException("I've never seen this colType in my life");
 //		}
 //	}
@@ -287,7 +296,6 @@ public class Table implements Serializable {
 			attributeIndex.add(i);
 		}
 		for (int i = 0; i < pages.size(); i++) {
-			
 			String pageName = pages.get(i);
 			Page p = deserialize(pageName);
 			try {
@@ -351,8 +359,63 @@ public class Table implements Serializable {
 		String num=pName.substring(s);
 		return Integer.parseInt(num);
 	}
+	public Iterator<Tuple> selectFromTable(SQLTerm[] arrSQLTerms, String[] strarrOperators,Vector<String[]> metaOfTable) throws DBAppException {
+		
+		Iterator<Tuple> s=inspectCols(arrSQLTerms,strarrOperators,metaOfTable);//method inspect cols determines which way to search through pages
+		if(s!=null)
+			return s;
+		
+		
+		return s;
+	}
 	
-	
+	public Iterator<Tuple> inspectCols(SQLTerm[] arrSQLTerms, String[] strarrOperators,Vector<String[]> metaOfTable) throws DBAppException{
+		 //check for colnames or validity type .. returns true if clustering key has an index
+			boolean clusterHasIndex= checkQueryValidity(arrSQLTerms,metaOfTable);
+			
+		 //safe to check for other indices
+		String s=(clusterHasIndex)?strClusteringKey:getFirstIndexedCol(arrSQLTerms);
+		if(s.equals("-1")) //no indices at all
+			return null;
+		 
+		//now we choose one index which is s
+		
+		 return null; //to be changed
+	}
+	public String getFirstIndexedCol(SQLTerm[] arrSQLTerms) throws DBAppException{
+	       for(SQLTerm x:arrSQLTerms) {
+	    	   if(colNameBTreeIndex.containsKey(x._strColumnName))
+	    		   return x._strColumnName;
+	       }
+	       return "-1";
+	}
+	public boolean checkQueryValidity(SQLTerm[] arrSQLTerms,Vector<String[]> metaOfTable) throws DBAppException{
+		boolean clusterHasIndex=false;
+		for(SQLTerm x:arrSQLTerms) {
+			 int i;
+			 for( i=0;i<metaOfTable.size();i++) {
+				 if(metaOfTable.get(i)[1].equals(x._strColumnName)) {
+					 try {
+					    Class colType = Class.forName(metaOfTable.get(i)[2]);
+						Class parameterType = x._objValue.getClass();
+						Class polyOriginal = Class.forName("java.awt.Polygon");
+						if (colType == polyOriginal) {
+							colType = Class.forName("kalabalaDB.Polygons");
+						}
+						if (!colType.equals(parameterType)) {
+							throw new DBAppException("DATA types 8alat");
+						}}
+					   catch(ClassNotFoundException e) {
+						   throw new DBAppException("Class Not Found Exception");
+					   }
+					 if(metaOfTable.get(i)[3].equals("True")&&metaOfTable.get(i)[3].equals("True"))
+						 clusterHasIndex=true;
+				 }
+			 }
+			 if(i==metaOfTable.size()) throw new DBAppException("Column "+x._strColumnName+" doesn't exist");
+		 }
+		return clusterHasIndex;
+	}
 	/*public void seeAnother(Object keyValue, String pageName, int newPPos) {
 		try {
 			while (newPPos < pages.size()) {

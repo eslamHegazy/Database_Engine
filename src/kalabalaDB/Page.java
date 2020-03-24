@@ -10,12 +10,6 @@ public class Page implements Serializable {
 		tuples = new Vector<Tuple>();
 		this.pageName = pageName;
 	}
-	
-//	public Page() {
-//		tuples = new Vector<Tuple>();
-//		pageName = "page" + lastIn;
-//		lastIn++;
-//	}
 
 	public Vector<Tuple> getTuples() {
 		return tuples;
@@ -43,15 +37,6 @@ public class Page implements Serializable {
 
 	public int size() {
 		return tuples.size();
-	}
-
-	public void insertIntoTVector(Tuple x, int m) {
-		for (int i = m; i < tuples.size() - 1; i++) {
-			Tuple c = tuples.get(i);
-			tuples.insertElementAt(x, i);
-			x = c;
-		}
-		tuples.addElement(x);
 	}
 	
 	public int binarySearch(Comparable key,int pos) {
@@ -104,6 +89,7 @@ public class Page implements Serializable {
 		}
 		return ans;
 	}
+	
 	public void insertIntoPage(Tuple x, int pos) {
 		Comparable nKey = (Comparable) x.getAttributes().get(pos);
 		int lower = 0;
@@ -111,8 +97,6 @@ public class Page implements Serializable {
 		if (upper == -1) {
 			tuples.addElement(x);
 		} else {
-//			int ans = -1;
-			
 			int ans = binarySearch(nKey,pos);
 			if(ans==tuples.size()) {
 				tuples.add(x);
@@ -125,33 +109,16 @@ public class Page implements Serializable {
 
 	public void serialize() throws DBAppException {
 		try {
-//		System.out.println("###################################");
-//		System.out.println("page before");
-//		System.out.println(this);
-		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".class");
-//		FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".ser");
-		//TODO: Check resulting path
-		//TODO: CHECK THIS SER/CLASS PROBLEM OF BOODY
-		
-		ObjectOutputStream out = new ObjectOutputStream(fileOut);
-		out.writeObject(this);
-
-		out.close();
-		fileOut.close();
+			FileOutputStream fileOut = new FileOutputStream("data/"+pageName + ".class");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(this);
+			out.close();
+			fileOut.close();
 		}
 		catch(IOException e) {
 			throw new DBAppException("IO Exception");
 		}
 	}
-
-	/*
-	 * public void deleteInPage(Object keyValue , int pos) { tuples.remove(pos);
-	 * for(int i = pos; i < tuples.size() ; i++) {
-	 * if(tuples.get(i).getAttributes().get(pos).equals(keyValue)) {
-	 * tuples.remove(i); i--; } }
-	 * 
-	 * }
-	 */
 
 	public void deleteInPage(Hashtable<String, Object> htblColNameValue, Vector<Integer> attributeIndex) {
 		
@@ -169,17 +136,34 @@ public class Page implements Serializable {
 					break;
 				}
 				j++;
-
 			}
 			if (j == attributeIndex.size()) {
 				tuples.remove(i);
 				i--;
 			}
-
 		}
-		
 	}
-
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (Object o : tuples) {
+			Tuple x = (Tuple) o;
+			sb.append(x.toString());
+//			sb.append("#");
+			sb.append("\n");
+		}
+		return sb.toString()+"\n";
+	}
+/*
+	public void insertIntoTVector(Tuple x, int m) {
+		for (int i = m; i < tuples.size() - 1; i++) {
+			Tuple c = tuples.get(i);
+			tuples.insertElementAt(x, i);
+			x = c;
+		}
+		tuples.addElement(x);
+	}
+	*/
+	
 	/*public void deleteInPage2(Object keyValue, int primaryPos) {
 		for (int i = 0; i < tuples.size(); i++) {
 			if (tuples.get(i).getAttributes().get(primaryPos).equals(keyValue)) {
@@ -188,7 +172,17 @@ public class Page implements Serializable {
 		}
 
 	}*/
+	
+	/*
+	 * public void deleteInPage(Object keyValue , int pos) { tuples.remove(pos);
+	 * for(int i = pos; i < tuples.size() ; i++) {
+	 * if(tuples.get(i).getAttributes().get(pos).equals(keyValue)) {
+	 * tuples.remove(i); i--; } }
+	 * 
+	 * }
+	 */
 
+	
 	/*
 	 * public void deleteInPage(Object keyValue , int pos) { int lower = 0; int
 	 * upper = tuples.size(); while(lower < upper) { int middle = (lower + upper)/2;
@@ -199,17 +193,7 @@ public class Page implements Serializable {
 	 * else { upper = middle; } } } }
 	 */
 
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (Object o : tuples) {
-			Tuple x = (Tuple) o;
-			sb.append(x.toString());
-//			sb.append("#");
-			sb.append("\n");
-
-		}
-		return sb.toString()+"\n";
-	}
+	
 	/*
 	public static void main(String[] args) throws DBAppException {
 		Page h = new Page();

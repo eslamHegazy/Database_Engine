@@ -15,22 +15,31 @@ public class DBApp {
 	int nodeSize;
 	public static void clear() {
 		File metadata = new File("data/metadata.csv");
-		metadata.delete();
-		File path = new File("data/");
-		for (String filename : path.list()) {
-			File fileToBeDeleted = new File("data/"+filename);
-			fileToBeDeleted.delete();
+		if (metadata!=null) 
+			metadata.delete();
+		File data = new File("data/");
+		String[] pages = data.list();
+		if (pages==null) return;
+		for (String p: pages) {
+			File pageToDelete = new File("data/"+p);
+			pageToDelete.delete();
 		}
 	}
 
 	public void init() throws DBAppException{
 		try {
+			//Configuration 
 			InputStream inStream = new FileInputStream("config/DBApp.properties");
 			Properties bal = new Properties();
 			bal.load(inStream);
-//			Set s = bal.keySet();
 			MaximumRowsCountinPage = Integer.parseInt(bal.getProperty("MaximumRowsCountinPage"));
 			nodeSize=Integer.parseInt(bal.getProperty("NodeSize"));
+			
+			//Assuring data folder and metadata.csv exist
+			File data = new File("data");
+			data.mkdir();
+			File metadata = new File("data/metadata.csv");
+			metadata.createNewFile();
 		}
 		catch(IOException e) {
 			System.out.println(e.getStackTrace());
@@ -476,6 +485,7 @@ public class DBApp {
 			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
 			case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
 			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
+			case "java.lang.String":bTree=new BPTree<String>(nodeSize);break;
 			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
 			default :throw new DBAppException("I've never seen this colType in my life");
 		}
@@ -484,9 +494,34 @@ public class DBApp {
 		serialize(table);
 	}
 
-	
-//	public static void main(String[] args) throws DBAppException {
-//		clear();
+	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
+			 String[] strarrOperators)
+			throws DBAppException {
+		String strTableName=arrSQLTerms[0]._strTableName;
+		Table t=deserialize(strTableName);
+		Vector meta = readFile("data/metadata.csv");
+		Vector<String[]> metaOfTable = new Vector();
+		for (Object o : meta) {
+			String[] line = (String[]) o;
+			if (line[0].equals(strTableName)) {
+				metaOfTable.add(line);
+			}
+		}
+		Iterator<Tuple> out=t.selectFromTable(arrSQLTerms,strarrOperators,metaOfTable);
+		serialize(t);
+		return out;
+	}
+	public static void main(String[] args) throws DBAppException {
+	/*	SQLTerm[] hai=new SQLTerm[2]; QUESTION
+		for(int i=0;i<hai.length;i++) {
+			SQLTerm x=new SQLTerm();
+			hai[i]=x;
+		}
+		hai[0]._strTableName="a";
+		System.out.println(hai[0]._strTableName); */
+
+		
+		//		clear();
 ////		/*
 //		String strTableName = "Student";
 //		DBApp dbApp = new DBApp();
@@ -525,7 +560,7 @@ public class DBApp {
 //		System.out.println("hii 4");
 //		dbApp.printAllPagesInAllTables();
 ////		 */
-//	}
+	}
 
 	
 //	public static void main(String[] args) throws IOException{

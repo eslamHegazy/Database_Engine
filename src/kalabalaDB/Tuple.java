@@ -2,6 +2,7 @@ package kalabalaDB;
 import java.io.*;
 import java.util.*;
 
+
 public class Tuple implements Serializable {
 	private Vector attributes = new Vector(); // Transient?
 
@@ -33,4 +34,6 @@ public class Tuple implements Serializable {
 	public void setAttributes(Vector attributes) {
 		this.attributes = attributes;
 	}
+
+
 }

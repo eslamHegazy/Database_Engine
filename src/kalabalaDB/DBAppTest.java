@@ -45,6 +45,27 @@ public class DBAppTest {
 //		System.out.println(d);
 		//clear();
 		//tst1();
+		
+//		clear();
+		DBApp d = new DBApp();
+		d.init();
+//		Hashtable h = new Hashtable();
+//		h.put("id", "java.lang.Integer");
+//		h.put("name", "java.lang.String");
+//		d.createTable("tabl", "id", h);
+//		String[] arr = {"Arousi","Boda","Shabra","Es","Fathy"};
+//		for (int i=0;i<45;i++) {
+//			String name = arr[(int)(Math.random()*5)];
+//			Hashtable h1 = new Hashtable();
+//			h1.put("id", i);
+//			h1.put("name", name);
+//			d.insertIntoTable("tabl", h1);
+//		}
+//		d.createBTreeIndex("tabl", "id");
+//		d.createBTreeIndex("tabl", "name");
+		Table t = d.deserialize("tabl");
+		t.printIndices();
+		
 	}
 	static void tst9() throws DBAppException{
 		String strTableName= "Bol";
