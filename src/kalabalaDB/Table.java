@@ -5,6 +5,9 @@ import java.util.*;
 import BPTree.BPTree;
 import BPTree.Ref;
 
+
+
+
 public class Table implements Serializable {
 	private Vector<String> pages = new Vector();
 	private int MaximumRowsCountinPage;
@@ -27,7 +30,7 @@ public class Table implements Serializable {
 		return pages;
 	}
 	public String getNewPageName() {
-		return tableName+pages.size();
+		return tableName+((pages.size()==0)?0:Integer.parseInt((pages.get(pages.size()-1)).substring(tableName.length()))+1);
 		
 	}
 	public int getMaximumRowsCountinPage() {

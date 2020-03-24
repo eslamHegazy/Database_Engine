@@ -45,4 +45,11 @@ public class Ref extends GeneralReference implements Serializable{
 	public String toString() {
 		return pageNo+"";
 	}
+
+	
+	
+	public void updateRef(int oldpage, int newpage) {
+		// TODO:
+		
+	}
 }

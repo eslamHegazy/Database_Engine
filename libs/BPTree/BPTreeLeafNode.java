@@ -10,7 +10,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	private static final long serialVersionUID = 1L;
 	private GeneralReference[] records;
 	private BPTreeLeafNode<T> next;
-	
+	//TODO: vector of overflowPagesNames ? DISCUSS IT WITH THE TEAM
 	@SuppressWarnings("unchecked")
 	public BPTreeLeafNode(int n) 
 	{
@@ -90,45 +90,47 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			BPTreeInnerNode<T> parent, 
 			int ptr)
 	{
-		
-		{
-			int index = 0;
-			while (index < numberOfKeys && getKey(index).compareTo(key) < 0)
-				++index;
-			if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
-				GeneralReference ref = records[index];
-				if (ref.isOverflow()) {
-					//TODO:
-					
-					//deserialize the actual page of this reference
-					
-					//insert key in the overflow page
-					//ovflpage.addRecord(recordReference);
-					
-					//serialize overflow page
-				}
-				else {
-					OverflowPage ovflpage = new OverflowPage(order);
-					ovflpage.addRecord((Ref)ref);
-					ovflpage.addRecord(recordReference);
-				}
-			}
 			
-			this.insertAt(index, key, recordReference);
-//			return null;
+		int index = 0;
+		while (index < numberOfKeys && getKey(index).compareTo(key) < 0)
+			++index;
+		
+		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
+			GeneralReference ref = records[index];
+			if (ref.isOverflow()) {
+				//TODO:
+				
+				//deserialize the actual page of this reference
+				
+				//insert key in the overflow page
+				//ovflpage.addRecord(recordReference);
+				
+				//serialize overflow page
+			}
+			else {
+				OverflowReference ovflref = new OverflowReference();
+				OverflowPage ovflpage = new OverflowPage(order);
+				ovflref.setFirstPage(ovflpage);
+				//TODO: what to store in ovflref? (string/ovflPage!?)
+				ovflpage.addRecord((Ref)ref);
+				ovflpage.addRecord(recordReference);
+				records[index]=ovflref;
+			}
+			//this.serialize();
+			return null;
 		}
-		if(this.isFull())
+		
+		else if(this.isFull())
 		{
 			BPTreeNode<T> newNode = this.split(key, recordReference);
 			Comparable<T> newKey = newNode.getFirstKey();
+			//TODO: where to serialize what ?
 			return new PushUp<T>(newNode, newKey);
 		}
 		else
 		{
-			int index = 0;
-			while (index < numberOfKeys && getKey(index).compareTo(key) <= 0)
-				++index;
 			this.insertAt(index, key, recordReference);
+			//TODO: where to serialize what ?
 			return null;
 		}
 	}

@@ -4,6 +4,12 @@ public class OverflowReference extends GeneralReference {
 	private OverflowPage firstPage;
 	//TODO insert , delete and update pass the key and page
 	
+	public OverflowPage getFirstPage() {
+		return firstPage;
+	}
+	public void setFirstPage(OverflowPage firstPage) {
+		this.firstPage = firstPage;
+	}
 	public void insert(Ref recordRef) {
 		firstPage.addRecord(recordRef);
 	}
@@ -12,6 +18,11 @@ public class OverflowReference extends GeneralReference {
 	}
 	public boolean isRecord() {
 		return false;
+	}
+	@Override
+	public void updateRef(int oldpage, int newpage) {
+		// TODO 
+		
 	}
 }
 

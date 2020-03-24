@@ -25,22 +25,22 @@ public class OverflowPage {
 		}
 	}
 	
-	public boolean updateRef(int pagenum) {
+	public boolean updateRef(int oldpage, int newpage) {
 		int i=0;
-		for (;i<refs.size()&&refs.get(i).getPage()<=pagenum;i++);
+		for (;i<refs.size()&&refs.get(i).getPage()<=oldpage;i++);
 		//i--;
 		if (i==0) {
 			return false;
 		}
 		if (i<refs.size()) {
-			refs.get(i-1).setPage(pagenum+1);
+			refs.get(i-1).setPage(newpage);
 		}
 		if (i==refs.size()) {
-			if (next!=null && next.updateRef(pagenum)) {
+			if (next!=null && next.updateRef(oldpage, newpage)) {
 				return true;
 			}
 			else {
-				refs.get(i-1).setPage(pagenum+1);
+				refs.get(i-1).setPage(newpage);
 			}
 		}
 		return false;
