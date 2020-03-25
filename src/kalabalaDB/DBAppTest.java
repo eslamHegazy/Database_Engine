@@ -12,8 +12,8 @@ import java.util.Scanner;
 
 public class DBAppTest {
 	public static void main(String[] args)throws Exception {
-//		clear();
-//		tst1(500);
+		clear();
+		tst1(500);
 //		tst2();
 //		tst1(500);
 		
@@ -63,8 +63,8 @@ public class DBAppTest {
 //		}
 //		d.createBTreeIndex("tabl", "id");
 //		d.createBTreeIndex("tabl", "name");
-		Table t = d.deserialize("tabl");
-		t.printIndices();
+//		Table t = d.deserialize("tabl");
+//		t.printIndices();
 		
 	}
 	static void tst9() throws DBAppException, IOException{

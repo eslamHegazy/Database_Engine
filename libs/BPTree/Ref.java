@@ -2,7 +2,8 @@ package BPTree;
 
 import java.io.Serializable;
 
-public class Ref extends GeneralReference implements Serializable{
+public class Ref extends GeneralReference implements Serializable
+{
 	
 	/**
 	 * This class represents a pointer to the record. It is used at the leaves of the B+ tree 

@@ -24,7 +24,6 @@ public class DBApp {
 			File pageToDelete = new File("data/"+p);
 			pageToDelete.delete();
 		}
-		File metaBPtree = new File("data/metaBPtree.csv");
 	}
 
 	public void init() throws DBAppException{
@@ -41,6 +40,12 @@ public class DBApp {
 			data.mkdir();
 			File metadata = new File("data/metadata.csv");
 			metadata.createNewFile();
+			File metaBPtree = new File("data/metaBPtree.csv");
+			metaBPtree.createNewFile();
+			FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
+			csvWriter.append("0");
+			csvWriter.flush();
+			csvWriter.close();
 		}
 		catch(IOException e) {
 			System.out.println(e.getStackTrace());

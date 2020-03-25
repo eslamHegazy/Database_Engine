@@ -1,5 +1,6 @@
 package BPTree;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -11,22 +12,13 @@ public class TestBPTree {
 	{
 		BPTree<Integer> tree = new BPTree<Integer>(3);
 		Scanner sc = new Scanner(System.in);
-		while(true) 
+		for(int i=0;i<15;i++)
 		{
-			int x = sc.nextInt();
-			if(x == -1)
-				break;
-			tree.insert(x, null);
-			System.out.println(tree.toString());
+			Ref r = new Ref(5);
+			tree.insert(i, r);
 		}
-		while(true) 
-		{
-			int x = sc.nextInt();
-			if(x == -1)
-				break;
-			tree.delete(x);
-			System.out.println(tree.toString());
-		}
+		
+		tree.toString();
 		sc.close();
 	}	
 }

@@ -1,6 +1,7 @@
 package BPTree;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Vector;
 
 import kalabalaDB.DBAppException;
@@ -38,8 +40,10 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		//nodeName=treeName+lastin;
 	}
 	
-	public static Vector readFile(String path) throws DBAppException {
-		try {
+	public static Vector readFile(String path) throws DBAppException 
+	{
+		try 
+		{
 			String currentLine = "";
 			FileReader fileReader = new FileReader(path);
 			BufferedReader br = new BufferedReader(fileReader);
@@ -58,7 +62,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	protected String getFromMetaDataTree() throws DBAppException , IOException
 	{
 		String lastin = "";
-		Vector meta = readFile("data/metadata.csv");
+		Vector meta = readFile("data/metaBPtree.csv");
 		int overrideLastin = 0;
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
@@ -66,10 +70,10 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 			overrideLastin = Integer.parseInt(curr[0])+1;
 			curr[0] = overrideLastin + "";
 			break;
-			
 		}
-		FileWriter csvWriter = new FileWriter("data/metadata.csv");
-		for (Object O : meta) {
+		FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
+		for (Object O : meta) 
+		{
 			String[] curr = (String[]) O;
 			csvWriter.append(curr[0]);
 			break;
@@ -196,8 +200,10 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		s += "]";
 		return s;
 	}
-	public void serializeNode() throws DBAppException {
-		try {
+	public void serializeNode() throws DBAppException 
+	{
+		try 
+		{
 			FileOutputStream fileOut = new FileOutputStream("data/"+ this.nodeName+ ".class");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(this);

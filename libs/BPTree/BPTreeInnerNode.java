@@ -97,8 +97,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		BPTreeNode<T> b=deserializeNode(childrenName[index]);
 		PushUp<T> pushUp = b.insert(key, recordReference, this, index); //TODO this or name of parent
 		
-		if(pushUp == null) {
-			((BPTreeInnerNode<T>) b).serializeNode();
+		if(pushUp == null) 
+		{
+			b.serializeNode();
 			return null;
 		}
 		

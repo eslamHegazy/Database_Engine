@@ -196,7 +196,8 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		
 		//set next pointers
 		newNode.setNext(this.getNext());
-		this.getNext().serializeNode();
+		if(this.getNext() != null)
+			this.getNext().serializeNode();
 		this.setNext(newNode);
 		
 		return newNode;
