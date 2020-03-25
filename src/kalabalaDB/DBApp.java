@@ -24,6 +24,7 @@ public class DBApp {
 			File pageToDelete = new File("data/"+p);
 			pageToDelete.delete();
 		}
+		File metaBPtree = new File("data/metaBPtree.csv");
 	}
 
 	public void init() throws DBAppException{
@@ -142,7 +143,7 @@ public class DBApp {
 //		tables.add(strTableName);
 	}
 	
-	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
+	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
 		Table y = deserialize(strTableName);
 		Object keyValue = null;
 		Tuple newEntry = new Tuple();
@@ -469,18 +470,19 @@ public class DBApp {
 		BPTree bTree=null;
 		Vector meta = readFile("data/metadata.csv");
 		String colType="";
-		int colPosition=-1;
+		int colPosition = -1;
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
 			if (curr[0].equals(strTableName)) {
 				colPosition++;
-				if(curr[1].equals(strColName)){
+				if (curr[1].equals(strColName)) {
 					colType = curr[2];
+					curr[4] = "True";
 					break;
 				}
 			}
 		}
-		FileWriter csvWriter = new FileWriter("O:\\6th Semester\\Data Bases II\\Project1\\kalabalaDBv4\\data\\metadata.csv");
+		FileWriter csvWriter = new FileWriter("data/metadata.csv");
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
 			for (int j = 0; j < curr.length; j++) {

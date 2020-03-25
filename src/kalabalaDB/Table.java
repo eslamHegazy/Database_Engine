@@ -18,7 +18,7 @@ public class Table implements Serializable {
 	private int primaryPos;
 	private Hashtable<String,BPTree> colNameBTreeIndex= new Hashtable<>();
 	
-	public  Ref searchWithCluster(Comparable key,BPTree b) {
+	public  Ref searchWithCluster(Comparable key,BPTree b) throws DBAppException {
 		Ref ref=b.searchRequiredReference(key); //NOT IMPLEMENTED
 		if(ref==null) { //returns null if key is the least value in tree
 			return new Ref(Integer.parseInt(pages.get(0).substring(tableName.length())));
@@ -125,7 +125,7 @@ public class Table implements Serializable {
 		vs.insertElementAt(str, n);
 	}
 
-	public void addInPage(int curr, Tuple x,String keyType,String keyColName,int nodeSize) throws DBAppException {
+	public void addInPage(int curr, Tuple x,String keyType,String keyColName,int nodeSize) throws DBAppException, IOException {
 //		System.out.println(x+" "+curr);
 		if (curr < pages.size()) {
 			String pageName = pages.get(curr);
@@ -200,7 +200,7 @@ public class Table implements Serializable {
 //		}
 //	}
 
-	public void insertSorted(Tuple x, Object keyV,String keyType,String keyColName,int nodeSize) throws DBAppException{
+	public void insertSorted(Tuple x, Object keyV,String keyType,String keyColName,int nodeSize) throws DBAppException, IOException{
 		int lower = 0;
 		int upper = min.size();
 		Comparable keyValue=(Comparable) keyV;
@@ -347,7 +347,7 @@ public class Table implements Serializable {
 	}
 	
 	
-	public void createBTreeIndex(String strColName,BPTree bTree,int colPosition) throws DBAppException{
+	public void createBTreeIndex(String strColName,BPTree bTree,int colPosition) throws DBAppException, IOException{
 		if(colNameBTreeIndex.containsKey(strColName)){
 			throw new DBAppException("BTree index already exists on this column");
 		}else{

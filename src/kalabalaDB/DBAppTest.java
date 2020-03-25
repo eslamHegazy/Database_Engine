@@ -67,7 +67,7 @@ public class DBAppTest {
 		t.printIndices();
 		
 	}
-	static void tst9() throws DBAppException{
+	static void tst9() throws DBAppException, IOException{
 		String strTableName= "Bol";
 		String strClusteringKey = "A";
 		Hashtable htblColNameType = new Hashtable<>();
@@ -88,7 +88,7 @@ public class DBAppTest {
 		dbApp.printAllPagesInAllTables("9dn");
 
 	}
-	static void tsta() throws DBAppException{
+	static void tsta() throws DBAppException, IOException{
 		clear();
 		
 		
@@ -109,7 +109,7 @@ public class DBAppTest {
 		}
 		dbApp.printAllPagesInAllTables("AZ");
 	}
-	static void tstb() throws DBAppException{
+	static void tstb() throws DBAppException, IOException{
 		
 		String strTableName= "B";
 		String strClusteringKey = "1";
@@ -130,7 +130,7 @@ public class DBAppTest {
 	}
 	
 
-	static void tst8() throws  DBAppException{
+	static void tst8() throws  DBAppException, IOException{
 		DBApp d = new DBApp();
 		d.init();
 		d.printAllPagesInAllTables("tst8-0");
@@ -156,7 +156,7 @@ public class DBAppTest {
 	}
 	
 	
-	static void tst7() throws  DBAppException{
+	static void tst7() throws  DBAppException, IOException{
 		DBApp d = new DBApp();
 		d.init();
 //		d.printAllPagesInAllTables("tst7-0");

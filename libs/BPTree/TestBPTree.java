@@ -1,12 +1,15 @@
 package BPTree;
 
+import java.io.IOException;
 import java.util.Scanner;
+
+import kalabalaDB.DBAppException;
 
 public class TestBPTree {
 
-	public static void main(String[] args) 
+	public static void main(String[] args) throws DBAppException, IOException 
 	{
-		BPTree<Integer> tree = new BPTree<Integer>(3,"balabizo");
+		BPTree<Integer> tree = new BPTree<Integer>(3);
 		Scanner sc = new Scanner(System.in);
 		while(true) 
 		{
