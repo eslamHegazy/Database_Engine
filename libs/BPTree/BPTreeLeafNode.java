@@ -360,11 +360,11 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		return null;
 	}
 
-	@Override
-	protected int getFromMetaDataTree(String treeName2) {
+	
+	/*protected int getFromMetaDataTree(String treeName2) {
 		// TODO Auto-generated method stub
 		return 0;
-	}
+	}*/
 
 	@Override
 	public void serializeNode() {

@@ -1,6 +1,12 @@
 package BPTree;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
+
+import kalabalaDB.DBAppException;
+import kalabalaDB.Page;
 
 public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  implements Serializable
 {
@@ -25,16 +31,29 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	/**
 	 * get child with specified index
 	 * @return Node which is child at specified index
+	 * @throws DBAppException 
 	 */
-	public BPTreeNode<T> getChild(int index) 
+	public BPTreeNode<T> getChild(int index) throws DBAppException 
 	{
 		BPTreeNode<T> child=deserializeNode(childrenName[index]);
 		return child;
 	}
 	
-	public BPTreeInnerNode<T> deserializeNode(String string) {
-		// TODO Auto-generated method stub
-		return null;
+	public BPTreeInnerNode<T> deserializeNode(String name) throws DBAppException {
+		try {
+			FileInputStream fileIn = new FileInputStream("data/"+name + ".class");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			BPTreeInnerNode<T> BPN =  (BPTreeInnerNode<T>) in.readObject();
+			in.close();
+			fileIn.close();
+			return BPN;
+		}
+		catch(IOException e) {
+			throw new DBAppException("IO Exception");
+		}
+		catch(ClassNotFoundException e) {
+			throw new DBAppException("Class Not Found Exception");
+		}
 	}
 
 	/**
@@ -353,10 +372,10 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		
 	}
 
-	@Override
-	protected int getFromMetaDataTree(String treeName2) {
+	
+	/*protected S getFromMetaDataTree(String treeName2) {
 		// TODO Auto-generated method stub
 		return 0;
-	}
+	}*/
 
 }

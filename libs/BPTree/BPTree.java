@@ -15,12 +15,14 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 	protected int order;
 	protected BPTreeNode<T> root;
 	protected int lastin; 
+	protected String tableName;
+	protected String colName;
 	
 	/**
 	 * Creates an empty B+ tree
 	 * @param order the maximum number of keys in the nodes of the tree
 	 */
-	public BPTree(int order,String treeName)  
+	public BPTree(int order,protected String tableName,protected String colName)  
 	{	
 		this.order = order;
 		this.treeName=treeName;

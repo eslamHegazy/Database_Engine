@@ -17,6 +17,8 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	protected String nodeName;
 	//protected int lastin;
 	protected String treeName;
+	//protected String colName;
+	//protected String tableName;
 
 	public BPTreeNode(int order) 
 	{
@@ -24,12 +26,12 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		numberOfKeys = 0;
 		this.order = order;
 		//TODO read lastin from metadata increment it and update the metadata then take the new value
-		int lastin=getFromMetaDataTree(treeName);
+		String name = getFromMetaDataTree(treeName);
 		nodeName=treeName+lastin;
 	}
 	//public abstract BPTreeNode<T> deserializeNode(String string);
 	public abstract void serializeNode();
-	protected abstract int getFromMetaDataTree(String treeName2); //TODO 
+	protected String getFromMetaDataTree(String tableName,String colName ); //TODO 
 
 	/**
 	 * @return a boolean indicating whether this node is the root of the B+ tree
