@@ -154,6 +154,7 @@ public class DBApp {
 		Tuple newEntry = new Tuple();
 		String keyType="";
 		String keyColName="";
+		ArrayList colNames=new ArrayList<String>();
 		int i = 0;
 		Vector meta = readFile("data/metadata.csv");
 		for (Object O : meta) {
@@ -161,6 +162,7 @@ public class DBApp {
 			if (curr[0].equals(strTableName)) {
 				String name = curr[1];
 				String type = curr[2];
+				colNames.add(name);
 				if (!htblColNameValue.containsKey(name)) {
 					throw new DBAppException("col name invalid");
 				} else {
@@ -195,8 +197,10 @@ public class DBApp {
 			}
 		}
 		
+
+
 		newEntry.addAttribute(new Date());
-		y.insertSorted(newEntry, keyValue,keyType,keyColName,nodeSize); // TODO
+		y.insertSorted(newEntry, keyValue,keyType,keyColName,nodeSize,colNames); // TODO
 		serialize(y);
 
 	}

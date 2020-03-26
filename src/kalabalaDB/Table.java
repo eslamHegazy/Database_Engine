@@ -134,13 +134,6 @@ public class Table implements Serializable {
 			if (p.size() < MaximumRowsCountinPage) {
 //				System.out.println("blboz2");
 				p.insertIntoPage(x, primaryPos);
-				if(colNameBTreeIndex.containsKey(keyColName)){
-					BPTree bTree=colNameBTreeIndex.get(keyColName);
-					int index=getIndexNumber(p.getPageName(),tableName.length());
-					Ref recordReference = new Ref(index);
-					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-					colNameBTreeIndex.put(keyColName,bTree);
-				}
 //				System.out.println("blboz3");
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
@@ -148,6 +141,13 @@ public class Table implements Serializable {
 				addInVector(min, minn, curr);
 				max.remove(curr);
 				addInVector(max, maxx, curr);
+				if(colNameBTreeIndex.containsKey(keyColName)){
+					BPTree bTree=colNameBTreeIndex.get(keyColName);
+					int index=getIndexNumber(p.getPageName(),tableName.length());
+					Ref recordReference = new Ref(index);
+					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+					colNameBTreeIndex.put(keyColName,bTree);
+				}
 				p.serialize();
 			} else {
 				// Tuple t=p.getTuples().get(p.size()-1);//element 199
@@ -160,12 +160,17 @@ public class Table implements Serializable {
 					colNameBTreeIndex.put(keyColName,bTree);
 				}
 				Tuple t = p.getTuples().remove(p.size() - 1);
+				if(colNameBTreeIndex.containsKey(keyColName)){
+					BPTree bTree=colNameBTreeIndex.get(keyColName);
+					bTree.delete((Comparable) t.getAttributes().get(primaryPos));
+				}
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
 				min.remove(curr);
 				addInVector(min, minn, curr);
 				max.remove(curr);
 				addInVector(max, maxx, curr);
+				
 				p.serialize();
 				addInPage(curr + 1, t,keyType,keyColName,nodeSize);
 			}
@@ -200,19 +205,8 @@ public class Table implements Serializable {
 //		}
 //	}
 
-	public void insertSorted(Tuple x, Object keyV,String keyType,String keyColName,int nodeSize) throws DBAppException, IOException{
-		int lower = 0;
-		int upper = min.size();
-		Comparable keyValue=(Comparable) keyV;
-		int curr=0;
-		for(curr=0;curr<pages.size();curr++){
-			Object minn=(min.get(curr));
-			Object maxx=max.get(curr);
-			if((keyValue.compareTo(minn)>=0&&keyValue.compareTo(maxx)<=0)||(keyValue.compareTo(minn)<0)||curr==pages.size()-1){
-				addInPage(curr, x,keyType,keyColName,nodeSize);
-				break;
-			}
-		}
+	public void insertSorted(Tuple x, Object keyV,String keyType,String keyColName,int nodeSize,ArrayList colNames) throws DBAppException, IOException{
+		
 		if(pages.size()==0){
 			Page p=new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
@@ -228,6 +222,43 @@ public class Table implements Serializable {
 			max.addElement(keyV);	
 			p.serialize();
 
+		}else{
+			Comparable keyValue=(Comparable) keyV;
+			if(colNameBTreeIndex.containsKey(keyColName)){
+				BPTree tree=colNameBTreeIndex.get(keyColName);
+				Ref pageReference=tree.searchForInsertion(keyValue);
+				String pageName=this.tableName+pageReference.getPage();
+				int curr=pages.indexOf(pageName);
+				addInPage(curr,x,keyType,keyColName,nodeSize);
+			}else{
+				int lower = 0;
+				int upper = min.size();
+				int curr=0;
+				for(curr=0;curr<pages.size();curr++){
+					Object minn=(min.get(curr));
+					Object maxx=max.get(curr);
+					if((keyValue.compareTo(minn)>=0&&keyValue.compareTo(maxx)<=0)||(keyValue.compareTo(minn)<0)||curr==pages.size()-1){
+						addInPage(curr, x,keyType,keyColName,nodeSize);
+						break;
+					}
+				}
+			}
+		}
+
+		Set<String> c=colNameBTreeIndex.keySet();
+		for(int i=0;i<c.size();i++){
+			if(!keyColName.equals(c)){
+				BPTree tree=colNameBTreeIndex.get(c);
+				int index=0;
+				for(;index<colNames.size();index++){
+					if(keyColName.equals(colNames.get(index))){
+						break;
+					}
+				}
+				Object keyValueOfNonCluster=x.getAttributes().get(index);
+				Ref pageReference=tree.searchForInsertion((Comparable) keyValueOfNonCluster);
+				tree.insert((Comparable) keyValueOfNonCluster, pageReference);
+			}
 		}
 	}
 
