@@ -154,7 +154,6 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		else
 			newNode.insertRightAt(keyIndex - midIndex, pushup.key, pushup.newNode);
 		
-
 		return newNode;
 	}
 	/**

@@ -30,15 +30,20 @@ public class OverflowReference extends GeneralReference {
 			throw new DBAppException("Class Not Found Exception");
 		}
 	}
-	public void setFirstPage(OverflowPage firstPage) throws DBAppException {
+	public void setFirstPage(OverflowPage firstPage) throws DBAppException, IOException {
 		OverflowPage Page=firstPage;
 		firstPageName=Page.getPageName();
-		Page.serialize();
+		if(Page != null)
+			Page.serialize();
 	}
 	public void insert(Ref recordRef) throws DBAppException, IOException {
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
 		firstPage.addRecord(recordRef);
 		firstPage.serialize();
+	}
+	public String toString()
+	{
+		return firstPageName.toString();
 	}
 	public boolean isOverflow() {
 		return true;

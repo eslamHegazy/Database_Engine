@@ -33,7 +33,7 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 		root.setRoot(true);
 		//root.treeName=this.treeName;
 	}
-	public void updateRef(int oldpage,int newpage,T key) throws DBAppException {
+	public void updateRef(int oldpage,int newpage,T key) throws DBAppException, IOException {
 	GeneralReference gf=search(key);
 	gf.updateRef(oldpage, newpage);
 	}
@@ -52,9 +52,12 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 		if(pushUp != null)
 		{
 			BPTreeInnerNode<T> newRoot = new BPTreeInnerNode<T>(order);
+			root.serializeNode();
 			newRoot.insertLeftAt(0, pushUp.key, root);
+			root.deserializeNode(root.nodeName);
 			newRoot.setChild(1, pushUp.newNode);
 			root.setRoot(false);
+			root.serializeNode();
 			root = newRoot;
 			root.setRoot(true);
 		}
@@ -112,12 +115,13 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 					System.out.print("{");
 					BPTreeInnerNode<T> parent = (BPTreeInnerNode<T>) curNode;
 					for(int i = 0; i <= parent.numberOfKeys; ++i)
-					{
-						
-						try {
+					{			
+						try 
+						{
 							System.out.print(parent.getChild(i).index+",");
 							next.add(parent.getChild(i));
-						} catch (DBAppException e) {
+						}
+						catch (DBAppException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}

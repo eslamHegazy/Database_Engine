@@ -2,19 +2,21 @@ package BPTree;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Vector;
 
 import kalabalaDB.DBAppException;
 import kalabalaDB.Page;
 
 //TODO serializing overflowpages
-public class OverflowPage {
+public class OverflowPage implements Serializable{
 	private String next;
 	private Vector<Ref> refs;
 	private int maxSize;// node size
@@ -122,7 +124,7 @@ public class OverflowPage {
 	protected String getFromMetaDataTree() throws DBAppException , IOException
 	{
 		String lastin = "";
-		Vector meta = readFile("data/metadata.csv");
+		Vector meta = readFile("data/metaBPtree.csv");
 		int overrideLastin = 0;
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
@@ -132,7 +134,7 @@ public class OverflowPage {
 			break;
 			
 		}
-		FileWriter csvWriter = new FileWriter("data/metadata.csv");
+		FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
 			csvWriter.append(curr[0]);
@@ -141,6 +143,16 @@ public class OverflowPage {
 		csvWriter.flush();
 		csvWriter.close();
 		return lastin;
+	}
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		for(Ref r : refs)
+		{
+			sb.append(r);
+		}
+		return sb.toString();
+		
 	}
 	
 }

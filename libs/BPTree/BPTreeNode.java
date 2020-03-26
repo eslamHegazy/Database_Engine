@@ -36,7 +36,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		index = nextIdx++;
 		numberOfKeys = 0;
 		this.order = order;
-		String lastin=getFromMetaDataTree();
+		nodeName=getFromMetaDataTree();
 		//nodeName=treeName+lastin;
 	}
 	
@@ -217,6 +217,8 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	}
 	public BPTreeNode<T> deserializeNode(String name) throws DBAppException {
 		try {
+		//	if(name == null || name == "")
+		//		return null;
 			FileInputStream fileIn = new FileInputStream("data/"+ name + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			BPTreeNode<T> BPTN =   (BPTreeNode<T>) in.readObject();
