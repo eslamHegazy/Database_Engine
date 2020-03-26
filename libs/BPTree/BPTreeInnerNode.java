@@ -357,9 +357,17 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	public GeneralReference search(T key) throws DBAppException 
 	{
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
-		return b.search(key);
+		GeneralReference x= b.search(key);
+		b.serializeNode();
+		return x;
 	}
-	
+	public Ref searchForInsertion(T key)throws DBAppException
+	{
+		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		Ref x= b.searchForInsertion(key);
+		b.serializeNode();
+		return x;
+	}
 	/**
 	 * delete the key at the given index and deleting its right child
 	 */

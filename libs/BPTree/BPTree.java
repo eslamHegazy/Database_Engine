@@ -62,8 +62,6 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 			root.setRoot(true);
 		}
 	}
-	
-	
 	/**
 	 * Looks up for the record that is associated with the specified key
 	 * @param key the key to find its record
@@ -136,9 +134,12 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 		//	</For Testing>
 		return s;
 	}
-	public Ref searchRequiredReference(Comparable key) throws DBAppException { //comparable and T???
-		// TODO Auto-generated method stub
-		search((T)key);
+	public Ref searchForInsertion(T key) throws DBAppException { //comparable and T???
+		return root.searchForInsertion(key);
+	}
+	public Ref searchRequiredReference(T key)throws DBAppException{
+		search(key);
 		return null;
+		
 	}
 }

@@ -230,7 +230,13 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 				return this.getRecord(i);
 		return null;
 	}
-	
+	public Ref searchForInsertion(T key)throws DBAppException
+	{
+		for(int i = 0; i < numberOfKeys; ++i)
+			if(this.getKey(i).compareTo(key) > 0)
+				return (Ref)(this.getRecord(i));
+		return (Ref)(records[records.length-1]);
+	}
 	/**
 	 * delete the passed key from the B+ tree
 	 * @throws DBAppException 

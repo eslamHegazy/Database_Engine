@@ -168,6 +168,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 			int ptr) throws DBAppException, IOException;
 	
 	public abstract GeneralReference search(T key) throws DBAppException;
+	public abstract Ref searchForInsertion(T key)throws DBAppException;
 
 	/**
 	 * delete a key from the B+ tree recursively
