@@ -19,7 +19,7 @@ public class OverflowReference extends GeneralReference implements Serializable
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
 		return firstPage;
 	}
-	private OverflowPage deserializeOverflowPage(String firstPageName2) throws DBAppException {
+	public OverflowPage deserializeOverflowPage(String firstPageName2) throws DBAppException {
 		try {
 			FileInputStream fileIn = new FileInputStream("data/"+ this.firstPageName + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);

@@ -313,11 +313,7 @@ public class DBApp {
 	}
 
 	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
-		/*
-		 * Table y = null; Object keyValue = null; for (Object x : tables) { y = (Table)
-		 * x; if (y.getTableName().equals(strTableName)) { break; } } if (y == null) {
-		 * System.err.println("NoSuchTable"); return; }
-		 */
+		
 		Table y = deserialize(strTableName);
 		Vector meta = readFile("data/metadata.csv");
 		Vector<String[]> metaOfTable = new Vector();
@@ -327,18 +323,26 @@ public class DBApp {
 				metaOfTable.add(line);
 			}
 		}
-		
-		y.deleteInTable(htblColNameValue, metaOfTable);
+		String clusteringKey = isThereACluster(htblColNameValue, strTableName);
+		y.deleteInTable(htblColNameValue, metaOfTable ,clusteringKey);
 		serialize(y);
-		/*
-		 * String x = SearchInTable(strTableName, (String)keyValue); String[] arrOfStr =
-		 * x.split("#"); String pName =arrOfStr[0]; int tuplePosition =
-		 * Integer.parseInt(arrOfStr[1]); y.deleteInTable(keyValue , pName ,
-		 * tuplePosition);
-		 */
 		
 	}
-
+	public String isThereACluster(Hashtable<String, Object> htblColNameValue , String strTableName) throws DBAppException
+	{
+		Vector meta = readFile("data/metadata.csv");
+		Vector<String[]> metaOfTable = new Vector();
+		for (Object o : meta) {
+			String[] line = (String[]) o;
+			if (line[0].equals(strTableName)) {
+				if(line[3].equals("True"))
+				{
+					return line[3];
+				}
+			}
+		}
+		return null;
+	}
 	public static void serialize(Table table) throws DBAppException {
 		try {
 			FileOutputStream fileOut = new FileOutputStream("data/"+table.getTableName() + ".class");
@@ -494,7 +498,17 @@ public class DBApp {
 			}
 		}
 
-		
+		FileWriter csvWriter = new FileWriter("O:\\6th Semester\\Data Bases II\\Project1\\kalabalaDBv4\\data\\metadata.csv");
+		for (Object O : meta) {
+			String[] curr = (String[]) O;
+			for (int j = 0; j < curr.length; j++) {
+				csvWriter.append(curr[j]);
+				csvWriter.append(",");
+			}
+			csvWriter.append("\n");
+		}
+		csvWriter.flush();
+		csvWriter.close();
 		switch(colType){
 			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
 			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;

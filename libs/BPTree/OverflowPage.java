@@ -17,8 +17,17 @@ import kalabalaDB.Page;
 
 //TODO serializing overflowpages
 public class OverflowPage implements Serializable{
-	private String next;
+	private String next; //esm l nextPage
 	private Vector<Ref> refs;
+	public Vector<Ref> getRefs() {
+		return refs;
+	}
+	public void setRefs(Vector<Ref> refs) {
+		this.refs = refs;
+	}
+	public String getNext() {
+		return next;
+	}
 	private int maxSize;// node size
 	private String pageName;
 	//private String treeName;
