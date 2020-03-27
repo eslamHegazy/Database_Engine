@@ -2,6 +2,7 @@ package BPTree;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -97,6 +98,8 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 		//	<For Testing>
 		// node :  (id)[k1|k2|k3|k4]{P1,P2,P3,}
 		String s = "";
+		BPTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
+		
 		Queue<BPTreeNode<T>> cur = new LinkedList<BPTreeNode<T>>(), next;
 		cur.add(root);
 		while(!cur.isEmpty())
@@ -130,7 +133,17 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 			}
 			System.out.println();
 			cur = next;
-		}	
+		}
+		
+		ArrayList<OverflowReference> tobePrinted  = BPTreeLeafNode.pagesToPrint;
+		System.out.println("\n The Overflow refrences are : \n");
+		
+		for(int i=0;i<tobePrinted.size();i++)
+		{
+			System.out.println("refrence number : " + (i+1) +" is :\n");
+			System.out.println(tobePrinted.get(i).toString());
+		}
+			
 		//	</For Testing>
 		return s;
 	}

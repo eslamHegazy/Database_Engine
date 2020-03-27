@@ -13,13 +13,11 @@ public class TestBPTree {
 	{
 		BPTree<Integer> tree = new BPTree<Integer>(3);
 		Scanner sc = new Scanner(System.in);
-		for(int i=0;i<5;i++)
+		for(int i=0;i<15;i++)
 		{
-			Ref r = new Ref(5);
-			int j = (int)Math.random()+5;
-			System.out.print(j+" ");
-			tree.insert(j, new Ref(j));
+			tree.insert(i, new Ref(i));
 		}
+		tree.insert(3, new Ref(16));
 		
 		tree.toString();
 		sc.close();

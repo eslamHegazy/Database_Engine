@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import kalabalaDB.DBAppException;
 
@@ -355,7 +356,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		this.setNext(foreignNode.getNext());
 	}
 	
-	
+	public static ArrayList<OverflowReference> pagesToPrint;
 	public String toString()
 	{		
 		String s = "(" + index + ")";
@@ -366,7 +367,18 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			String key = " ";
 			if(i < numberOfKeys) {
 				key = keys[i].toString();
-				key += ","+records[i]; 
+				
+				if(records[i] instanceof Ref)
+				{
+					key += ","+records[i]; 
+				}
+				
+				else
+				{
+					key += ","+((OverflowReference)records[i]).getFirstPageName();
+					pagesToPrint.add((OverflowReference) records[i]);
+				}
+			
 			}
 			s+= key;
 			if(i < order - 1)

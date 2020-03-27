@@ -7,10 +7,14 @@ import java.io.Serializable;
 
 import kalabalaDB.DBAppException;
 
-public class OverflowReference extends GeneralReference implements Serializable {
+public class OverflowReference extends GeneralReference implements Serializable 
+	{
 	private String firstPageName;
 	//done (ta2riban) insert , delete and update pass the key and page
 	
+	public String getFirstPageName() {
+		return firstPageName;
+	}
 	public OverflowPage getFirstPage() throws DBAppException {
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
 		return firstPage;
@@ -44,7 +48,16 @@ public class OverflowReference extends GeneralReference implements Serializable 
 	}
 	public String toString()
 	{
-		return firstPageName.toString();
+		StringBuilder sb = new StringBuilder();
+		
+		try
+		{
+			sb.append(deserializeOverflowPage(this.firstPageName));
+		}
+		catch(DBAppException e){
+			System.out.println("WRONG first page name");
+		}
+		return sb.toString();
 	}
 	public boolean isOverflow() {
 		return true;

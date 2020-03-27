@@ -32,14 +32,16 @@ public class OverflowPage implements Serializable{
 		pageName="Node"+lastin;	
 	} 
 	public void addRecord(Ref recordRef) throws DBAppException, IOException {
-		if (refs.size()<maxSize) {
+		if (refs.size()<maxSize) 
+		{
 			refs.add(recordRef);
 		}
 		else {
 			OverflowPage nextPage;
-			if (next==null) {
+			if (next==null) 
+			{
 				nextPage = new OverflowPage(maxSize);
-				next=nextPage.getPageName();
+				next=nextPage.getPageName();	
 			}else{
 				nextPage=deserialize(next);
 			}
@@ -147,9 +149,21 @@ public class OverflowPage implements Serializable{
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
+		sb.append("The overflow page:" + pageName + ": \n");
 		for(Ref r : refs)
 		{
-			sb.append(r);
+			sb.append(r+" , ");
+		}
+		sb.append("\n");
+		if(this.next == null)
+			return sb.toString();
+		try 
+		{
+			sb.append(deserialize(next).toString());
+		}
+		catch(DBAppException e)
+		{
+			System.out.println("PAGE EXCEPTION");
 		}
 		return sb.toString();
 		
