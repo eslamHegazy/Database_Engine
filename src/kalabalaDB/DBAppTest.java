@@ -1,7 +1,13 @@
 package kalabalaDB;
 
+import java.awt.List;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -10,10 +16,34 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Scanner;
 
+import BPTree.BPTree;
+
 public class DBAppTest {
+	
 	public static void main(String[] args)throws Exception {
-		clear();
-		tst1(500);
+		
+//		clear();
+//		tst1(500);
+//		DBApp d = new DBApp();
+//		d.init();
+//		d.createBTreeIndex("Esso Table", "the key");
+		
+
+//		clear();
+//		tst1(20);
+//		DBApp d = new DBApp();
+//		d.init();
+//		d.createBTreeIndex("Esso Table", "the key");
+		
+//		DBApp d = new DBApp();
+//		d.init();
+//		d.printAllPagesInAllTables("lol");
+		sas();
+//		Table t = d.deserialize("Esso Table");
+//		BPTree b = t.getColNameBTreeIndex().get("the key");
+//		System.out.println(b);
+		
+//		d.createBTreeIndex("Esso Table", "garbage");
 //		tst2();
 //		tst1(500);
 		
@@ -47,8 +77,6 @@ public class DBAppTest {
 		//tst1();
 		
 //		clear();
-		DBApp d = new DBApp();
-		d.init();
 //		Hashtable h = new Hashtable();
 //		h.put("id", "java.lang.Integer");
 //		h.put("name", "java.lang.String");
@@ -478,5 +506,24 @@ public class DBAppTest {
 			p.addPoint(x, y);
 		}
 		return p;
+	}
+	
+	public static void sas() throws Exception{
+		File data = new File("data");
+		String[] list = data.list();
+		File fasa= new File("data/0s/");
+		fasa.mkdir();
+		for (String f : list) {
+			if (f.substring(f.length()-5).equals("class")) {
+				FileInputStream fi = new FileInputStream("data/"+f); 
+				ObjectInputStream obj = new ObjectInputStream(fi);
+				Object o = obj.readObject();
+				String nf = f.substring(0,f.length()-5)+"tstr";
+				PrintWriter pw = new PrintWriter("data/0s/"+nf);
+				pw.print(o.toString());
+				pw.close();
+			}
+				
+		}
 	}
 }

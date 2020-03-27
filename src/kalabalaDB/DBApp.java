@@ -41,11 +41,12 @@ public class DBApp {
 			File metadata = new File("data/metadata.csv");
 			metadata.createNewFile();
 			File metaBPtree = new File("data/metaBPtree.csv");
-			metaBPtree.createNewFile();
-			FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
-			csvWriter.append("0");
-			csvWriter.flush();
-			csvWriter.close();
+			if(metaBPtree.createNewFile()) {
+				FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
+				csvWriter.append("0");
+				csvWriter.flush();
+				csvWriter.close();
+			}
 		}
 		catch(IOException e) {
 			System.out.println(e.getStackTrace());
@@ -347,6 +348,7 @@ public class DBApp {
 			fileOut.close();
 		}
 		catch(IOException e) {
+			e.printStackTrace();
 			throw new DBAppException("IO Exception");
 		}
 	}
@@ -491,15 +493,8 @@ public class DBApp {
 				}
 			}
 		}
-		FileWriter csvWriter = new FileWriter("data/metadata.csv");
-		for (Object O : meta) {
-			String[] curr = (String[]) O;
-			for (int j = 0; j < curr.length; j++) {
-				csvWriter.append(curr[j]);
-				csvWriter.append(",");
-			}
-			csvWriter.append("\n");
-		}
+
+		
 		switch(colType){
 			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
 			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;

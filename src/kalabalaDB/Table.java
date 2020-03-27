@@ -9,6 +9,10 @@ import BPTree.Ref;
 
 
 public class Table implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1273622720148360313L;
 	private Vector<String> pages = new Vector();
 	private int MaximumRowsCountinPage;
 	private Vector<Object>min=new Vector<>();
@@ -18,6 +22,9 @@ public class Table implements Serializable {
 	private int primaryPos;
 	private Hashtable<String,BPTree> colNameBTreeIndex= new Hashtable<>();
 	
+	public Hashtable<String, BPTree> getColNameBTreeIndex() {
+		return colNameBTreeIndex;
+	}
 	public  Ref searchWithCluster(Comparable key,BPTree b) throws DBAppException {
 		Ref ref=b.searchRequiredReference(key); //NOT IMPLEMENTED
 		if(ref==null) { //returns null if key is the least value in tree
@@ -516,4 +523,26 @@ public class Table implements Serializable {
 	 * }
 	 */
 
+//	private void writeObject(ObjectOutputStream out) throws IOException{
+//		out.writeObject(pages);
+//		out.writeObject(MaximumRowsCountinPage);
+//		out.writeObject(min);
+//		out.writeObject(max);
+//		out.writeObject(tableName);
+//		out.writeObject(strClusteringKey);
+//		out.writeObject(primaryPos);
+//		out.writeObject(new HashtableSerializer(colNameBTreeIndex));
+//	}
+//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
+//		this.pages=(Vector<String>) in.readObject();
+//		this.MaximumRowsCountinPage= (int) in.readObject();
+//		this.min=(Vector<Object>) in.readObject();
+//		this.max=(Vector<Object>) in.readObject();
+//		this.tableName=(String) in.readObject();
+//		this.strClusteringKey=(String) in.readObject();
+//		this.primaryPos=(int) in.readObject();
+//		this.colNameBTreeIndex = ((HashtableSerializer)(in.readObject())).getHashtable();
+//	}
+	
+	
 }

@@ -3,10 +3,11 @@ package BPTree;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 import kalabalaDB.DBAppException;
 
-public class OverflowReference extends GeneralReference {
+public class OverflowReference extends GeneralReference implements Serializable {
 	private String firstPageName;
 	//done (ta2riban) insert , delete and update pass the key and page
 	

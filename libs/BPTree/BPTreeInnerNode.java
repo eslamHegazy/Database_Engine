@@ -38,6 +38,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 */
 	public BPTreeNode<T> getChild(int index) throws DBAppException 
 	{
+		if (childrenName[index]==null) return null;
 		BPTreeNode<T> child=deserializeNode(childrenName[index]);
 		return child;
 	}
@@ -49,7 +50,8 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 */
 	public void setChild(int index, BPTreeNode<T> child) 
 	{
-		childrenName[index] = child.nodeName;
+		if (child==null) childrenName[index]=null;
+		else	childrenName[index] = child.nodeName;
 		//child.serializeNode();//TODO can i serialize ,myself??
 	}
 	/**
