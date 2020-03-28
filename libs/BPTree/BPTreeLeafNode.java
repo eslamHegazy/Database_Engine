@@ -1,6 +1,14 @@
 package BPTree;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import kalabalaDB.DBAppException;
 
 public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> implements Serializable{
 
@@ -10,9 +18,8 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	private static final long serialVersionUID = 1L;
 	private GeneralReference[] records;
 	private String next;
-	//TODO: vector of overflowPagesNames ? DISCUSS IT WITH THE TEAM
 	@SuppressWarnings("unchecked")
-	public BPTreeLeafNode(int n) 
+	public BPTreeLeafNode(int n) throws DBAppException, IOException 
 	{
 		super(n);
 		keys = new Comparable[n];
@@ -22,10 +29,11 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	
 	/**
 	 * @return the next leaf node
+	 * @throws DBAppException 
 	 */
-	public BPTreeLeafNode<T> getNext()
+	public BPTreeLeafNode<T> getNext() throws DBAppException
 	{
-		return (next==null)?null:deserializeNode(next);
+		return (next==null)?null:((BPTreeLeafNode)deserializeNode(next)); //TODO wth
 	}
 	
 	/**
@@ -84,11 +92,13 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	
 	/**
 	 * insert the specified key associated with a given record refernce in the B+ tree
+	 * @throws IOException 
+	 * @throws DBAppException 
 	 */
 	public PushUp<T> insert(T key, 
 			Ref recordReference, 
 			BPTreeInnerNode<T> parent, 
-			int ptr)
+			int ptr) throws DBAppException, IOException
 	{
 			
 		int index = 0;
@@ -98,10 +108,11 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
 			GeneralReference ref = records[index];
 			if (ref.isOverflow()) {
-				//TODO:
+				//done:
 				
 				//deserialize the actual page of this reference
-				
+				OverflowReference ofRef=(OverflowReference)ref;
+				ofRef.insert(recordReference);
 				//insert key in the overflow page
 				//ovflpage.addRecord(recordReference);
 				
@@ -111,9 +122,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 				OverflowReference ovflref = new OverflowReference();
 				OverflowPage ovflpage = new OverflowPage(order);
 				ovflref.setFirstPage(ovflpage);
-				//TODO: what to store in ovflref? (string/ovflPage!?)
-				ovflpage.addRecord((Ref)ref);
-				ovflpage.addRecord(recordReference);
+				//done: what to store in ovflref? (string/ovflPage!?)
+				ovflref.insert((Ref)ref);
+				ovflref.insert(recordReference);
 				records[index]=ovflref;
 			}
 			//this.serialize();
@@ -124,14 +135,12 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		{
 			BPTreeNode<T> newNode = this.split(key, recordReference);
 			Comparable<T> newKey = newNode.getFirstKey();
-			//TODO: where to serialize what ?
-			newNode.serializeNode();
+			newNode.serializeNode(); //TODO type cast or create in BPTreeNode
 			return new PushUp<T>(newNode, newKey);
 		}
 		else
 		{
 			this.insertAt(index, key, recordReference);
-			//TODO: where to serialize what ?
 			return null;
 		}
 	}
@@ -160,8 +169,10 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 * @param key the new key that caused the split
 	 * @param recordReference the reference of the new key
 	 * @return the new node that results from the split
+	 * @throws IOException 
+	 * @throws DBAppException 
 	 */
-	public BPTreeNode<T> split(T key, GeneralReference recordReference) 
+	public BPTreeNode<T> split(T key, GeneralReference recordReference) throws DBAppException, IOException 
 	{
 		int keyIndex = this.findIndex(key);
 		int midIndex = numberOfKeys / 2;
@@ -186,7 +197,8 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		
 		//set next pointers
 		newNode.setNext(this.getNext());
-		this.getNext().serializeNode();
+		if(this.getNext() != null)
+			this.getNext().serializeNode();
 		this.setNext(newNode);
 		
 		return newNode;
@@ -219,11 +231,18 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 				return this.getRecord(i);
 		return null;
 	}
-	
+	public Ref searchForInsertion(T key)throws DBAppException
+	{
+		for(int i = 0; i < numberOfKeys; ++i)
+			if(this.getKey(i).compareTo(key) > 0)
+				return (Ref)(this.getRecord(i));
+		return (Ref)(records[records.length-1]);
+	}
 	/**
 	 * delete the passed key from the B+ tree
+	 * @throws DBAppException 
 	 */
-	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) 
+	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) throws DBAppException 
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) == 0)
@@ -254,6 +273,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 */
 	public void deleteAt(int index)
 	{
+		//check if there is an overflow
 		for(int i = index; i < numberOfKeys - 1; ++i)
 		{
 			keys[i] = keys[i+1];
@@ -267,8 +287,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 * @param parent the parent of the current node
 	 * @param ptr the index of the parent pointer that points to this node 
 	 * @return true if borrow is done successfully and false otherwise
+	 * @throws DBAppException 
 	 */
-	public boolean borrow(BPTreeInnerNode<T> parent, int ptr)
+	public boolean borrow(BPTreeInnerNode<T> parent, int ptr) throws DBAppException
 	{
 		//check left sibling
 		if(ptr > 0)
@@ -302,8 +323,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 * merges the current node with its left or right sibling
 	 * @param parent the parent of the current node
 	 * @param ptr the index of the parent pointer that points to this node 
+	 * @throws DBAppException 
 	 */
-	public void merge(BPTreeInnerNode<T> parent, int ptr)
+	public void merge(BPTreeInnerNode<T> parent, int ptr) throws DBAppException
 	{
 		if(ptr > 0)
 		{
@@ -324,8 +346,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	/**
 	 * merge the current node with the specified node. The foreign node will be deleted
 	 * @param foreignNode the node to be merged with the current node
+	 * @throws DBAppException 
 	 */
-	public void merge(BPTreeLeafNode<T> foreignNode)
+	public void merge(BPTreeLeafNode<T> foreignNode) throws DBAppException
 	{
 		for(int i = 0; i < foreignNode.numberOfKeys; ++i)
 			this.insertAt(numberOfKeys, foreignNode.getKey(i), foreignNode.getRecord(i));
@@ -333,7 +356,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		this.setNext(foreignNode.getNext());
 	}
 	
-	
+	public static ArrayList<OverflowReference> pagesToPrint;
 	public String toString()
 	{		
 		String s = "(" + index + ")";
@@ -344,7 +367,18 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			String key = " ";
 			if(i < numberOfKeys) {
 				key = keys[i].toString();
-				key += ","+records[i]; 
+				
+				if(records[i] instanceof Ref)
+				{
+					key += ","+records[i]; 
+				}
+				
+				else
+				{
+					key += ","+((OverflowReference)records[i]).getFirstPageName();
+					pagesToPrint.add((OverflowReference) records[i]);
+				}
+			
 			}
 			s+= key;
 			if(i < order - 1)
@@ -355,20 +389,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	}
 
 	
-	public BPTreeLeafNode<T> deserializeNode(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
+	
 
-	@Override
-	protected int getFromMetaDataTree(String treeName2) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
-	@Override
-	public void serializeNode() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 }

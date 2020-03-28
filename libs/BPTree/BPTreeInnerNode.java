@@ -1,6 +1,13 @@
 package BPTree;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
+import kalabalaDB.DBAppException;
 
 public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  implements Serializable
 {
@@ -13,9 +20,11 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	/**
 	 * create BPTreeNode given order.
 	 * @param n
+	 * @throws IOException 
+	 * @throws DBAppException 
 	 */
 	@SuppressWarnings("unchecked")
-	public BPTreeInnerNode(int n) 
+	public BPTreeInnerNode(int n) throws DBAppException, IOException 
 	{
 		super(n);
 		keys = new Comparable[n];
@@ -25,31 +34,32 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	/**
 	 * get child with specified index
 	 * @return Node which is child at specified index
+	 * @throws DBAppException 
 	 */
-	public BPTreeNode<T> getChild(int index) 
+	public BPTreeNode<T> getChild(int index) throws DBAppException 
 	{
+		if (childrenName[index]==null) return null;
 		BPTreeNode<T> child=deserializeNode(childrenName[index]);
 		return child;
 	}
 	
-	public BPTreeInnerNode<T> deserializeNode(String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	/**
 	 * creating child at specified index
 	 */
 	public void setChild(int index, BPTreeNode<T> child) 
 	{
-		childrenName[index] = child.nodeName;
+		if (child==null) childrenName[index]=null;
+		else	childrenName[index] = child.nodeName;
 		//child.serializeNode();//TODO can i serialize ,myself??
 	}
 	/**
 	 * get the first child of this node.
 	 * @return first child node.
+	 * @throws DBAppException 
 	 */
-	public BPTreeNode<T> getFirstChild()
+	public BPTreeNode<T> getFirstChild() throws DBAppException
 	{
 		BPTreeNode<T> child=deserializeNode(childrenName[0]);
 		return child;
@@ -57,8 +67,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	/**
 	 * get the last child of this node
 	 * @return last child node.
+	 * @throws DBAppException 
 	 */
-	public BPTreeNode<T> getLastChild()
+	public BPTreeNode<T> getLastChild() throws DBAppException
 	{
 		BPTreeNode<T> child=deserializeNode(childrenName[numberOfKeys]);
 		return child;
@@ -79,14 +90,17 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * @param parent parent of that inserted node
 	 * @param ptr index of pointer in the parent node pointing to the current node
 	 * @return value to be pushed up to the parent.
+	 * @throws IOException 
+	 * @throws DBAppException 
 	 */
-	public PushUp<T> insert(T key, Ref recordReference, BPTreeInnerNode<T> parent, int ptr)
+	public PushUp<T> insert(T key, Ref recordReference, BPTreeInnerNode<T> parent, int ptr) throws DBAppException, IOException
 	{
 		int index = findIndex(key);
 		BPTreeNode<T> b=deserializeNode(childrenName[index]);
 		PushUp<T> pushUp = b.insert(key, recordReference, this, index); //TODO this or name of parent
 		
-		if(pushUp == null) {
+		if(pushUp == null) 
+		{
 			b.serializeNode();
 			return null;
 		}
@@ -97,7 +111,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			Comparable<T> newKey = newNode.getFirstKey();
 			newNode.deleteAt(0, 0);
 			newNode.serializeNode();
-			b.serializeNode();
+		    b.serializeNode();
 			return new PushUp<T>(newNode, newKey); //TODO recheck
 		}
 		else
@@ -114,9 +128,11 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * split the inner node and adjust values and pointers.
 	 * @param pushup key to be pushed up to the parent in case of splitting.
 	 * @return Inner node after splitting
+	 * @throws IOException 
+	 * @throws DBAppException 
 	 */
 	@SuppressWarnings("unchecked")
-	public BPTreeInnerNode<T> split(PushUp<T> pushup) 
+	public BPTreeInnerNode<T> split(PushUp<T> pushup) throws DBAppException, IOException 
 	{
 		int keyIndex = this.findIndex((T)pushup.key);
 		int midIndex = numberOfKeys / 2 - 1;
@@ -140,7 +156,6 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		else
 			newNode.insertRightAt(keyIndex - midIndex, pushup.key, pushup.newNode);
 		
-
 		return newNode;
 	}
 	/**
@@ -162,8 +177,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * insert at given index a given key
 	 * @param index where it inserts the key
 	 * @param key to be inserted at index
+	 * @throws DBAppException 
 	 */
-	private void insertAt(int index, Comparable<T> key) 
+	private void insertAt(int index, Comparable<T> key) throws DBAppException 
 	{
 		for (int i = numberOfKeys; i > index; --i) 
 		{
@@ -178,8 +194,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * @param index where key is inserted
 	 * @param key to be inserted in that index
 	 * @param leftChild child which this node points to with pointer at left of that index
+	 * @throws DBAppException 
 	 */
-	public void insertLeftAt(int index, Comparable<T> key, BPTreeNode<T> leftChild) 
+	public void insertLeftAt(int index, Comparable<T> key, BPTreeNode<T> leftChild) throws DBAppException 
 	{
 		insertAt(index, key);
 		this.setChild(index+1, this.getChild(index));
@@ -189,16 +206,18 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * @param index where key is inserted
 	 * @param key to be inserted in that index
 	 * @param rightChild child which this node points to with pointer at right of that index
+	 * @throws DBAppException 
 	 */
-	public void insertRightAt(int index, Comparable<T> key, BPTreeNode<T> rightChild)
+	public void insertRightAt(int index, Comparable<T> key, BPTreeNode<T> rightChild) throws DBAppException
 	{
 		insertAt(index, key);
 		this.setChild(index + 1, rightChild);
 	}
 	/**
 	 * delete key and return true or false if it is deleted or not
+	 * @throws DBAppException 
 	 */
-	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) //TODO parent
+	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) throws DBAppException //TODO parent
 	{
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
@@ -211,7 +230,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		if(!done) {
 			BPTreeNode<T> b=deserializeNode(childrenName[numberOfKeys]);
 			done = b.delete(key, this, numberOfKeys);
-			b.serializeNode();
+		    b.serializeNode();
 		}
 		if(numberOfKeys < this.minKeys())
 		{
@@ -238,8 +257,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * @param parent of the current node
 	 * @param ptr index of pointer in the parent node pointing to the current node 
 	 * @return true or false if it can borrow form right sibling or left sibling or it can not
+	 * @throws DBAppException 
 	 */
-	public boolean borrow(BPTreeInnerNode<T> parent, int ptr)
+	public boolean borrow(BPTreeInnerNode<T> parent, int ptr) throws DBAppException
 	{
 		//check left sibling
 		if(ptr > 0)
@@ -248,7 +268,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			if(leftSibling.numberOfKeys > leftSibling.minKeys())
 			{
 				this.insertLeftAt(0, parent.getKey(ptr-1), leftSibling.getLastChild());
-				leftSibling.getLastChild().serializeNode();
+				leftSibling.getLastChild().serializeNode(); 
 				parent.deleteAt(ptr-1);
 				parent.insertRightAt(ptr-1, leftSibling.getLastKey(), this);
 				leftSibling.deleteAt(leftSibling.numberOfKeys - 1);
@@ -264,7 +284,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			if(rightSibling.numberOfKeys > rightSibling.minKeys())
 			{
 				this.insertRightAt(this.numberOfKeys, parent.getKey(ptr), rightSibling.getFirstChild());
-				rightSibling.getFirstChild().serializeNode();
+				rightSibling.getFirstChild().serializeNode(); 
 				parent.deleteAt(ptr);
 				parent.insertRightAt(ptr, rightSibling.getFirstKey(), rightSibling);
 				rightSibling.deleteAt(0, 0);
@@ -278,8 +298,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * try to merge with left or right sibling in case of overflow
 	 * @param parent of the current node 
 	 * @param ptr index of pointer in the parent node pointing to the current node
+	 * @throws DBAppException 
 	 */
-	public void merge(BPTreeInnerNode<T> parent, int ptr)
+	public void merge(BPTreeInnerNode<T> parent, int ptr) throws DBAppException
 	{
 		if(ptr > 0)
 		{
@@ -304,8 +325,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * to be inserted with the merged node
 	 * @param parentKey the pulled key from the parent to be inserted in the merged node
 	 * @param foreignNode the node to be merged with the current node
+	 * @throws DBAppException 
 	 */
-	public void merge(Comparable<T> parentKey, BPTreeInnerNode<T> foreignNode)
+	public void merge(Comparable<T> parentKey, BPTreeInnerNode<T> foreignNode) throws DBAppException
 	{
 		this.insertRightAt(numberOfKeys, parentKey, foreignNode.getFirstChild());
 		for(int i = 0; i < foreignNode.numberOfKeys; ++i)
@@ -331,14 +353,23 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	
 	/**
 	 * searches for the record reference of the specified key
+	 * @throws DBAppException 
 	 */
 	@Override
-	public GeneralReference search(T key) 
+	public GeneralReference search(T key) throws DBAppException 
 	{
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
-		return b.search(key);
+		GeneralReference x= b.search(key);
+		b.serializeNode();
+		return x;
 	}
-	
+	public Ref searchForInsertion(T key)throws DBAppException
+	{
+		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		Ref x= b.searchForInsertion(key);
+		b.serializeNode();
+		return x;
+	}
 	/**
 	 * delete the key at the given index and deleting its right child
 	 */
@@ -347,16 +378,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		deleteAt(index, 1);	
 	}
 
-	@Override
-	public void serializeNode() {
-		// TODO Auto-generated method stub
-		
-	}
+	
 
-	@Override
-	protected int getFromMetaDataTree(String treeName2) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+	
+	
 
 }

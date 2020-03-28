@@ -1,6 +1,19 @@
 package BPTree;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Vector;
+
+import kalabalaDB.DBAppException;
 
 public abstract class BPTreeNode<T extends Comparable<T>> implements Serializable{
 	
@@ -14,23 +27,72 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	protected int index;		//for printing the tree
 	private boolean isRoot;
 	private static int nextIdx = 0;
+	public int getNumberOfKeys() {
+		return numberOfKeys;
+	}
+
+	public void setNumberOfKeys(int numberOfKeys) {
+		this.numberOfKeys = numberOfKeys;
+	}
 	protected String nodeName;
 	//protected int lastin;
-	protected String treeName;
+	//protected String treeName;
 
-	public BPTreeNode(int order) 
+	public BPTreeNode(int order) throws DBAppException, IOException 
 	{
 		index = nextIdx++;
 		numberOfKeys = 0;
 		this.order = order;
-		//TODO read lastin from metadata increment it and update the metadata then take the new value
-		int lastin=getFromMetaDataTree(treeName);
-		nodeName=treeName+lastin;
+		nodeName=getFromMetaDataTree();
+		//nodeName=treeName+lastin;
 	}
-	//public abstract BPTreeNode<T> deserializeNode(String string);
-	public abstract void serializeNode();
-	protected abstract int getFromMetaDataTree(String treeName2); //TODO 
+	
+	public static Vector readFile(String path) throws DBAppException 
+	{
+		try 
+		{
+			String currentLine = "";
+			FileReader fileReader = new FileReader(path);
+			BufferedReader br = new BufferedReader(fileReader);
+			Vector metadata = new Vector();
+			while ((currentLine = br.readLine()) != null) {
+				metadata.add(currentLine.split(","));
+			}
+			return metadata;
+		}
+		catch(IOException e) {
+			e.printStackTrace();
+			throw new DBAppException("IO Exception");
+		}
+	}
 
+	protected String getFromMetaDataTree() throws DBAppException , IOException
+	{
+		String lastin = "";
+		Vector meta = readFile("data/metaBPtree.csv");
+		int overrideLastin = 0;
+		for (Object O : meta) {
+			String[] curr = (String[]) O;
+			lastin = curr[0];
+			overrideLastin = Integer.parseInt(curr[0])+1;
+			curr[0] = overrideLastin + "";
+			break;
+		}
+		FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
+		for (Object O : meta) 
+		{
+			String[] curr = (String[]) O;
+			csvWriter.append(curr[0]);
+			break;
+		}
+		csvWriter.flush();
+		csvWriter.close();
+		return lastin;
+	}
+	
+	
+	
+	
 	/**
 	 * @return a boolean indicating whether this node is the root of the B+ tree
 	 */
@@ -104,13 +166,16 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	 * @param parent the parent of the current node
 	 * @param ptr the index of the parent pointer that points to this node
 	 * @return a key and a new node in case of a node splitting and null otherwise
+	 * @throws IOException 
+	 * @throws DBAppException 
 	 */
 	public abstract PushUp<T> insert(T key, 
 			Ref recordReference, 
 			BPTreeInnerNode<T> parent, 
-			int ptr);
+			int ptr) throws DBAppException, IOException;
 	
-	public abstract GeneralReference search(T key);
+	public abstract GeneralReference search(T key) throws DBAppException;
+	public abstract Ref searchForInsertion(T key)throws DBAppException;
 
 	/**
 	 * delete a key from the B+ tree recursively
@@ -118,8 +183,9 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	 * @param parent the parent of the current node
 	 * @param ptr the index of the parent pointer that points to this node 
 	 * @return true if this node was successfully deleted and false otherwise
+	 * @throws DBAppException 
 	 */
-	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr);
+	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) throws DBAppException;
 	
 	/**
 	 * A string represetation for the node
@@ -141,6 +207,40 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		}
 		s += "]";
 		return s;
+	}
+	public void serializeNode() throws DBAppException 
+	{
+		try 
+		{
+			FileOutputStream fileOut = new FileOutputStream("data/"+ this.nodeName+ ".class");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			out.writeObject(this);
+			out.close();
+			fileOut.close();
+		}
+		catch(IOException e) {
+			throw new DBAppException("IO Exception");
+		}
+		
+	}
+	public BPTreeNode<T> deserializeNode(String name) throws DBAppException {
+		try {
+		//	if(name == null || name == "")
+		//		return null;
+			FileInputStream fileIn = new FileInputStream("data/"+ name + ".class");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			BPTreeNode<T> BPTN =   (BPTreeNode<T>) in.readObject();
+			in.close();
+			fileIn.close();
+			return BPTN;
+		}
+		catch(IOException e) {
+			throw new DBAppException("IO Exception");
+		}
+		catch(ClassNotFoundException e) {
+			throw new DBAppException("Class Not Found Exception");
+		}
+		
 	}
 
 }

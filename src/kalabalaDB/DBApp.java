@@ -40,6 +40,13 @@ public class DBApp {
 			data.mkdir();
 			File metadata = new File("data/metadata.csv");
 			metadata.createNewFile();
+			File metaBPtree = new File("data/metaBPtree.csv");
+			if(metaBPtree.createNewFile()) {
+				FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
+				csvWriter.append("0");
+				csvWriter.flush();
+				csvWriter.close();
+			}
 		}
 		catch(IOException e) {
 			System.out.println(e.getStackTrace());
@@ -142,12 +149,13 @@ public class DBApp {
 //		tables.add(strTableName);
 	}
 	
-	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
+	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
 		Table y = deserialize(strTableName);
 		Object keyValue = null;
 		Tuple newEntry = new Tuple();
 		String keyType="";
 		String keyColName="";
+		ArrayList colNames=new ArrayList<String>();
 		int i = 0;
 		Vector meta = readFile("data/metadata.csv");
 		for (Object O : meta) {
@@ -155,6 +163,7 @@ public class DBApp {
 			if (curr[0].equals(strTableName)) {
 				String name = curr[1];
 				String type = curr[2];
+				colNames.add(name);
 				if (!htblColNameValue.containsKey(name)) {
 					throw new DBAppException("col name invalid");
 				} else {
@@ -189,8 +198,10 @@ public class DBApp {
 			}
 		}
 		
+
+
 		newEntry.addAttribute(new Date());
-		y.insertSorted(newEntry, keyValue,keyType,keyColName,nodeSize); // TODO
+		y.insertSorted(newEntry, keyValue,keyType,keyColName,nodeSize,colNames); // TODO
 		serialize(y);
 
 	}
@@ -337,6 +348,7 @@ public class DBApp {
 			fileOut.close();
 		}
 		catch(IOException e) {
+			e.printStackTrace();
 			throw new DBAppException("IO Exception");
 		}
 	}
@@ -465,28 +477,31 @@ public class DBApp {
 	}
 	
 	
-	public void createBTreeIndex(String strTableName,String strColName) throws DBAppException{
+	public void createBTreeIndex(String strTableName,String strColName) throws DBAppException, IOException{
 		BPTree bTree=null;
 		Vector meta = readFile("data/metadata.csv");
 		String colType="";
-		int colPosition=-1;
+		int colPosition = -1;
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
 			if (curr[0].equals(strTableName)) {
 				colPosition++;
-				if(curr[1].equals(strColName)){
+				if (curr[1].equals(strColName)) {
 					colType = curr[2];
+					curr[4] = "True";
 					break;
 				}
 			}
 		}
+
+		
 		switch(colType){
-			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize,strTableName);break;
-			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize,strTableName);break;
-			case "java.util.Date":bTree=new BPTree<Date>(nodeSize,strTableName);break;
-			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize,strTableName);break;
-			case "java.lang.String":bTree=new BPTree<String>(nodeSize,strTableName);break;
-			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize,strTableName);break;
+			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
+			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
+			case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
+			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
+			case "java.lang.String":bTree=new BPTree<String>(nodeSize);break;
+			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
 			default :throw new DBAppException("I've never seen this colType in my life");
 		}
 		Table table =deserialize(strTableName);
