@@ -1,6 +1,12 @@
 package kalabalaDB;
 import java.io.*;
 import java.util.*;
+
+import BPTree.BPTree;
+import BPTree.GeneralReference;
+import BPTree.OverflowPage;
+import BPTree.OverflowReference;
+import BPTree.Ref;
 public class Page implements Serializable {
 	private Vector<Tuple> tuples;
 	private String pageName;
@@ -123,12 +129,10 @@ public class Page implements Serializable {
 	public void deleteInPage(Hashtable<String, Object> htblColNameValue, Vector<Integer> attributeIndex) {
 		
 		for (int i = 0; i < tuples.size(); i++) {
-			Vector x = tuples.get(i).getAttributes(); // is it serialized?
+			Vector x = tuples.get(i).getAttributes();
 			Set<String> keys = htblColNameValue.keySet();
 			int j = 0;
 			for (String key : keys) {
-				// if(!x.get(attributeIndex.get(j)).equals(keys.g))
-
 				if (j == attributeIndex.size()) {
 					break;
 				}
@@ -143,6 +147,183 @@ public class Page implements Serializable {
 			}
 		}
 	}
+	
+	public void deleteInPageforRef( Vector<String[]> metaOfTable,int primarypos,String clusteringKey
+			,Hashtable<String,BPTree> colNameBTreeIndex,Hashtable<String, Object> htblColNameValue,ArrayList<String> allIndices , boolean isCluster) throws DBAppException
+	{
+		int index = 0;
+		int lastOcc = tuples.size();
+		if(isCluster)
+		{
+			lastOcc = bsLastOcc((Comparable) htblColNameValue.get(clusteringKey), primarypos)+1;
+			for(index = lastOcc-1;index>=0 && tuples.get(index).getAttributes().get(primarypos).equals(htblColNameValue.get(clusteringKey)); index--);
+			index++;
+			
+
+		}
+		
+		ArrayList<String> x = new ArrayList<>();
+		for(int i = 0 ; i < metaOfTable.size();i++)
+		{
+			x.add(metaOfTable.get(i)[1]);
+		}
+		for(int k = index; k < lastOcc;k++)
+		{
+			Tuple t = tuples.get(k);
+			if(validDelete(x, htblColNameValue, t))
+			{
+				for(int i = 0;i<tuples.get(k).getAttributes().size();i++)
+				{
+					for(int j = 0 ; j < allIndices.size() ; j++)
+					{
+						if(allIndices.get(j).equals(x.get(i)))
+						{
+							BPTree bpTree = colNameBTreeIndex.get(allIndices.get(j));
+							GeneralReference gr = bpTree.search((Comparable) tuples.get(k).getAttributes().get(i));
+							if(gr instanceof Ref)
+							{
+								bpTree.delete((Comparable) tuples.get(k).getAttributes().get(i));
+							}
+							else
+							{
+								OverflowReference ofr = (OverflowReference)gr;
+								deleteFromOverFlow(ofr,this.pageName,bpTree,tuples.get(k).getAttributes().get(i));
+							}
+						}
+					}
+				}
+				tuples.remove(k);
+				k--;
+				
+			}
+			
+		}
+		
+		
+	}
+	public void deleteFromOverFlow(OverflowReference ofr , String pageName , BPTree bpTree , Object value) throws DBAppException
+	{
+		OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
+		for(int i = 0 ; i < ofp.getRefs().size();i++)
+		{
+			if(ofp.getRefs().get(i).equals(pageName))
+			{
+				ofp.getRefs().remove(i);
+				if(ofp.getRefs().size() == 0)
+				{
+					if(ofp.getNext()==null)
+					{
+						bpTree.delete((Comparable) value);
+					}
+					else
+					{
+						ofr.setFirstPageName(ofp.getNext());
+					}
+					File f = new File("data/" + ofp.getPageName() + ".class");
+					f.delete();
+				}
+				else
+				{
+					ofp.serialize();
+				}
+				return;
+			}
+		}
+		if(ofp.getNext() != null)
+		{
+			OverflowPage nextOFP = ofp.deserialize(ofp.getNext());
+			OverflowPage before = ofp;
+			boolean notNull = true;
+			while(notNull)
+			{
+				for(int i = 0 ; i < nextOFP.getRefs().size();i++)
+				{
+					if(nextOFP.getRefs().get(i).equals(pageName))
+					{
+						nextOFP.getRefs().remove(i);
+						if(nextOFP.getRefs().size()==0)
+						{
+							before.setNext(nextOFP.getNext());
+							before.serialize();
+							File f = new File("data/" + nextOFP.getPageName() + ".class");
+							f.delete();
+							notNull = false;
+						}
+						else
+						{
+							nextOFP.serialize();
+							before.serialize();
+							notNull = false;
+						}
+						return;
+					}
+				}
+				if(nextOFP.getNext()!=null)
+				{
+					before = nextOFP;
+					nextOFP = nextOFP.deserialize(nextOFP.getNext());
+				}
+				else
+				{
+					notNull = false;
+				}
+			}
+		}
+		
+	}
+	
+	public void deleteInPageWithBS(Hashtable<String, Object> htblColNameValue ,Vector<String[]> metaOfTable, String clusteringKey , int primaryPos)
+	{
+		int index = bsLastOcc((Comparable)htblColNameValue.get(clusteringKey), primaryPos);
+		ArrayList<String> x = new ArrayList<>();
+		for(int i = 0 ; i < metaOfTable.size();i++)
+		{
+			x.add(metaOfTable.get(i)[1]);
+		}
+		for(int i = index ; i >=0 ; i--)
+		{
+			Tuple t = tuples.get(i);
+			if(t.getAttributes().get(primaryPos)==htblColNameValue.get(clusteringKey))
+			{
+				if(validDelete(x, htblColNameValue, t))
+				{
+					tuples.remove(i);
+					i--;
+				}
+			}
+			else
+			{
+				break;
+			}
+				
+		}
+		
+	}
+	
+	public boolean validDelete(ArrayList<String> x,Hashtable<String, Object> htblColNameValue , Tuple t)
+	{
+		Set<String> keys =  htblColNameValue.keySet();
+		ArrayList<String> y = new ArrayList<>();
+		for(String key : keys)
+		{
+			y.add(key);
+		}
+		for(int i = 0 ; i < y.size() ; i++ )
+		{
+			for(int j = 0 ; j < x.size();j++)
+			{
+				if(y.get(i)==x.get(j))
+				{
+					if(!(htblColNameValue.get(y.get(i))== t.getAttributes().get(j)))
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (Object o : tuples) {
