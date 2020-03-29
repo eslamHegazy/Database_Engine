@@ -222,34 +222,45 @@ public class Page implements Serializable {
 				return;
 			}
 		}
-		OverflowPage nextOFP = ofp.deserialize(ofp.getNext());
-		OverflowPage before = ofp;
-		boolean notNull = true;
-		while(notNull)
+		if(ofp.getNext() != null)
 		{
-			for(int i = 0 ; i < nextOFP.getRefs().size();i++)
+			OverflowPage nextOFP = ofp.deserialize(ofp.getNext());
+			OverflowPage before = ofp;
+			boolean notNull = true;
+			while(notNull)
 			{
-				if(nextOFP.getRefs().get(i).equals(pageName))
+				for(int i = 0 ; i < nextOFP.getRefs().size();i++)
 				{
-					nextOFP.getRefs().remove(i);
-					if(nextOFP.getRefs().size()==0)
+					if(nextOFP.getRefs().get(i).equals(pageName))
 					{
-						before.setNext(nextOFP.getNext());
-						File f = new File("data/" + nextOFP.getPageName() + ".class");
-						f.delete();
-						notNull = false;
+						nextOFP.getRefs().remove(i);
+						if(nextOFP.getRefs().size()==0)
+						{
+							before.setNext(nextOFP.getNext());
+							File f = new File("data/" + nextOFP.getPageName() + ".class");
+							f.delete();
+							notNull = false;
+						}
+						else
+						{
+							nextOFP.serialize();
+							notNull = false;
+						}
+						return;
 					}
-					else
-					{
-						nextOFP.serialize();
-						notNull = false;
-					}
-					return;
+				}
+				if(nextOFP.getNext()!=null)
+				{
+					before = nextOFP;
+					nextOFP = nextOFP.deserialize(nextOFP.getNext());
+				}
+				else
+				{
+					notNull = false;
 				}
 			}
-			before = nextOFP;
-			nextOFP = nextOFP.deserialize(nextOFP.getNext());
 		}
+		
 	}
 	
 	public void deleteInPageWithBS(Hashtable<String, Object> htblColNameValue ,Vector<String[]> metaOfTable, String clusteringKey , int primaryPos)
