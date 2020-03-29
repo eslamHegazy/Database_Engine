@@ -187,7 +187,7 @@ public class Page implements Serializable {
 							else
 							{
 								OverflowReference ofr = (OverflowReference)gr;
-								deleteFromOverFlow(ofr,this.pageName);
+								deleteFromOverFlow(ofr,this.pageName,bpTree,tuples.get(k).getAttributes().get(i));
 							}
 						}
 					}
@@ -201,7 +201,7 @@ public class Page implements Serializable {
 		
 		
 	}
-	public void deleteFromOverFlow(OverflowReference ofr , String pageName) throws DBAppException
+	public void deleteFromOverFlow(OverflowReference ofr , String pageName , BPTree bpTree , Object value) throws DBAppException
 	{
 		OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
 		for(int i = 0 ; i < ofp.getRefs().size();i++)
@@ -211,7 +211,14 @@ public class Page implements Serializable {
 				ofp.getRefs().remove(i);
 				if(ofp.getRefs().size() == 0)
 				{
-					ofr.setFirstPageName(ofp.getNext());
+					if(ofp.getNext()==null)
+					{
+						bpTree.delete((Comparable) value);
+					}
+					else
+					{
+						ofr.setFirstPageName(ofp.getNext());
+					}
 					File f = new File("data/" + ofp.getPageName() + ".class");
 					f.delete();
 				}
@@ -237,6 +244,7 @@ public class Page implements Serializable {
 						if(nextOFP.getRefs().size()==0)
 						{
 							before.setNext(nextOFP.getNext());
+							before.serialize();
 							File f = new File("data/" + nextOFP.getPageName() + ".class");
 							f.delete();
 							notNull = false;
@@ -244,6 +252,7 @@ public class Page implements Serializable {
 						else
 						{
 							nextOFP.serialize();
+							before.serialize();
 							notNull = false;
 						}
 						return;
