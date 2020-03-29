@@ -275,6 +275,7 @@ public class Table implements Serializable {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void deleteInTable(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable,
 			String clusteringKey) throws DBAppException {
 
@@ -299,7 +300,7 @@ public class Table implements Serializable {
 				Page p = deserialize(x.getPage() + "");
 				p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameBTreeIndex, htblColNameValue,
 						allIndices, isCluster);
-				p.serialize();
+				setMinMax(p);
 
 			} else {
 				OverflowReference x = (OverflowReference) pageReference;
@@ -310,13 +311,12 @@ public class Table implements Serializable {
 					Page p = deserialize(ref.getPage() + "");
 					p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameBTreeIndex, htblColNameValue,
 							allIndices, isCluster);
-					p.serialize();
+					setMinMax(p);
 				}
 
 			}
 
 		} else if (clusteringKey != null) {
-			// TODO
 			for (int i = 0; i < pages.size(); i++) {
 				if (((Comparable) htblColNameValue.get(clusteringKey)).compareTo(((Comparable) min.get(i))) < 0) {
 					break;
@@ -326,16 +326,28 @@ public class Table implements Serializable {
 								.compareTo(((Comparable) max.get(i))) <= 0) {
 
 					Page page = deserialize(pages.get(i));
-					page.deleteInPageWithBS(htblColNameValue);
-					page.serialize();
+					page.deleteInPageWithBS(htblColNameValue, metaOfTable, clusteringKey, primaryPos);
+					if (page.getTuples().size() == 0) {
+						File f = new File("data/" + page.getPageName() + ".class");
+						f.delete();
+						pages.remove(i);
+						min.remove(i);
+						max.remove(i);
+						i--;
+
+					} else {
+						Object minn = page.getTuples().get(0).getAttributes().get(primaryPos);
+						Object maxx = page.getTuples().get(page.size() - 1).getAttributes().get(primaryPos);
+						min.setElementAt(minn, i);
+						max.setElementAt(maxx, i);
+						page.serialize();
+					}
 					{
 					}
 
 				}
 			}
-		}
-		else
-		{
+		} else {
 			Vector<Integer> attributeIndex = new Vector();
 			Set<String> keys = htblColNameValue.keySet();
 			for (String key : keys) {
@@ -352,33 +364,28 @@ public class Table implements Serializable {
 				String pageName = pages.get(i);
 				Page p = deserialize(pageName);
 				try {
-					FileInputStream fileIn = new FileInputStream("data/"+pageName + ".class");
+					FileInputStream fileIn = new FileInputStream("data/" + pageName + ".class");
 					ObjectInputStream in = new ObjectInputStream(fileIn);
 					Page xx = (Page) in.readObject();
 					in.close();
 					fileIn.close();
-				}
-				catch(ClassNotFoundException e) {
+				} catch (ClassNotFoundException e) {
 					throw new DBAppException("Class Not Found Exception");
-				}
-				catch(IOException e) {
+				} catch (IOException e) {
 					throw new DBAppException("IO Exception");
 				}
-				p.deleteInPage(htblColNameValue,attributeIndex);
-				if(p.getTuples().size()==0)
-				{
-					File f = new File("data/"+pageName + ".class");
+				p.deleteInPage(htblColNameValue, attributeIndex);
+				if (p.getTuples().size() == 0) {
+					File f = new File("data/" + pageName + ".class");
 					f.delete();
 					pages.remove(i);
 					min.remove(i);
 					max.remove(i);
 					i--;
-					
-				}
-				else
-				{
-					Object minn= p.getTuples().get(0).getAttributes().get(primaryPos);
-					Object maxx= p.getTuples().get(p.size()-1).getAttributes().get(primaryPos);
+
+				} else {
+					Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
+					Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
 					min.setElementAt(minn, i);
 					max.setElementAt(maxx, i);
 					p.serialize();
@@ -437,6 +444,29 @@ public class Table implements Serializable {
 				return false;
 		}
 		return true;
+	}
+
+	public void setMinMax(Page p) throws DBAppException {
+		String pageName = p.getPageName();
+		for (int i = 0; i < pages.size(); i++) {
+			if (pages.get(i).equals(pageName)) {
+				if (p.getTuples().size() == 0) {
+					File f = new File("data/" + pageName + ".class");
+					f.delete();
+					pages.remove(i);
+					min.remove(i);
+					max.remove(i);
+					i--;
+
+				} else {
+					Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
+					Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
+					min.setElementAt(minn, i);
+					max.setElementAt(maxx, i);
+					p.serialize();
+				}
+			}
+		}
 	}
 
 	public ArrayList<String> indicesIHave(Hashtable<String, Object> htblColNameValue,

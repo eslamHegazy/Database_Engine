@@ -337,7 +337,15 @@ public class DBApp {
 			if (line[0].equals(strTableName)) {
 				if(line[3].equals("True"))
 				{
-					return line[3];
+					Set<String> keyss = htblColNameValue.keySet();
+					for(String key : keyss)
+					{
+						if(key == line[1])
+						{
+							return line[3];
+						}
+					}
+					
 				}
 			}
 		}

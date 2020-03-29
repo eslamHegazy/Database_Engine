@@ -17,7 +17,10 @@ import kalabalaDB.Page;
 
 //TODO serializing overflowpages
 public class OverflowPage implements Serializable{
-	private String next; //esm l nextPage
+	private String next; //the name of the overFlowPage
+	public void setNext(String next) {
+		this.next = next;
+	}
 	private Vector<Ref> refs;
 	public Vector<Ref> getRefs() {
 		return refs;

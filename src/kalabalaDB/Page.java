@@ -187,7 +187,6 @@ public class Page implements Serializable {
 							else
 							{
 								OverflowReference ofr = (OverflowReference)gr;
-								OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
 								deleteFromOverFlow(ofr,this.pageName);
 							}
 						}
@@ -199,16 +198,85 @@ public class Page implements Serializable {
 			}
 			
 		}
-		//TODO Check page not empty.
+		
 		
 	}
-	public void deleteFromOverFlow(OverflowReference ofr , String pageName)
+	public void deleteFromOverFlow(OverflowReference ofr , String pageName) throws DBAppException
 	{
-		//TODO
+		OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
+		for(int i = 0 ; i < ofp.getRefs().size();i++)
+		{
+			if(ofp.getRefs().get(i).equals(pageName))
+			{
+				ofp.getRefs().remove(i);
+				if(ofp.getRefs().size() == 0)
+				{
+					ofr.setFirstPageName(ofp.getNext());
+					File f = new File("data/" + ofp.getPageName() + ".class");
+					f.delete();
+				}
+				else
+				{
+					ofp.serialize();
+				}
+				return;
+			}
+		}
+		OverflowPage nextOFP = ofp.deserialize(ofp.getNext());
+		OverflowPage before = ofp;
+		boolean notNull = true;
+		while(notNull)
+		{
+			for(int i = 0 ; i < nextOFP.getRefs().size();i++)
+			{
+				if(nextOFP.getRefs().get(i).equals(pageName))
+				{
+					nextOFP.getRefs().remove(i);
+					if(nextOFP.getRefs().size()==0)
+					{
+						before.setNext(nextOFP.getNext());
+						File f = new File("data/" + nextOFP.getPageName() + ".class");
+						f.delete();
+						notNull = false;
+					}
+					else
+					{
+						nextOFP.serialize();
+						notNull = false;
+					}
+					return;
+				}
+			}
+			before = nextOFP;
+			nextOFP = nextOFP.deserialize(nextOFP.getNext());
+		}
 	}
 	
-	public void deleteInPageWithBS(Hashtable<String, Object> htblColNameValue)
+	public void deleteInPageWithBS(Hashtable<String, Object> htblColNameValue ,Vector<String[]> metaOfTable, String clusteringKey , int primaryPos)
 	{
+		int index = bsLastOcc((Comparable)htblColNameValue.get(clusteringKey), primaryPos);
+		ArrayList<String> x = new ArrayList<>();
+		for(int i = 0 ; i < metaOfTable.size();i++)
+		{
+			x.add(metaOfTable.get(i)[1]);
+		}
+		for(int i = index ; i >=0 ; i--)
+		{
+			Tuple t = tuples.get(i);
+			if(t.getAttributes().get(primaryPos)==htblColNameValue.get(clusteringKey))
+			{
+				if(validDelete(x, htblColNameValue, t))
+				{
+					tuples.remove(i);
+					i--;
+				}
+			}
+			else
+			{
+				break;
+			}
+				
+		}
 		
 	}
 	

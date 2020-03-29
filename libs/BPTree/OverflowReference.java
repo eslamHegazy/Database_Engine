@@ -9,6 +9,9 @@ import kalabalaDB.DBAppException;
 
 public class OverflowReference extends GeneralReference implements Serializable 
 	{
+	public void setFirstPageName(String firstPageName) {
+		this.firstPageName = firstPageName;
+	}
 	private String firstPageName;
 	//done (ta2riban) insert , delete and update pass the key and page
 	
