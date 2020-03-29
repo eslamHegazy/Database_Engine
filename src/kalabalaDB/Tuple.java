@@ -5,7 +5,12 @@ import java.util.*;
 
 public class Tuple implements Serializable {
 	private Vector attributes = new Vector(); // Transient?
-
+    
+	public boolean equals(Object o) {
+		Tuple x=(Tuple)o;
+		Tuple y=(Tuple)this;
+		return x.attributes.get(attributes.size()-1).equals(y.attributes.get(attributes.size()-1));
+	}
 	public void addAttribute(Object o) {
 		attributes.add(o);
 	}

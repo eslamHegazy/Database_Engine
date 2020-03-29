@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+
 import kalabalaDB.DBAppException;
 
 public class BPTree<T extends Comparable<T>> implements Serializable{
@@ -153,5 +154,14 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 		search(key);
 		return null;
 		
+	}
+	public BPTreeLeafNode getLeftmostLeaf() throws DBAppException {
+		BPTreeNode<T> curNode=root;
+		while(!(curNode instanceof BPTreeLeafNode)) {
+			BPTreeInnerNode <T> x=(BPTreeInnerNode)curNode;
+			curNode=x.getFirstChild();
+		}
+        
+		return (BPTreeLeafNode) curNode;
 	}
 }
