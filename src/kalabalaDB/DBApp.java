@@ -517,6 +517,7 @@ public class DBApp {
 		}
 		csvWriter.flush();
 		csvWriter.close();
+
 		switch(colType){
 			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
 			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;

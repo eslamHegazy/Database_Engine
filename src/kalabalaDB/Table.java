@@ -14,7 +14,7 @@ public class Table implements Serializable {
 	/**
 	 * 
 	 */
-	
+
 	private Vector<String> pages = new Vector();
 	private int MaximumRowsCountinPage;
 	private Vector<Object> min = new Vector<>();
@@ -22,16 +22,16 @@ public class Table implements Serializable {
 	private String tableName;
 	private String strClusteringKey;
 	private int primaryPos;
+
 	private Hashtable<String, BPTree> colNameBTreeIndex = new Hashtable<>();
 
 	public Hashtable<String, BPTree> getColNameBTreeIndex() {
 		return colNameBTreeIndex;
 	}
-
 	public Ref searchWithCluster(Comparable key, BPTree b) throws DBAppException {
 		Ref ref = b.searchRequiredReference(key); // NOT IMPLEMENTED
 		if (ref == null) { // returns null if key is the least value in tree
-			return new Ref(Integer.parseInt(pages.get(0).substring(tableName.length())));
+			return new Ref(pages.get(0));
 		}
 		return ref;
 	}
@@ -135,9 +135,10 @@ public class Table implements Serializable {
 		vs.insertElementAt(str, n);
 	}
 
-	public void addInPage(int curr, Tuple x, String keyType, String keyColName, int nodeSize)
-			throws DBAppException, IOException {
-		// System.out.println(x+" "+curr);
+
+	public void addInPage(int curr, Tuple x, String keyType, String keyColName, int nodeSize) throws DBAppException, IOException {
+		// System.out.println(x+" "+curr);\
+
 		if (curr < pages.size()) {
 			String pageName = pages.get(curr);
 
@@ -146,18 +147,20 @@ public class Table implements Serializable {
 				// System.out.println("blboz2");
 				p.insertIntoPage(x, primaryPos);
 				// System.out.println("blboz3");
+
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
 				min.remove(curr);
 				addInVector(min, minn, curr);
 				max.remove(curr);
 				addInVector(max, maxx, curr);
+				
 				if (colNameBTreeIndex.containsKey(keyColName)) {
 					BPTree bTree = colNameBTreeIndex.get(keyColName);
-					int index = getIndexNumber(p.getPageName(), tableName.length());
-					Ref recordReference = new Ref(index);
+					Ref recordReference = new Ref(p.getPageName());
 					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 					colNameBTreeIndex.put(keyColName, bTree);
+
 				}
 				p.serialize();
 			} else {
@@ -165,14 +168,15 @@ public class Table implements Serializable {
 				p.insertIntoPage(x, primaryPos);
 				if (colNameBTreeIndex.containsKey(keyColName)) {
 					BPTree bTree = colNameBTreeIndex.get(keyColName);
-					int index = getIndexNumber(p.getPageName(), tableName.length());
-					Ref recordReference = new Ref(index);
+					Ref recordReference = new Ref(p.getPageName());
 					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 					colNameBTreeIndex.put(keyColName, bTree);
 				}
 				Tuple t = p.getTuples().remove(p.size() - 1);
+
 				if (colNameBTreeIndex.containsKey(keyColName)) {
 					BPTree bTree = colNameBTreeIndex.get(keyColName);
+
 					bTree.delete((Comparable) t.getAttributes().get(primaryPos));
 				}
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
@@ -190,8 +194,7 @@ public class Table implements Serializable {
 			p.insertIntoPage(x, primaryPos);
 			if (colNameBTreeIndex.containsKey(keyColName)) {
 				BPTree bTree = colNameBTreeIndex.get(keyColName);
-				int index = getIndexNumber(p.getPageName(), tableName.length());
-				Ref recordReference = new Ref(index);
+				Ref recordReference = new Ref(p.getPageName());
 				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 				colNameBTreeIndex.put(keyColName, bTree);
 			}
@@ -204,29 +207,27 @@ public class Table implements Serializable {
 		}
 
 	}
-	// public static void createBPTreeGivinType(BPTree bTree,String colType,int
-	// nodeSize) throws DBAppException{
-	// switch(colType){
-	// case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
-	// case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
-	// case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
-	// case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
-	// case "java.awt.Polygon
-	// ":bTree=new BPTree<Polygons>(nodeSize);break;
-	// default :throw new DBAppException("I've never seen this colType in my life");
-	// }
-	// }
 
-	public void insertSorted(Tuple x, Object keyV, String keyType, String keyColName, int nodeSize, ArrayList colNames)
-			throws DBAppException, IOException {
+//	public static void createBPTreeGivinType(BPTree bTree,String colType,int nodeSize) throws DBAppException{
+//		switch(colType){
+//		case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
+//		case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
+//		case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
+//		case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
+//		case "java.awt.Polygon
+//	":bTree=new BPTree<Polygons>(nodeSize);break;
+//		default :throw new DBAppException("I've never seen this colType in my life");
+//		}
+//	}
 
-		if (pages.size() == 0) {
-			Page p = new Page(getNewPageName());
+	public void insertSorted(Tuple x, Object keyV,String keyType,String keyColName,int nodeSize,ArrayList colNames) throws DBAppException, IOException{
+		
+		if(pages.size()==0){
+			Page p=new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
 			if (colNameBTreeIndex.containsKey(keyColName)) {
 				BPTree bTree = colNameBTreeIndex.get(keyColName);
-				int index = getIndexNumber(p.getPageName(), tableName.length());
-				Ref recordReference = new Ref(index);
+				Ref recordReference = new Ref(p.getPageName());
 				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 				colNameBTreeIndex.put(keyColName, bTree);
 			}
@@ -507,6 +508,7 @@ public class Table implements Serializable {
 		return allTableIndices;
 	}
 
+
 	public boolean clusteringKeyHasIndex(ArrayList<String> indices, String clusteringKey) {
 		if (clusteringKey != null) {
 			for (int i = 0; i < indices.size(); i++) {
@@ -528,10 +530,10 @@ public class Table implements Serializable {
 		}
 		for (String str : pages) {
 			Page p = deserialize(str);
-			int index = getIndexNumber(p.getPageName(), tableName.length());
+			
 			int i = 0;
 			for (Tuple t : p.getTuples()) {
-				Ref recordReference = new Ref(index);
+				Ref recordReference = new Ref(p.getPageName());
 				bTree.insert((Comparable) t.getAttributes().get(colPosition), recordReference);
 				i++;
 			}
@@ -576,7 +578,6 @@ public class Table implements Serializable {
 		case "and":res=andSets(current,next);break;
 		case "xor":res=xorSets(current,next);break;
 		default:throw new DBAppException("wrong operation type "+string);
-		
 		}
 		return res;
 	}
@@ -662,6 +663,7 @@ public class Table implements Serializable {
 		return res;
 		
 	}
+
 	private ArrayList<Tuple> mtOrMtlLinear(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException {
 		ArrayList<Tuple> res=new ArrayList();
 		for(int i=pages.size()-1;i>=0;i++) {
@@ -776,6 +778,7 @@ public class Table implements Serializable {
 				   for(Ref r:ovp.getRefs())
 				       ref.add(r);
 				   ovp=ovp.getNext1();
+
 			   }
 		   }
  		return ref;
@@ -820,4 +823,27 @@ public class Table implements Serializable {
 	
 
 
+//	private void writeObject(ObjectOutputStream out) throws IOException{
+//		out.writeObject(pages);
+//		out.writeObject(MaximumRowsCountinPage);
+//		out.writeObject(min);
+//		out.writeObject(max);
+//		out.writeObject(tableName);
+//		out.writeObject(strClusteringKey);
+//		out.writeObject(primaryPos);
+//		out.writeObject(new HashtableSerializer(colNameBTreeIndex));
+//	}
+//	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException{
+//		this.pages=(Vector<String>) in.readObject();
+//		this.MaximumRowsCountinPage= (int) in.readObject();
+//		this.min=(Vector<Object>) in.readObject();
+//		this.max=(Vector<Object>) in.readObject();
+//		this.tableName=(String) in.readObject();
+//		this.strClusteringKey=(String) in.readObject();
+//		this.primaryPos=(int) in.readObject();
+//		this.colNameBTreeIndex = ((HashtableSerializer)(in.readObject())).getHashtable();
+//	}
+		
+	
+	
 }

@@ -15,9 +15,10 @@ public class TestBPTree {
 		Scanner sc = new Scanner(System.in);
 		for(int i=0;i<15;i++)
 		{
-			tree.insert(i, new Ref(i));
+
+			tree.insert(i, new Ref("asd"));
 		}
-		tree.insert(3, new Ref(16));
+		tree.insert(3, new Ref("asd"));
 		
 		tree.toString();
 		sc.close();

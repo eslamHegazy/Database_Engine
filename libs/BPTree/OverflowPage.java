@@ -17,10 +17,9 @@ import kalabalaDB.Page;
 
 //TODO serializing overflowpages
 public class OverflowPage implements Serializable{
+
 	private String next; //the name of the overFlowPage
-
 	private Vector<Ref> refs;
-
 
 	private int maxSize;// node size
 	private String pageName;
@@ -40,6 +39,7 @@ public class OverflowPage implements Serializable{
 	public void setRefs(Vector<Ref> refs) {
 		this.refs = refs;
 	}
+
 	public void addRecord(Ref recordRef) throws DBAppException, IOException {
 		if (refs.size()<maxSize) 
 		{
@@ -59,11 +59,13 @@ public class OverflowPage implements Serializable{
 			nextPage.serialize();
 		}
 	}
+
 	public String getNext() {
 		return next;
 	}
 	public OverflowPage getNext1() throws DBAppException {
 		if(next==null)
+
 			return null;
 		return deserialize(next);
 	}
