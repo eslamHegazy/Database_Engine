@@ -31,6 +31,12 @@ public class OverflowPage implements Serializable{
 		String lastin=getFromMetaDataTree();
 		pageName="Node"+lastin;	
 	} 
+	public Vector<Ref> getRefs() {
+		return refs;
+	}
+	public void setRefs(Vector<Ref> refs) {
+		this.refs = refs;
+	}
 	public void addRecord(Ref recordRef) throws DBAppException, IOException {
 		if (refs.size()<maxSize) 
 		{
@@ -51,10 +57,18 @@ public class OverflowPage implements Serializable{
 		}
 	}
 	
+	public OverflowPage getNext() throws DBAppException {
+		if(next.equals(""))
+			return null;
+		return deserialize(next);
+	}
+	public void setNext(String next) {
+		this.next = next;
+	}
 	public String getPageName() {
 		return pageName;
 	}
-	public boolean updateRef(int oldpage, int newpage) throws DBAppException  {
+	public boolean updateRef(String oldpage, String newpage) throws DBAppException  {
 		int i=0;
 		for (;i<refs.size()&&refs.get(i).getPage()<=oldpage;i++);
 		//i--;

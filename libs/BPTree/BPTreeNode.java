@@ -27,6 +27,13 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	protected int index;		//for printing the tree
 	private boolean isRoot;
 	private static int nextIdx = 0;
+	public int getNumberOfKeys() {
+		return numberOfKeys;
+	}
+
+	public void setNumberOfKeys(int numberOfKeys) {
+		this.numberOfKeys = numberOfKeys;
+	}
 	protected String nodeName;
 	//protected int lastin;
 	//protected String treeName;

@@ -4,14 +4,18 @@ import java.io.Serializable;
 
 public class Ref extends GeneralReference implements Serializable
 {
-	
+	public boolean equals(Object o) {
+		Ref x=(Ref)o;
+		Ref y=(Ref)this;
+		return (x.pageNo).equals(y.pageNo);
+	}
 	/**
 	 * This class represents a pointer to the record. It is used at the leaves of the B+ tree 
 	 */
 	private static final long serialVersionUID = 1L;
-	private int pageNo;//, indexInPage;
+	private String pageNo;//, indexInPage;
 	
-	public Ref(int pageNo)
+	public Ref(String pageNo)
 	{
 		this.pageNo = pageNo;
 //		this.indexInPage = indexInPage;
@@ -20,12 +24,12 @@ public class Ref extends GeneralReference implements Serializable
 	/**
 	 * @return the page at which the record is saved on the hard disk
 	 */
-	public int getPage()
+	public String getPage()
 	{
 		return pageNo;
 	}
 	
-	public void setPage(int pageNo) {
+	public void setPage(String pageNo) {
 		this.pageNo=pageNo;
 	}
 	
@@ -49,8 +53,7 @@ public class Ref extends GeneralReference implements Serializable
 
 	
 	
-	public void updateRef(int oldpage, int newpage) {
-		// TODO:
+	public void updateRef(String oldpage, String newpage) {
 		pageNo=newpage;
 		
 	}
