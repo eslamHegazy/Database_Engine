@@ -35,9 +35,9 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 		root.setRoot(true);
 		//root.treeName=this.treeName;
 	}
-	public void updateRef(String oldpage,String newpage,T key) throws DBAppException, IOException {
-	GeneralReference gf=search(key);
-	gf.updateRef(oldpage, newpage);
+	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException, IOException {
+		GeneralReference gf=search(key);
+		gf.updateRef(oldpage, newpage, tableNameLength);
 	}
 	
 	

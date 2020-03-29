@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Vector;
 
 import kalabalaDB.DBAppException;
@@ -75,9 +76,10 @@ public class OverflowPage implements Serializable{
 	public String getPageName() {
 		return pageName;
 	}
-	public boolean updateRef(String oldpage, String newpage) throws DBAppException  {
+	public boolean updateRef(String oldpage, String newpage, int tableNameLength) throws DBAppException  {
 		int i=0;
-		for (;i<refs.size()&&refs.get(i).getPage()<=oldpage;i++);
+		int old = Integer.parseInt(oldpage.substring(tableNameLength));
+		for (;i<refs.size()&&Integer.parseInt(refs.get(i).getPage().substring(tableNameLength))<=old;i++);
 		//i--;
 		if (i==0) {
 			return false;
@@ -87,7 +89,7 @@ public class OverflowPage implements Serializable{
 		}
 		if (i==refs.size()) {
 			OverflowPage nextPage=deserialize(next);
-			if (nextPage!=null && nextPage.updateRef(oldpage, newpage)) {
+			if (nextPage!=null && nextPage.updateRef(oldpage, newpage, tableNameLength)) {
 				nextPage.serialize();
 				return true;
 			}
@@ -190,4 +192,20 @@ public class OverflowPage implements Serializable{
 		
 	}
 	
+	public ArrayList<Ref> ALLgetRefs() throws DBAppException {
+		ArrayList<Ref> result = new ArrayList<Ref>(); 
+		result.addAll(refs);
+		if(next != null)
+		{
+			try
+			{
+			result.addAll(deserialize(next).refs);
+			}
+			catch(DBAppException e)
+			{
+				throw new DBAppException("can't find overflow page in disk");
+			}
+		}	
+		return result;
+	}
 }

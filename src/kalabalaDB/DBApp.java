@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import BPTree.BPTree;
+import BPTree.GeneralReference;
+import BPTree.Ref;
 
 public class DBApp {
 	// static Vector tables=new Vector();
@@ -207,16 +209,24 @@ public class DBApp {
 	}
 
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
-			throws DBAppException {
+			throws DBAppException
+	{
 		Table y = deserialize(strTableName);
 		try {
 			Vector meta = readFile("data/metadata.csv");
 			Comparable key = null;
-			for (Object O : meta) {
+			boolean key_index = false;
+			String key_column_name = "";
+			// get the key from the metadata and type cast it
+			for (Object O : meta) 
+			{
 				String[] curr = (String[]) O;
-				if (curr[0].equals(strTableName) && curr[3].equals("True")) // search in metadata for the table name and the
-																			// key
+				if (curr[0].equals(strTableName) && curr[3].equals("True")) // search in metadata for the table name and the													// key
 				{
+					key_column_name = curr[1];
+					if(curr[3].equals("True"))
+						key_index = true;
+					
 					if (curr[2].equals("java.lang.Integer"))
 						key = Integer.parseInt(strClusteringKey);
 					else if (curr[2].equals("java.lang.Double"))
@@ -233,28 +243,37 @@ public class DBApp {
 				}
 			}
 
-			ArrayList<String> types = new ArrayList<String>();
-			ArrayList<String> colnames = new ArrayList<String>();
-	
-			for (Object O : meta) {
+			// get the full information about the table
+			ArrayList<String> types = new ArrayList<String>();		// types of the columns
+			ArrayList<String> colnames = new ArrayList<String>(); 	// hold the names of the columns
+			ArrayList<Boolean> indexed = new ArrayList<Boolean>();	// hold if the column is indexed or not
+			
+			// get the full information about the table
+			for (Object O : meta) 
+			{
 				String[] curr = (String[]) O;
 				if (curr[0].equals(strTableName)) // search in metadata for the table name and the key
 				{
 					String name = curr[1];
 					String type = curr[2];
+					boolean indx = Boolean.parseBoolean(curr[4]);
 					types.add(type);
 					colnames.add(name);
+					indexed.add(indx);
 				}
 			}
 			
 			// check validity of the hashtable entries
 			Set<String> hashtableKeys = htblColNameValue.keySet();
-			for (String str : hashtableKeys) {
-				if (!colnames.contains(str)) {
+			for (String str : hashtableKeys) 
+			{
+				if (!colnames.contains(str)) 
+				{
 //					System.out.println("Invalid column types");
 					throw new DBAppException("Invalid column types");
 //					return;
 				}
+				
 				int pos = colnames.indexOf(str);
 				Class colType = Class.forName(types.get(pos));
 				Class parameterType = htblColNameValue.get(str).getClass();
@@ -263,35 +282,111 @@ public class DBApp {
 					colType = Class.forName("kalabalaDB.Polygons");
 				}
 				System.out.println(colType+" "+parameterType);
+				
 				if (!colType.equals(parameterType)) {
-					throw new DBAppException("Data types do not match with those of the actual column of the table");
+					throw new DBAppException("Data types do not match with those of the actual column of the table");	
 				}
+			}		
+			
+			
+			// if the key is indexed use binary search
+			if(key_index)
+			{
+				
+				BPTree key_tree = y.getColNameBTreeIndex().get(key_column_name);
+				GeneralReference GR = key_tree.search(key);  // the result of the search in the B+ tree
+				ArrayList<Ref> references = GR.getALLRef();  // the entire references where the key exists
+				HashSet<String> hs = new HashSet<String>();	 // the names of pages where there is a key	
+				
+				for(Ref r: references)
+					hs.add(r.getPage());
+				
+				for(String p_name:hs)
+				{
+					Page p = Table.deserialize(p_name); 
+					int i=0;
+					while (i < p.getTuples().size()) 
+					{
+						Tuple current = p.getTuples().get(i);
+		
+						if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
+							continue;
+						
+						// loop over the current tuple 
+						for (int k = 0; k < current.getAttributes().size()-1; k++) 
+						{
+							System.out.printf("k=%d, %s\n",k,colnames.get(k));
+							if (htblColNameValue.containsKey(colnames.get(k))) 
+							{
+								System.out.println(k+", before :"+current);
+								current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
+								System.out.println(k+", after :"+current);
+								// update the trees
+								if(indexed.get(k))
+								{
+									BPTree t = y.getColNameBTreeIndex().get(colnames.get(k));
+									Comparable old_value = (Comparable)current.getAttributes().get(k);
+									Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
+									
+									t.delete(old_value, p_name);
+									t.insert(new_value, new Ref(p_name));
+								}
+							
+							}
+							
+						}
+						Date date = new Date();
+						current.getAttributes().setElementAt(date, current.getAttributes().size()-1);
+		
+						i++;
+					}
+					System.out.println("page after: "+p);
+					p.serialize();
+				}
+				
 			}
-
-		
-		
+			// if the key is not indexed use the Binary search
+			else
+			{
 			String[] searchResult = SearchInTable(strTableName, strClusteringKey).split("#");
 			Page p = Table.deserialize(searchResult[0]);
 			int i = Integer.parseInt(searchResult[1]);
+			
 			int j = y.getPages().indexOf(searchResult[0]);
 			boolean flag = true;
-			while (j < y.getPages().size() && flag) {
+			while (j < y.getPages().size() && flag) 
+			{
 				p = Table.deserialize(y.getPages().get(j));
 				
-				while (i < p.getTuples().size()&& flag) {
+				while (i < p.getTuples().size()&& flag) 
+				{
 					Tuple current = p.getTuples().get(i);
 	
-					if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) {
+					if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
+					{
 						flag = false;
 						break;
 					}
 	
-					for (int k = 0; k < current.getAttributes().size()-1; k++) {
+					for (int k = 0; k < current.getAttributes().size()-1; k++) 
+					{
 						System.out.printf("k=%d, %s\n",k,colnames.get(k));
 						if (htblColNameValue.containsKey(colnames.get(k))) {
 							System.out.println(k+", before :"+current);
 							current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
 							System.out.println(k+", after :"+current);
+							
+							// update the trees
+							if(indexed.get(k))
+							{
+								BPTree t = y.getColNameBTreeIndex().get(colnames.get(k));
+								Comparable old_value = (Comparable)current.getAttributes().get(k);
+								Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
+								
+								t.delete(old_value, searchResult[0]);
+								t.insert(new_value, new Ref(searchResult[0]));
+							}
+							
 						}
 						
 					}
@@ -305,13 +400,15 @@ public class DBApp {
 				System.out.println("page after: "+p);
 				p.serialize();
 			}
+			}
 		}
 		catch(ClassNotFoundException e) {
 			throw new DBAppException("Class not found Exception");
 		}
+		
 		serialize(y);
 	}
-
+	
 	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
 		
 		Table y = deserialize(strTableName);

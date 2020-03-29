@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import kalabalaDB.DBAppException;
 
@@ -73,11 +74,15 @@ public class OverflowReference extends GeneralReference implements Serializable
 		return false;
 	}
 	@Override
-	public void updateRef(String oldpage, String newpage) throws DBAppException {
+	public void updateRef(String oldpage, String newpage, int tableNameLength) throws DBAppException {
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
-		firstPage.updateRef(oldpage, newpage);
-		firstPage.serialize();
-		
+		firstPage.updateRef(oldpage, newpage, tableNameLength);
+		firstPage.serialize();	
+	}
+	
+	public ArrayList<Ref> ALLgetRef() throws DBAppException
+	{
+		return deserializeOverflowPage(firstPageName).ALLgetRefs();
 	}
 }
 
