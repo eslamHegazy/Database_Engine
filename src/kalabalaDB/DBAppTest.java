@@ -17,83 +17,21 @@ import java.util.Locale;
 import java.util.Scanner;
 
 import BPTree.BPTree;
+import BPTree.Ref;
+import RTree.RTree;
 
 public class DBAppTest {
 	
 	public static void main(String[] args)throws Exception {
-		
-//		clear();
-//		tst1(500);
-//		DBApp d = new DBApp();
-//		d.init();
-//		d.createBTreeIndex("Esso Table", "the key");
-		
-
-//		clear();
-//		tst1(20);
-//		DBApp d = new DBApp();
-//		d.init();
-//		d.createBTreeIndex("Esso Table", "the key");
-		
-//		DBApp d = new DBApp();
-//		d.init();
-//		d.printAllPagesInAllTables("lol");
-		sas();
-//		Table t = d.deserialize("Esso Table");
-//		BPTree b = t.getColNameBTreeIndex().get("the key");
-//		System.out.println(b);
-		
-//		d.createBTreeIndex("Esso Table", "garbage");
-//		tst2();
-//		tst1(500);
-		
-//		clear();
-//		tst3();
-		
-//		tst4();
-//		tst44();
-//		tst4();
-//		tst5();
-//		tst6();
-//		tst4();
-//		tst5();
-//		SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
-//		Date d = s.parse("2010-01-11");
-//		System.out.println(d);
-//		clear();
-//		tst7();
-//		tst8();
-		
-//		tsta();
-		
-//		tstb();
-		
-//		tst9();
-		
-//		SimpleDateFormat da = new SimpleDateFormat("yyyy-MM-dd");
-//		Date d = da.parse("2000-10-02");
-//		System.out.println(d);
-		//clear();
-		//tst1();
-		
-//		clear();
-//		Hashtable h = new Hashtable();
-//		h.put("id", "java.lang.Integer");
-//		h.put("name", "java.lang.String");
-//		d.createTable("tabl", "id", h);
-//		String[] arr = {"Arousi","Boda","Shabra","Es","Fathy"};
-//		for (int i=0;i<45;i++) {
-//			String name = arr[(int)(Math.random()*5)];
-//			Hashtable h1 = new Hashtable();
-//			h1.put("id", i);
-//			h1.put("name", name);
-//			d.insertIntoTable("tabl", h1);
-//		}
-//		d.createBTreeIndex("tabl", "id");
-//		d.createBTreeIndex("tabl", "name");
-//		Table t = d.deserialize("tabl");
-//		t.printIndices();
-		
+		RTree<Integer> r1 = new RTree(4, 2, 2);
+		r1.insert(new double[] {1,5},new double[] {4,6} , 1);
+//		r1.insert(new double[] {0,-5},new double[] {2,2} , 2);
+//		r1.insert(new double[] {8,9},new double[] {10, 12} , 3);
+//		r1.insert(new double[] {-3,-5},new double[] {40,40} , 4);
+//		r1.insert(new double[] {0,4},new double[] {1,9} , 5);
+//		r1.insert(new double[] {2,1},new double[] {3,7} , 6);
+//		r1.insert(new double[] {10,13},new double[] {12,15} , 7);
+//		System.out.println(r1);
 	}
 	static void tst9() throws DBAppException, IOException{
 		String strTableName= "Bol";
