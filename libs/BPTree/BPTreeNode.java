@@ -186,6 +186,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	 * @throws DBAppException 
 	 */
 	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) throws DBAppException;
+	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException, IOException;
 	
 	/**
 	 * A string represetation for the node
@@ -208,6 +209,10 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		s += "]";
 		return s;
 	}
+		
+	
+	
+	
 	public void serializeNode() throws DBAppException 
 	{
 		try 
@@ -242,5 +247,9 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		}
 		
 	}
+
+	
+
+	
 
 }

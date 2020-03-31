@@ -209,7 +209,7 @@ public class DBApp {
 	}
 
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
-			throws DBAppException
+			throws DBAppException, IOException
 	{
 		Table y = deserialize(strTableName);
 		try {

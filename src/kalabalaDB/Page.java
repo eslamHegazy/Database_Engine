@@ -201,7 +201,8 @@ public class Page implements Serializable {
 		
 		
 	}
-	public void deleteFromOverFlow(OverflowReference ofr , String pageName , BPTree bpTree , Object value) throws DBAppException
+	
+	public static void deleteFromOverFlow(OverflowReference ofr , String pageName , BPTree bpTree , Object value) throws DBAppException
 	{
 		OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
 		for(int i = 0 ; i < ofp.getRefs().size();i++)

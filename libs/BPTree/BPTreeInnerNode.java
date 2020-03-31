@@ -252,6 +252,46 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		}
 		return done;
 	}
+	
+	// delete Ref not entire key
+	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr, String page_name) throws DBAppException //TODO parent
+, IOException
+	{
+		boolean done = false;
+		for(int i = 0; !done && i < numberOfKeys; ++i)
+			if(keys[i].compareTo(key) > 0) {
+				BPTreeNode<T> b=deserializeNode(childrenName[i]);
+				done = b.delete(key, this, i,page_name);
+				b.serializeNode();
+			}
+			
+		if(!done) {
+			BPTreeNode<T> b=deserializeNode(childrenName[numberOfKeys]);
+			done = b.delete(key, this, numberOfKeys,page_name);
+		    b.serializeNode();
+		}
+		if(numberOfKeys < this.minKeys())
+		{
+			if(this.isRoot())
+			{
+				this.getFirstChild().setRoot(true);
+				getFirstChild().serializeNode();
+				this.setRoot(false);
+				return done;
+			}
+			//1.try to borrow
+			if(borrow(parent, ptr)) {
+				parent.serializeNode();
+				return done;
+			}
+			//2.merge
+			merge(parent, ptr);
+		    parent.serializeNode();
+		}
+		return done;
+	}
+	
+	
 	/**
 	 * borrow from the right sibling or left sibling in case of overflow.
 	 * @param parent of the current node

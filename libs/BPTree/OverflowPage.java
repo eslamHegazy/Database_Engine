@@ -1,6 +1,7 @@
 package BPTree;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -25,6 +26,7 @@ public class OverflowPage implements Serializable{
 	private int maxSize;// node size
 	private String pageName;
 	//private String treeName;
+	
 	public OverflowPage(int maxSize) throws DBAppException, IOException {
 		this.maxSize=maxSize;
 //		refs = new RecordReference[maxSize];
@@ -39,6 +41,15 @@ public class OverflowPage implements Serializable{
 	}
 	public void setRefs(Vector<Ref> refs) {
 		this.refs = refs;
+	}
+	
+	public int getTotalSize() throws DBAppException
+	{
+		if(next == null)
+			return refs.size();
+		
+		OverflowPage n = deserialize(next);
+		return refs.size() + n.getTotalSize();
 	}
 
 	public void addRecord(Ref recordRef) throws DBAppException, IOException {
@@ -59,6 +70,40 @@ public class OverflowPage implements Serializable{
 			nextPage.addRecord(recordRef);
 			nextPage.serialize();
 		}
+	}
+	
+	public void deleteRecord(String page_name) throws DBAppException {
+		boolean deleted = false;
+		
+		for(Ref r: refs)
+		{
+			if(r.getPage().equals(page_name))
+			{
+				refs.remove(r);
+				deleted = true;
+				break;
+			}
+		}
+			
+			if(!deleted)
+			{
+				if(next == null)
+					throw new DBAppException("The ref not found");
+				
+				OverflowPage n = deserialize(next);
+				n.deleteRecord(page_name);
+				if(n.refs.size() == 0)
+					{
+					this.next = n.next;
+					// TODO 7ad y3ml delete ll next from the DISK
+					File f = new File("data/"+n.getPageName()+".class");
+					f.delete();
+					return;
+					}
+				n.serialize();
+			}
+		
+		this.serialize();
 	}
 
 	public String getNext() {
@@ -208,4 +253,5 @@ public class OverflowPage implements Serializable{
 		}	
 		return result;
 	}
+	
 }

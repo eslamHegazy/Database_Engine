@@ -242,7 +242,7 @@ public class DBAppTest {
 		
 	}
 	
-	static void tst6() throws DBAppException{
+	static void tst6() throws DBAppException, IOException{
 		DBApp d = new DBApp();
 		d.init();
 		d.printAllPagesInAllTables("tst6-0");
