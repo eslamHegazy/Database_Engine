@@ -1,1 +1,9 @@
-kalabalaDB.Table@6acbcfc0
+Name: Esso Table
+Clustering key: the key @ pos=0
+Pages:
+{Esso Table0, Esso Table1, Esso Table2, Esso Table3, Esso Table4, Esso Table5, Esso Table6, Esso Table7}
+Min:
+{12345, 12353, 12361, 12367, 12373, 12381, 12388, 12395}
+Max:
+{12353, 12359, 12367, 12373, 12381, 12388, 12395, 12399}
+Indexed Columns: 

@@ -11,6 +11,9 @@ public class Tuple implements Serializable {
 		Tuple y=(Tuple)this;
 		return x.attributes.get(attributes.size()-1).equals(y.attributes.get(attributes.size()-1));
 	}
+	public int hashCode() {
+		return (int)attributes.get(attributes.size()-1);
+	}
 	public void addAttribute(Object o) {
 		attributes.add(o);
 	}
