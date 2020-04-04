@@ -1,9 +1,0 @@
-Name: T
-Clustering key: K @ pos=0
-Pages:
-{T0, T1}
-Min:
-{1, 6}
-Max:
-{6, 16}
-Indexed Columns: 
