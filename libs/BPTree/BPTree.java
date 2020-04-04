@@ -89,14 +89,6 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
 			root = ((BPTreeInnerNode<T>) root).getFirstChild();
 		return done;
 	}
-	// to delete Ref only not the key
-	public boolean delete(T key, String Page_name) throws DBAppException, IOException {
-		boolean done = root.delete(key, null, -1,Page_name);
-		//go down and find the new root in case the old root is deleted
-		while(root instanceof BPTreeInnerNode && !root.isRoot())
-			root = ((BPTreeInnerNode<T>) root).getFirstChild();
-		return done;
-	}
 	
 	/**
 	 * Returns a string representation of the B+ tree.
@@ -173,5 +165,4 @@ public class BPTree<T extends Comparable<T>> implements Serializable{
         
 		return (BPTreeLeafNode) curNode;
 	}
-	
 }

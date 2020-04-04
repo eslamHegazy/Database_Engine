@@ -267,51 +267,6 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		return false;
 	}
 	
-	
-	// to delete a ref not a page
-	
-	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException, IOException 
-	{
-		for(int i = 0; i < numberOfKeys; ++i)
-			if(keys[i].compareTo(key) == 0)
-			{
-				// handle deleting only one ref not the entire key
-				if(records[i] instanceof Ref)
-					this.deleteAt(i);
-				else
-				{
-					OverflowReference ov = (OverflowReference) records[i];
-					ov.deleteRef(page_name);
-					if(ov.getTotalSize() == 1)
-					{
-						OverflowPage firstpage = ov.deserializeOverflowPage(ov.getFirstPageName());
-						Ref r = firstpage.getRefs().firstElement();
-						records[i] = r;
-						// TODO delete the overflow page from DISK  
-					}
-					
-				}
-				
-				
-				if(i == 0 && ptr > 0)
-				{
-					//update key at parent
-					parent.setKey(ptr - 1, this.getFirstKey());
-				}
-				//check that node has enough keys
-				if(!this.isRoot() && numberOfKeys < this.minKeys())
-				{
-					//1.try to borrow
-					if(borrow(parent, ptr))
-						return true;
-					//2.merge
-					merge(parent, ptr);
-				}
-				return true;
-			}
-		return false;
-	}
-	
 	/**
 	 * delete a key at the specified index of the node
 	 * @param index the index of the key to be deleted

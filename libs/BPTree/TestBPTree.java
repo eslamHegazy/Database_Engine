@@ -15,21 +15,11 @@ public class TestBPTree {
 		Scanner sc = new Scanner(System.in);
 		for(int i=0;i<15;i++)
 		{
-			tree.insert(i, new Ref("asd1"));
+
+			tree.insert(i, new Ref("asd"));
 		}
-		tree.insert(3, new Ref("asd2"));
-		tree.insert(3, new Ref("asd3"));
-		tree.insert(3, new Ref("asd4"));
-		tree.insert(3, new Ref("asd5"));
-		tree.insert(3, new Ref("asd6"));
-		tree.insert(3, new Ref("asd7"));
-		tree.insert(3, new Ref("asd8"));
+		tree.insert(3, new Ref("asd"));
 		
-		tree.delete(3,"asd4");
-		tree.delete(3,"asd5");
-		tree.delete(3,"asd6");
-		tree.delete(3,"asd7");
-		tree.delete(3,"asd8");
 		tree.toString();
 		sc.close();
 	}	
