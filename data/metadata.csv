@@ -1,2 +1,4 @@
-T,K,java.lang.Integer,True,False
-T,I,java.lang.Integer,False,False
+Esso Table,the key,java.lang.Integer,True,False
+Esso Table,garbage,java.lang.Integer,False,False
+Esso Table,Txt,java.lang.String,False,False
+Esso Table,float qnt,java.lang.Double,False,False

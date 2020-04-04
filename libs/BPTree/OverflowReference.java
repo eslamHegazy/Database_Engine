@@ -1,5 +1,6 @@
 package BPTree;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -49,11 +50,37 @@ public class OverflowReference extends GeneralReference implements Serializable
 		if(Page != null)
 			Page.serialize();
 	}
+	
+	
 	public void insert(Ref recordRef) throws DBAppException, IOException {
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
 		firstPage.addRecord(recordRef);
 		firstPage.serialize();
 	}
+	
+	public void deleteRef(String page_name) throws DBAppException, IOException 
+	{
+		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
+		firstPage.deleteRecord(page_name);
+		if(firstPage.getRefs().size() == 0)
+			{
+			// TODO delete overflow page with name (firstPageName) 
+			File f = new File("data/"+firstPageName+".class");
+			f.delete();
+			firstPageName = firstPage.getNext();
+			firstPage=deserializeOverflowPage(firstPageName);
+			}
+		
+		firstPage.serialize();
+	}
+	
+	public int getTotalSize() throws DBAppException
+	{
+		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
+		return firstPage.getTotalSize();
+	}
+	
+	
 	public String toString()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -84,5 +111,6 @@ public class OverflowReference extends GeneralReference implements Serializable
 	{
 		return deserializeOverflowPage(firstPageName).ALLgetRefs();
 	}
+	
 }
 
