@@ -324,12 +324,19 @@ public class DBApp {
 								// update the trees
 								if(indexed.get(k))
 								{
-									BPTree t = y.getColNameBTreeIndex().get(colnames.get(k));
-									Comparable old_value = (Comparable)current.getAttributes().get(k);
-									Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
 									
-									t.delete(old_value, p_name);
-									t.insert(new_value, new Ref(p_name));
+									if(types.get(k).equals("java.awt.Polygon"))
+									{
+										// TODO  update the R-tree 
+									}
+									else
+									{
+										BPTree t = y.getColNameBTreeIndex().get(colnames.get(k));
+										Comparable old_value = (Comparable)current.getAttributes().get(k);
+										Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
+										t.delete(old_value, p_name);
+										t.insert(new_value, new Ref(p_name));
+									}
 								}
 							
 							}
@@ -379,13 +386,20 @@ public class DBApp {
 							// update the trees
 							if(indexed.get(k))
 							{
+								if(types.get(k).equals("java.awt.Polygon"))
+								{
+									// TODO  update the R-tree 
+								}
+								else
+								{
 								BPTree t = y.getColNameBTreeIndex().get(colnames.get(k));
 								Comparable old_value = (Comparable)current.getAttributes().get(k);
 								Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
 								
 								t.delete(old_value, searchResult[0]);
 								t.insert(new_value, new Ref(searchResult[0]));
-							}
+								}
+								}
 							
 						}
 						
