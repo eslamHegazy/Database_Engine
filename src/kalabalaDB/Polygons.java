@@ -12,9 +12,12 @@ public class Polygons extends Polygon implements Comparable<Polygons>{
 		}
 		return sb.toString();
 	}
-	public static Polygons parsePolygon(String inp) {
+	public static Polygons parsePolygons(String inp) {
+		return (Polygons)parsePolygon(inp);
+	}
+	public static Polygon parsePolygon(String inp) {
 		char[] arr = inp.toCharArray();
-		Polygons res = new Polygons();
+		Polygon res = new Polygon();
 		StringBuilder sb = new StringBuilder();
 
 		for (int i = 0; i < arr.length; i++) {

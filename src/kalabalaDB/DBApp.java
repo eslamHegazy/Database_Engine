@@ -236,7 +236,7 @@ public class DBApp {
 					else if (curr[2].equals("java.lang.Boolean"))
 						key = Boolean.parseBoolean(strClusteringKey);
 					else if (curr[2].equals("java.awt.Polygon"))
-						key = Polygons.parsePolygon(strClusteringKey);
+						key = Polygons.parsePolygons(strClusteringKey);
 					else
 						throw new DBAppException("The key has an UNKNOWN TYPE");
 						//TODO: Is the previous line good ? 
@@ -355,7 +355,7 @@ public class DBApp {
 			// if the key is not indexed use the Binary search
 			else
 			{
-			String[] searchResult = SearchInTable(strTableName, strClusteringKey).split("#");
+			String[] searchResult = y.SearchInTable(strTableName, strClusteringKey).split("#");
 			Page p = Table.deserialize(searchResult[0]);
 			int i = Integer.parseInt(searchResult[1]);
 			
@@ -491,11 +491,9 @@ public class DBApp {
 			e.printStackTrace();
 			
 			throw new DBAppException("IO Exception | Probably wrong table name (tried to operate on a table that does not exist !");
-			//TODO: Fix the above line :D
 		}
 		catch (ClassNotFoundException e) {
 			throw new DBAppException("Class Not Found Exception");
-			//TODO: Fix the above line :D
 		}
 	}
 
@@ -517,77 +515,6 @@ public class DBApp {
 	}
 
 
-	public String SearchInTable(String strTableName, String strKey) throws DBAppException {
-		/*
-		 * Table y = null; Object keyValue = null; for (Object x : tables) { y = (Table)
-		 * x; if (y.getTableName().equals(strTableName)) { break; } } if (y == null) {
-		 * System.err.println("NoSuchTable"); return "-1"; }
-		 */
-		try {
-			Vector meta = readFile("data/metadata.csv");
-			Comparable key = null;
-			for (Object O : meta) {
-				String[] curr = (String[]) O;
-				if (curr[0].equals(strTableName) && curr[3].equals("True")) // search in metadata for the table name and the
-																			// key
-				{
-					if (curr[2].equals("java.lang.Integer"))
-						key = Integer.parseInt(strKey);
-					else if (curr[2].equals("java.lang.Double"))
-						key = Double.parseDouble(strKey);
-					else if (curr[2].equals("java.util.Date"))
-						key = Date.parse(strKey);
-					else if (curr[2].equals("java.lang.Boolean"))
-						key = Boolean.parseBoolean(strKey);
-					else if (curr[2].equals("java.awt.Polygon"))
-						key = (Comparable) Polygons.parsePolygon(strKey);
-					else {
-//						TODO:return "-1";
-						throw new DBAppException("Searching for a key of unknown type !");
-					}
-				}
-			}
-	
-			Table t = deserialize(strTableName);
-			Vector<String> pages = t.getPages();
-			// Vector<String> MinMax = t.getMin().toString() ;
-	
-			for (String s : pages) {
-				Page p = Table.deserialize(s);
-				int l = 0;
-				int r = p.getTuples().size()-1;
-	
-				while (l <= r) {
-					int m = l + (r - l) / 2;
-	
-					// Check if x is present at mid
-					if (key.equals((p.getTuples().get(m)).getAttributes().get(t.getPrimaryPos()))) {
-						while (m > 0 && key.equals((p.getTuples().get(m - 1)).getAttributes().get(t.getPrimaryPos()))) {
-							m--;
-						}
-						return p.getPageName() + "#" + m;
-					}
-	
-					// If x greater, ignore left half
-					if (key.compareTo((p.getTuples().get(m)).getAttributes().get(t.getPrimaryPos())) < 0)
-						r = m - 1;
-	
-					// If x is smaller, ignore right half
-					else
-						l = m + 1;
-				}
-//				p.serialize(); // added by abdo
-			}
-//			serialize(t); // addd by abdo
-	
-//			return "-1";
-			throw new DBAppException("Searched for a tuple that does not exist in the table");
-		}
-		catch(ClassCastException e) {
-			throw new DBAppException("Class Cast Exception");
-		}
-	}
-	
 	static Date parseDate(String strClusteringKey) throws DBAppException {
 		try {
 			SimpleDateFormat s = new SimpleDateFormat("yyyy-MM-dd");
@@ -659,6 +586,42 @@ public class DBApp {
 		Iterator<Tuple> out=t.selectFromTable(arrSQLTerms,strarrOperators,metaOfTable);
 		serialize(t);
 		return out;
+	}
+	public void dropTable(String strTableName) throws DBAppException{
+		try {
+			Table tableToBeDeleted = deserialize(strTableName);
+			tableToBeDeleted.drop();
+			File tableFile = new File("data/"+strTableName+".class");
+			tableFile.delete();
+			deleteFromMetadata(strTableName);
+		}
+		catch (DBAppException d) {
+			d.printStackTrace();
+		}
+	}
+	public static void deleteFromMetadata(String strTableName)throws DBAppException {
+		try {
+			Vector<String[]> meta = readFile("data/metadata.csv");
+			Vector<String[]> result = new Vector<>();
+			for (String[] curLine : meta) {
+				if (!curLine[0].equals(strTableName))
+					result.add(curLine);
+			}
+			FileWriter csvWriter = new FileWriter("data/metadata.csv");
+			for (String[] curr : result) {
+				for (int j = 0; j < curr.length; j++) {
+					csvWriter.append(curr[j]);
+					csvWriter.append(",");
+				}
+				csvWriter.append("\n");
+			}
+			csvWriter.flush();
+			csvWriter.close();
+			
+		}
+		catch(IOException e) {
+			throw new DBAppException("IO Exception while modifying metadata to delete a table");
+		}
 	}
 	public static void main(String[] args) throws DBAppException {
 	/*	SQLTerm[] hai=new SQLTerm[2]; QUESTION

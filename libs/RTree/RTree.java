@@ -9,6 +9,7 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import kalabalaDB.Polygons;
+import kalabalaDB.TreeIndex;
 
 /**
  * Implementation of an arbitrary-dimension RTree. Based on R-Trees: A Dynamic
@@ -21,7 +22,7 @@ import kalabalaDB.Polygons;
  *
  * @param <T> the type of entry to store in this RTree.
  */
-public class RTree<T> {
+public class RTree<T> implements TreeIndex{
 
 	private final int maxEntries;
 	private final int minEntries;

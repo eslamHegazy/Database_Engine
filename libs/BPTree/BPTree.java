@@ -8,8 +8,9 @@ import java.util.Queue;
 
 
 import kalabalaDB.DBAppException;
+import kalabalaDB.TreeIndex;
 
-public class BPTree<T extends Comparable<T>> implements Serializable{
+public class BPTree<T extends Comparable<T>> implements Serializable, TreeIndex{
 
 	/**
 	 * 

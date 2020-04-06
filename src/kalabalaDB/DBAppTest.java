@@ -1,6 +1,7 @@
 package kalabalaDB;
 
 import java.awt.List;
+import java.awt.Polygon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
@@ -11,10 +12,12 @@ import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Vector;
 
 import BPTree.BPTree;
 import BPTree.Ref;
@@ -22,9 +25,12 @@ import BPTree.Ref;
 
 
 public class DBAppTest {
-	
-	public static void main(String[] args)throws Exception {
 
+	public static void main(String[] args)throws Exception {
+		clear();
+		tst1(30);
+		tstInvalidDelete();
+		
 	//RTree<Integer> r1 = new RTree(4, 2, 2);
 	//	r1.insert(new double[] {1,5},new double[] {4,6} , 1);
 //		r1.insert(new double[] {0,-5},new double[] {2,2} , 2);
@@ -52,7 +58,7 @@ public class DBAppTest {
 //		DBApp d = new DBApp();
 //		d.init();
 //		d.printAllPagesInAllTables("lol");
-		sas();
+//		sas();
 //		Table t = d.deserialize("Esso Table");
 //		BPTree b = t.getColNameBTreeIndex().get("the key");
 //		System.out.println(b);
@@ -538,5 +544,219 @@ public class DBAppTest {
 			}
 				
 		}
+	}
+	
+	static class idtc {
+		String strTableName,strClusteringKey;
+		Hashtable<String, String> htblColNameType;
+		Hashtable<String, Object> htblColNameValue;
+		boolean result;
+		
+		public idtc(String strTableName, String strClusteringKey, Hashtable<String, String> htblColNameType,
+				Hashtable<String, Object> htblColNameValue, boolean result) {
+			this.strTableName = strTableName;
+			this.strClusteringKey = strClusteringKey;
+			this.htblColNameType = htblColNameType;
+			this.htblColNameValue = htblColNameValue;
+			this.result = result;
+		}
+
+		void execute() throws DBAppException{
+//			clear();
+			DBApp d = new DBApp();
+			d.init();
+//			if(d.exists(strTableName))
+//				d.dropTable(strTableName);
+			d.createTable(strTableName, strClusteringKey, htblColNameType);
+			Table t = DBApp.deserialize(strTableName);
+			Vector meta = DBApp.readFile("data/metadata.csv");
+			Vector<String[]> metaOfTable = new Vector();
+			for (Object o : meta) {
+				String[] line = (String[]) o;
+				if (line[0].equals(strTableName)) {
+					metaOfTable.add(line);
+				}
+			}
+			System.out.println(t.invalidDelete(htblColNameValue, metaOfTable)==result?"Pass":"Fail");
+		}
+	}
+	static void tstInvalidDelete() throws DBAppException{
+		ArrayList<idtc> testCases = new ArrayList<>();
+		tstInvalidDeleteSchema1(testCases);
+		tstInvalidDeleteSchema2(testCases);
+		System.out.println("Tesing invalidDelete method: ");
+		for (int i=0;i<testCases.size();i++) {
+			idtc cur = testCases.get(i);
+			System.out.print("Test#"+i+" ");
+			cur.execute();
+//			cur=null;
+		}
+	}
+	static void tstInvalidDeleteSchema1(ArrayList<idtc> testCases) throws DBAppException{
+		Hashtable<String, String> htblColNameType = new Hashtable<>();
+		htblColNameType.put("id", "java.lang.Integer");
+		String strTableName = "Tab_",strClusteringKey="id";
+		
+		Hashtable<String, Object> htblColNameValue = new Hashtable<>();
+		int i=0;
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("id", 7);
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, false));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("id", 5.0);
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, true));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("id ", 3);
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, true));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("id", 4);
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, false));
+		
+	}
+	
+	static void tstInvalidDeleteSchema2(ArrayList<idtc> testCases) throws DBAppException{
+		Hashtable<String, String> htblColNameType = new Hashtable<>();
+		htblColNameType.put("x", "java.lang.Integer");
+		htblColNameType.put("y", "java.lang.Integer");
+		htblColNameType.put("z", "java.lang.Double");
+		htblColNameType.put("s", "java.lang.String");
+		htblColNameType.put("b", "java.lang.Boolean");
+		htblColNameType.put("d", "java.util.Date");
+		htblColNameType.put("p", "java.awt.Polygon");
+		String strTableName = "Tabl_",strClusteringKey="id";
+		
+		Hashtable<String, Object> htblColNameValue = new Hashtable<>();
+		boolean result; int i=0;
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("x", 4);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("y", 9);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("z", 0);	// our database engine doesn't typecast an int to double to suit the table specifications 
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("d", DBApp.parseDate("2000-02-24"));
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("x", 8);
+		htblColNameValue.put("y", 4);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("x", 0.0);
+		htblColNameValue.put("y", 4);
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("x", 8);
+		htblColNameValue.put("y", 3.2);
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("x", 8);
+		htblColNameValue.put("z", (double)5);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("z", (double) 5);
+		htblColNameValue.put("x", 8);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("d", DBApp.parseDate("1999-05-19"));
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("d", "24-01-2010");
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("p", Polygons.parsePolygon("(0,0),(1,1),(2,2)"));
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		result= false; //TODO:
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("p", Polygons.parsePolygon("(0,0),(1,1),(0,1)"));
+		htblColNameValue.put("z", 2.0);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("p", Polygons.parsePolygon("(0,0),(1,1),(0,1)"));
+		htblColNameValue.put("z", "2.0");
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("p", new Polygon());
+		htblColNameValue.put("z", "2.0");
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("p", "(0,0),(1,1),(0,1)");
+		htblColNameValue.put("z", 3);
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("s", "11");
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("s", 4);
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("b", true);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("b", false);
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("b", new Boolean(true));
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("b", new Boolean(false));
+		result= false; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
+		
+		htblColNameValue= new Hashtable<>();
+		htblColNameValue.put("nonexistingcolumn", 19312);
+		result= true; 
+		testCases.add(new idtc(strTableName+(i++), strClusteringKey, htblColNameType, htblColNameValue, result));
 	}
 }
