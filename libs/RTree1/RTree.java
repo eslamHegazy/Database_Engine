@@ -1,4 +1,4 @@
-package BPTree;
+package RTree1;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -8,8 +8,10 @@ import java.util.Queue;
 
 
 import kalabalaDB.DBAppException;
+import kalabalaDB.Polygons;
+import kalabalaDB.TreeIndex;
 
-public class BPTree<T extends Comparable<T>> implements Serializable {
+public class RTree<T extends Comparable<T>> implements Serializable{
 
 	/**
 	 * 
@@ -18,7 +20,7 @@ public class BPTree<T extends Comparable<T>> implements Serializable {
 	//protected String treeName;
 	protected static final long serialVersionUID = 1L;
 	protected int order;
-	protected BPTreeNode<T> root;
+	protected RTreeNode<T> root;
 	protected int lastin; 
 	
 	/**
@@ -27,11 +29,11 @@ public class BPTree<T extends Comparable<T>> implements Serializable {
 	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public BPTree(int order) throws DBAppException, IOException  
+	public RTree(int order) throws DBAppException, IOException  
 	{	
 		this.order = order;
 		//this.treeName=treeName;
-		root = new BPTreeLeafNode<T>(this.order);
+		root = new RTreeLeafNode<T>(this.order);
 		root.setRoot(true);
 		//root.treeName=this.treeName;
 	}
@@ -53,7 +55,7 @@ public class BPTree<T extends Comparable<T>> implements Serializable {
 		PushUp<T> pushUp = root.insert(key, recordReference, null, -1);
 		if(pushUp != null)
 		{
-			BPTreeInnerNode<T> newRoot = new BPTreeInnerNode<T>(order);
+			RTreeInnerNode<T> newRoot = new RTreeInnerNode<T>(order);
 			root.serializeNode();
 			newRoot.insertLeftAt(0, pushUp.key, root);
 			root.deserializeNode(root.nodeName);
@@ -85,16 +87,16 @@ public class BPTree<T extends Comparable<T>> implements Serializable {
 	{
 		boolean done = root.delete(key, null, -1);
 		//go down and find the new root in case the old root is deleted
-		while(root instanceof BPTreeInnerNode && !root.isRoot())
-			root = ((BPTreeInnerNode<T>) root).getFirstChild();
+		while(root instanceof RTreeInnerNode && !root.isRoot())
+			root = ((RTreeInnerNode<T>) root).getFirstChild();
 		return done;
 	}
 	// to delete Ref only not the key
 	public boolean delete(T key, String Page_name) throws DBAppException, IOException {
 		boolean done = root.delete(key, null, -1,Page_name);
 		//go down and find the new root in case the old root is deleted
-		while(root instanceof BPTreeInnerNode && !root.isRoot())
-			root = ((BPTreeInnerNode<T>) root).getFirstChild();
+		while(root instanceof RTreeInnerNode && !root.isRoot())
+			root = ((RTreeInnerNode<T>) root).getFirstChild();
 		return done;
 	}
 	
@@ -106,33 +108,29 @@ public class BPTree<T extends Comparable<T>> implements Serializable {
 		
 		//	<For Testing>
 		// node :  (id)[k1|k2|k3|k4]{P1,P2,P3,}
-		StringBuilder sb = new StringBuilder();
-		BPTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
+		String s = "";
+		RTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
 		
-		Queue<BPTreeNode<T>> cur = new LinkedList<BPTreeNode<T>>(), next;
+		Queue<RTreeNode<T>> cur = new LinkedList<RTreeNode<T>>(), next;
 		cur.add(root);
 		while(!cur.isEmpty())
 		{
-			next = new LinkedList<BPTreeNode<T>>();
+			next = new LinkedList<RTreeNode<T>>();
 			while(!cur.isEmpty())
 			{
-				BPTreeNode<T> curNode = cur.remove();
-//				System.out.print(curNode);
-				sb.append(curNode);
-				if(curNode instanceof BPTreeLeafNode)
-//					System.out.print("->");
-					sb.append("->");
+				RTreeNode<T> curNode = cur.remove();
+				System.out.print(curNode);
+				if(curNode instanceof RTreeLeafNode)
+					System.out.print("->");
 				else
 				{
-//					System.out.print("{");
-					sb.append("{");
-					BPTreeInnerNode<T> parent = (BPTreeInnerNode<T>) curNode;
+					System.out.print("{");
+					RTreeInnerNode<T> parent = (RTreeInnerNode<T>) curNode;
 					for(int i = 0; i <= parent.numberOfKeys; ++i)
 					{			
 						try 
 						{
-//							System.out.print(parent.getChild(i).index+",");
-							sb.append(parent.getChild(i).index+",");
+							System.out.print(parent.getChild(i).index+",");
 							next.add(parent.getChild(i));
 						}
 						catch (DBAppException e) {
@@ -140,30 +138,25 @@ public class BPTree<T extends Comparable<T>> implements Serializable {
 							e.printStackTrace();
 						}
 					}
-//					System.out.print("} ");
-					sb.append("}");
+					System.out.print("} ");
 				}
 				
 			}
-//			System.out.println();
-			sb.append("\n");
+			System.out.println();
 			cur = next;
 		}
 		
-		ArrayList<OverflowReference> tobePrinted  = BPTreeLeafNode.pagesToPrint;
-//		System.out.println("\n The Overflow refrences are : \n");
-		sb.append("\n The Overflow refrences are : \n");
+		ArrayList<OverflowReference> tobePrinted  = RTreeLeafNode.pagesToPrint;
+		System.out.println("\n The Overflow refrences are : \n");
 		
 		for(int i=0;i<tobePrinted.size();i++)
 		{
-//			System.out.println("refrence number : " + (i+1) +" is :\n");
-//			System.out.println(tobePrinted.get(i).toString());
-			sb.append("refrence number : " + (i+1) +" is :\n");
-			sb.append(tobePrinted.get(i).toString());
+			System.out.println("refrence number : " + (i+1) +" is :\n");
+			System.out.println(tobePrinted.get(i).toString());
 		}
 			
 		//	</For Testing>
-		return sb.toString();
+		return s;
 	}
 	public Ref searchForInsertion(T key) throws DBAppException { //comparable and T???
 		return root.searchForInsertion(key);
@@ -173,14 +166,14 @@ public class BPTree<T extends Comparable<T>> implements Serializable {
 		return null;
 		
 	}
-	public BPTreeLeafNode getLeftmostLeaf() throws DBAppException {
-		BPTreeNode<T> curNode=root;
-		while(!(curNode instanceof BPTreeLeafNode)) {
-			BPTreeInnerNode <T> x=(BPTreeInnerNode)curNode;
+	public RTreeLeafNode getLeftmostLeaf() throws DBAppException {
+		RTreeNode<T> curNode=root;
+		while(!(curNode instanceof RTreeLeafNode)) {
+			RTreeInnerNode <T> x=(RTreeInnerNode)curNode;
 			curNode=x.getFirstChild();
 		}
         
-		return (BPTreeLeafNode) curNode;
+		return (RTreeLeafNode) curNode;
 	}
 	
 }

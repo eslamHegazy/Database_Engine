@@ -1,4 +1,4 @@
-package BPTree;
+package RTree1;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,11 +13,9 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Vector;
 
-import javax.swing.tree.TreeNode;
-
 import kalabalaDB.DBAppException;
 
-public abstract class BPTreeNode<T extends Comparable<T>> implements Serializable{
+public abstract class RTreeNode<T extends Comparable<T>> implements Serializable{
 	
 	/**
 	 * Abstract class that collects the common functionalities of the inner and leaf nodes
@@ -40,7 +38,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	//protected int lastin;
 	//protected String treeName;
 
-	public BPTreeNode(int order) throws DBAppException, IOException 
+	public RTreeNode(int order) throws DBAppException, IOException 
 	{
 		index = nextIdx++;
 		numberOfKeys = 0;
@@ -173,7 +171,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	 */
 	public abstract PushUp<T> insert(T key, 
 			Ref recordReference, 
-			BPTreeInnerNode<T> parent, 
+			RTreeInnerNode<T> parent, 
 			int ptr) throws DBAppException, IOException;
 	
 	public abstract GeneralReference search(T key) throws DBAppException;
@@ -187,8 +185,8 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	 * @return true if this node was successfully deleted and false otherwise
 	 * @throws DBAppException 
 	 */
-	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) throws DBAppException;
-	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException, IOException;
+	public abstract boolean delete(T key, RTreeInnerNode<T> parent, int ptr) throws DBAppException;
+	public abstract boolean delete(T key, RTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException, IOException;
 	
 	/**
 	 * A string represetation for the node
@@ -230,13 +228,13 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		}
 		
 	}
-	public BPTreeNode<T> deserializeNode(String name) throws DBAppException {
+	public RTreeNode<T> deserializeNode(String name) throws DBAppException {
 		try {
 		//	if(name == null || name == "")
 		//		return null;
 			FileInputStream fileIn = new FileInputStream("data/"+ name + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
-			BPTreeNode<T> BPTN =   (BPTreeNode<T>) in.readObject();
+			RTreeNode<T> BPTN =   (RTreeNode<T>) in.readObject();
 			in.close();
 			fileIn.close();
 			return BPTN;

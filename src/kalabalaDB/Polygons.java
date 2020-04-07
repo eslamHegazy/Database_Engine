@@ -13,7 +13,28 @@ public class Polygons extends Polygon implements Comparable<Polygons>{
 		return sb.toString();
 	}
 	public static Polygons parsePolygons(String inp) {
-		return (Polygons)parsePolygon(inp);
+		char[] arr = inp.toCharArray();
+		Polygons res = new Polygons();
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < arr.length; i++) {
+			sb = new StringBuilder();
+			if (arr[i] == '(' || arr[i] == ',' || arr[i] == ' ')
+				continue;
+			while (arr[i] != ',') {
+				sb.append(arr[i++]);
+			}
+			int x = Integer.parseInt(sb.toString());
+			sb = new StringBuilder();
+			i++; // to skip the ',' start the y coordinate
+			while (arr[i] != ')') {
+				sb.append(arr[i++]);
+			}
+			int y = Integer.parseInt(sb.toString());
+			i++; // to skip the ')'
+			res.addPoint(x, y);
+		}
+		return res;
 	}
 	public static Polygon parsePolygon(String inp) {
 		char[] arr = inp.toCharArray();

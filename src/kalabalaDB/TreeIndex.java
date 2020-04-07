@@ -1,5 +1,5 @@
 package kalabalaDB;
 
-public interface TreeIndex {
+public interface TreeIndex<T extends Comparable<T>> {
 
 }

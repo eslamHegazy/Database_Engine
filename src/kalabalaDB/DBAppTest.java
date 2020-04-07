@@ -25,11 +25,70 @@ import BPTree.Ref;
 
 
 public class DBAppTest {
-
+	static void faUpTs() throws Exception{
+//		DBApp d = new DBApp();
+//		d.init();
+//		Hashtable htblColNameType = new Hashtable();
+//		htblColNameType.put("k1", "java.util.Date");
+//		htblColNameType.put("c2", "java.lang.Boolean");
+//		htblColNameType.put("c3", "java.lang.Integer");
+//		d.createTable("fathy", "k1", htblColNameType);
+//		for (int i=0;i<30;i++) {
+//			Hashtable htblColNameValue
+		String strTableName = "Student";
+		DBApp dbApp = new DBApp( );
+		dbApp.init();
+		Hashtable htblColNameType = new Hashtable( );
+		htblColNameType.put("id", "java.lang.Integer");
+		htblColNameType.put("name", "java.lang.String");
+		htblColNameType.put("gpa", "java.lang.Double");
+		dbApp.createTable( strTableName, "id", htblColNameType );
+		dbApp.createBTreeIndex( strTableName, "gpa" );
+		
+		Hashtable htblColNameValue = new Hashtable( );
+		htblColNameValue.put("id", new Integer( 2343432 ));
+		htblColNameValue.put("name", new String("Ahmed Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.95 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 453455 ));
+		htblColNameValue.put("name", new String("Ahmed Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.95 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 5674567 ));
+		htblColNameValue.put("name", new String("Dalia Noor" ) );
+		htblColNameValue.put("gpa", new Double( 1.25 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue);
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 23498 ));
+		htblColNameValue.put("name", new String("John Noor" ) );
+		htblColNameValue.put("gpa", new Double( 1.5 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 78452 ));
+		htblColNameValue.put("name", new String("Zaky Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.88 ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+//		
+//		for (int i=0;i<50;i++) {
+//			htblColNameValue.clear( );
+//			htblColNameValue.put("id", new Integer( 76000+(int)(Math.random()*5000) ));
+//			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
+//			double gpa = 1.0*((int)(1+Math.random()*100))/100;
+//			htblColNameValue.put("gpa", new Double( gpa ) );
+//			dbApp.insertIntoTable( strTableName , htblColNameValue );
+//		}
+//		
+//		
+	}
 	public static void main(String[] args)throws Exception {
 		clear();
-		tst1(30);
-		tstInvalidDelete();
+		faUpTs();
+		sas();
+//		clear();
+//		tst1(30);
+//		tstInvalidDelete();
 		
 	//RTree<Integer> r1 = new RTree(4, 2, 2);
 	//	r1.insert(new double[] {1,5},new double[] {4,6} , 1);
@@ -407,14 +466,25 @@ public class DBAppTest {
 		}
 	}
 	static void clear() {
-		File metadata = new File("data/metadata.csv");
-		metadata.delete();
+//		File metadata = new File("data/metadata.csv");
+//		metadata.delete();
 		File data = new File("data");
-		String[] pages = data.list();
-		for (String p: pages) {
-			File pageToDelete = new File("data/"+p);
-			pageToDelete.delete();
+		String[] files = data.list();
+		for (String p: files ) {
+			File fileToDelete = new File("data/"+p);
+//			pageToDelete.delete();
+			delete(fileToDelete);
 		}
+	}
+	static void delete(File file) {
+//		File file = new File(path);
+		if (file.isDirectory()) {
+			File[] files = file.listFiles();
+			for (int i=0;i<files.length;i++) {
+				delete(files[i]);
+			}
+		}
+		file.delete();
 	}
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -533,6 +603,8 @@ public class DBAppTest {
 		File fasa= new File("data/0s/");
 		fasa.mkdir();
 		for (String f : list) {
+//			System.out.println(f);
+			if (f.equals("0s")) continue;
 			if (f.substring(f.length()-5).equals("class")) {
 				FileInputStream fi = new FileInputStream("data/"+f); 
 				ObjectInputStream obj = new ObjectInputStream(fi);

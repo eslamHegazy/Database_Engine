@@ -20,7 +20,7 @@ public class Table implements Serializable {
 	private String tableName;
 	private String strClusteringKey;
 	private int primaryPos;
-
+	//TODO
 	private Hashtable<String, BPTree> colNameBTreeIndex = new Hashtable<>();
 
 	public Hashtable<String, BPTree> getColNameBTreeIndex() {
@@ -157,6 +157,7 @@ public class Table implements Serializable {
 					BPTree bTree = colNameBTreeIndex.get(keyColName);
 					Ref recordReference = new Ref(p.getPageName());
 					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+					//TODO: Remove the next line ; eslam wrote this todo
 					colNameBTreeIndex.put(keyColName, bTree);
 
 				}
@@ -269,10 +270,30 @@ public class Table implements Serializable {
 					}
 				}
 				Object keyValueOfNonCluster = x.getAttributes().get(index);
+				//TODO: getting NullPointerException here
 				Ref pageReference = tree.searchForInsertion((Comparable) keyValueOfNonCluster);
 				tree.insert((Comparable) keyValueOfNonCluster, pageReference);
 			}
 		}
+		
+//		Set<String> c = colNameBTreeIndex.keySet();
+//		for (String curColName : c) {
+//			if (curColName.equals(keyColName)) continue;
+//			BPTree tree = colNameBTreeIndex.get(curColName);
+//			if (tree == null ) continue;
+//			int index = 0;
+//			for (; index < colNames.size() ; index++) {
+////				String currentColumn = (String) colNames.get(index);
+//				if (keyColName.equals(colNames.get(index))) {
+//					continue;
+//				}
+//			}
+//			Object keyValueOfNonCluster = x.getAttributes().get(index);
+//			//TODO: getting NullPointerException here
+////			Ref pageReference = tree.searchForInsertion((Comparable) keyValueOfNonCluster);
+//			Ref pageReference = insertedReference;	//Update it in the above if-else-if... blocks
+//			tree.insert((Comparable) keyValueOfNonCluster, pageReference);
+//		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1321,7 +1342,11 @@ public class Table implements Serializable {
 		for (String col:colNameBTreeIndex.keySet()) {
 			sb.append(col+"\t");
 		}
-
+		sb.append("Indexes: \n");
+		for (String col:colNameBTreeIndex.keySet()) {
+			sb.append(col+"\n");
+			sb.append(colNameBTreeIndex.get(col)+"\n");
+		}
 		return sb.toString();
 	}
 	

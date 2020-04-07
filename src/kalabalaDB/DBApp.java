@@ -544,7 +544,7 @@ public class DBApp {
 			}
 		}
 
-		FileWriter csvWriter = new FileWriter("O:\\6th Semester\\Data Bases II\\Project1\\kalabalaDBv4\\data\\metadata.csv");
+		FileWriter csvWriter = new FileWriter("data/metadata.csv");
 		for (Object O : meta) {
 			String[] curr = (String[]) O;
 			for (int j = 0; j < curr.length; j++) {
@@ -562,6 +562,7 @@ public class DBApp {
 			case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
 			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
 			case "java.lang.String":bTree=new BPTree<String>(nodeSize);break;
+			//TODO:
 			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
 			default :throw new DBAppException("I've never seen this colType in my life");
 		}
