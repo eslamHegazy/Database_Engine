@@ -3,10 +3,10 @@ import java.io.*;
 import java.util.*;
 
 import BPTree.BPTree;
-import BPTree.GeneralReference;
-import BPTree.OverflowPage;
-import BPTree.OverflowReference;
-import BPTree.Ref;
+import General.GeneralReference;
+import General.OverflowPage;
+import General.OverflowReference;
+import General.Ref;
 public class Page implements Serializable {
 	private Vector<Tuple> tuples;
 	private String pageName;
@@ -149,7 +149,7 @@ public class Page implements Serializable {
 	}
 	
 	public void deleteInPageforRef( Vector<String[]> metaOfTable,int primarypos,String clusteringKey
-			,Hashtable<String,BPTree> colNameBTreeIndex,Hashtable<String, Object> htblColNameValue,ArrayList<String> allIndices , boolean isCluster) throws DBAppException
+			,Hashtable<String,TreeIndex> colNameTreeIndex,Hashtable<String, Object> htblColNameValue,ArrayList<String> allIndices , boolean isCluster) throws DBAppException
 	{
 		int index = 0;
 		int lastOcc = tuples.size();
@@ -178,16 +178,16 @@ public class Page implements Serializable {
 					{
 						if(allIndices.get(j).equals(x.get(i)))
 						{
-							BPTree bpTree = colNameBTreeIndex.get(allIndices.get(j));
-							GeneralReference gr = bpTree.search((Comparable) tuples.get(k).getAttributes().get(i));
+							TreeIndex tree = colNameTreeIndex.get(allIndices.get(j));
+							GeneralReference gr = tree.search((Comparable) tuples.get(k).getAttributes().get(i));
 							if(gr instanceof Ref)
 							{
-								bpTree.delete((Comparable) tuples.get(k).getAttributes().get(i));
+								tree.delete((Comparable) tuples.get(k).getAttributes().get(i));
 							}
 							else
 							{
 								OverflowReference ofr = (OverflowReference)gr;
-								deleteFromOverFlow(ofr,this.pageName,bpTree,tuples.get(k).getAttributes().get(i));
+								deleteFromOverFlow(ofr,this.pageName,tree,tuples.get(k).getAttributes().get(i));
 							}
 						}
 					}
@@ -202,7 +202,7 @@ public class Page implements Serializable {
 		
 	}
 	
-	public static void deleteFromOverFlow(OverflowReference ofr , String pageName , BPTree bpTree , Object value) throws DBAppException
+	public static void deleteFromOverFlow(OverflowReference ofr , String pageName , TreeIndex tree , Object value) throws DBAppException
 	{
 		OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
 		for(int i = 0 ; i < ofp.getRefs().size();i++)
@@ -214,7 +214,7 @@ public class Page implements Serializable {
 				{
 					if(ofp.getNext()==null)
 					{
-						bpTree.delete((Comparable) value);
+						tree.delete((Comparable) value);
 					}
 					else
 					{

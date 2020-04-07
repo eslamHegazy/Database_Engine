@@ -7,8 +7,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import BPTree.BPTree;
-import BPTree.GeneralReference;
-import BPTree.Ref;
+import General.GeneralReference;
+import General.Ref;
+import RTree1.RTree;
 
 public class DBApp {
 	// static Vector tables=new Vector();
@@ -293,7 +294,7 @@ public class DBApp {
 			if(key_index)
 			{
 				
-				BPTree key_tree = y.getColNameBTreeIndex().get(key_column_name);
+				TreeIndex key_tree = y.getColNameBTreeIndex().get(key_column_name);
 				GeneralReference GR = key_tree.search(key);  // the result of the search in the B+ tree
 				ArrayList<Ref> references = GR.getALLRef();  // the entire references where the key exists
 				HashSet<String> hs = new HashSet<String>();	 // the names of pages where there is a key	
@@ -323,20 +324,13 @@ public class DBApp {
 								System.out.println(k+", after :"+current);
 								// update the trees
 								if(indexed.get(k))
-								{
-									
-									if(types.get(k).equals("java.awt.Polygon"))
-									{
-										// TODO  update the R-tree 
-									}
-									else
-									{
-										BPTree t = y.getColNameBTreeIndex().get(colnames.get(k));
-										Comparable old_value = (Comparable)current.getAttributes().get(k);
-										Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
-										t.delete(old_value, p_name);
-										t.insert(new_value, new Ref(p_name));
-									}
+								{	
+									TreeIndex t = y.getColNameBTreeIndex().get(colnames.get(k));
+									Comparable old_value = (Comparable)current.getAttributes().get(k);
+									Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
+									t.delete(old_value, p_name);
+									t.insert(new_value, new Ref(p_name));
+
 								}
 							
 							}
@@ -386,20 +380,12 @@ public class DBApp {
 							// update the trees
 							if(indexed.get(k))
 							{
-								if(types.get(k).equals("java.awt.Polygon"))
-								{
-									// TODO  update the R-tree 
-								}
-								else
-								{
-								BPTree t = y.getColNameBTreeIndex().get(colnames.get(k));
+								TreeIndex t = y.getColNameBTreeIndex().get(colnames.get(k));
 								Comparable old_value = (Comparable)current.getAttributes().get(k);
 								Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
-								
 								t.delete(old_value, searchResult[0]);
 								t.insert(new_value, new Ref(searchResult[0]));
-								}
-								}
+							}
 							
 						}
 						
@@ -562,8 +548,7 @@ public class DBApp {
 			case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
 			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
 			case "java.lang.String":bTree=new BPTree<String>(nodeSize);break;
-			//TODO:
-			case "java.awt.Polygon":bTree=new BPTree<Polygons>(nodeSize);break;
+			case "java.awt.Polygon":throw new DBAppException("A B+ Tree Index cannot be created on a column of type Polygon ! You can create an R-Tree index instead!");
 			default :throw new DBAppException("I've never seen this colType in my life");
 		}
 		Table table =deserialize(strTableName);
@@ -571,6 +556,48 @@ public class DBApp {
 		serialize(table);
 	}
 
+	
+
+	public void createRTreeIndex(String strTableName,String strColName) throws DBAppException, IOException{
+		RTree rTree=null;
+		Vector meta = readFile("data/metadata.csv");
+		String colType="";
+		int colPosition = -1;
+		for (Object O : meta) {
+			String[] curr = (String[]) O;
+			if (curr[0].equals(strTableName)) {
+				colPosition++;
+				if (curr[1].equals(strColName)) {
+					colType = curr[2];
+					curr[4] = "True";
+					break;
+				}
+			}
+		}
+
+		FileWriter csvWriter = new FileWriter("data/metadata.csv");
+		for (Object O : meta) {
+			String[] curr = (String[]) O;
+			for (int j = 0; j < curr.length; j++) {
+				csvWriter.append(curr[j]);
+				csvWriter.append(",");
+			}
+			csvWriter.append("\n");
+		}
+		csvWriter.flush();
+		csvWriter.close();
+
+		switch(colType){
+			case "java.awt.Polygon":rTree=new RTree<Polygons>(nodeSize);break;
+			default :throw new DBAppException("R-Tree index can be created only on columns of type Polygon !");
+		}
+		Table table =deserialize(strTableName);
+		table.createRTreeIndex(strColName,rTree,colPosition);
+		serialize(table);
+	}
+
+
+	
 	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
 			 String[] strarrOperators)
 			throws DBAppException {

@@ -6,10 +6,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-
+import General.GeneralReference;
+import General.OverflowReference;
+import General.Ref;
 import kalabalaDB.DBAppException;
+import kalabalaDB.TreeIndex;
 
-public class BPTree<T extends Comparable<T>> implements Serializable {
+public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T> {
 
 	/**
 	 * 

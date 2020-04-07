@@ -13,6 +13,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Vector;
 
+import General.GeneralReference;
+import General.Ref;
 import kalabalaDB.DBAppException;
 
 public abstract class RTreeNode<T extends Comparable<T>> implements Serializable{

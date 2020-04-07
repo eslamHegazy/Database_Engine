@@ -1,4 +1,4 @@
-package BPTree;
+package General;
 
 import java.io.Serializable;
 

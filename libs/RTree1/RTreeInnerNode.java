@@ -7,6 +7,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
+import General.GeneralReference;
+import General.Ref;
 import kalabalaDB.DBAppException;
 
 public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  implements Serializable

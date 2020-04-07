@@ -20,8 +20,7 @@ import java.util.Scanner;
 import java.util.Vector;
 
 import BPTree.BPTree;
-import BPTree.Ref;
-//import RTree.RTree;
+import General.Ref;
 
 
 public class DBAppTest {

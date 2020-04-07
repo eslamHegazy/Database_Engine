@@ -8,9 +8,14 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import General.GeneralReference;
+import General.LeafNode;
+import General.OverflowPage;
+import General.OverflowReference;
+import General.Ref;
 import kalabalaDB.DBAppException;
 
-public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> implements Serializable{
+public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> implements Serializable,LeafNode<T>{
 
 	/**
 	 * 

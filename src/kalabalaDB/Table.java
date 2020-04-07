@@ -5,10 +5,12 @@ import java.util.*;
 
 import BPTree.BPTree;
 import BPTree.BPTreeLeafNode;
-import BPTree.GeneralReference;
-import BPTree.OverflowPage;
-import BPTree.OverflowReference;
-import BPTree.Ref;
+import General.GeneralReference;
+import General.LeafNode;
+import General.OverflowPage;
+import General.OverflowReference;
+import General.Ref;
+import RTree1.RTree;
 
 public class Table implements Serializable {
 
@@ -21,10 +23,10 @@ public class Table implements Serializable {
 	private String strClusteringKey;
 	private int primaryPos;
 	//TODO
-	private Hashtable<String, BPTree> colNameBTreeIndex = new Hashtable<>();
+	private Hashtable<String, TreeIndex> colNameTreeIndex = new Hashtable<>();
 
-	public Hashtable<String, BPTree> getColNameBTreeIndex() {
-		return colNameBTreeIndex;
+	public Hashtable<String, TreeIndex> getColNameBTreeIndex() {
+		return colNameTreeIndex;
 	}
 	public Ref searchWithCluster(Comparable key, BPTree b) throws DBAppException {
 		Ref ref = b.searchRequiredReference(key); // NOT IMPLEMENTED
@@ -35,8 +37,8 @@ public class Table implements Serializable {
 	}
 
 	public void printIndices() {
-		for (String x : colNameBTreeIndex.keySet()) {
-			BPTree b = colNameBTreeIndex.get(x);
+		for (String x : colNameTreeIndex.keySet()) {
+			TreeIndex b = colNameTreeIndex.get(x);
 			System.out.println(x);
 			System.out.println(b);
 			System.out.println();
@@ -153,30 +155,30 @@ public class Table implements Serializable {
 				max.remove(curr);
 				addInVector(max, maxx, curr);
 				
-				if (colNameBTreeIndex.containsKey(keyColName)) {
-					BPTree bTree = colNameBTreeIndex.get(keyColName);
+				if (colNameTreeIndex.containsKey(keyColName)) {
+					TreeIndex tree = colNameTreeIndex.get(keyColName);
 					Ref recordReference = new Ref(p.getPageName());
-					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+					tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 					//TODO: Remove the next line ; eslam wrote this todo
-					colNameBTreeIndex.put(keyColName, bTree);
+					colNameTreeIndex.put(keyColName, tree);
 
 				}
 				p.serialize();
 			} else {
 				// Tuple t=p.getTuples().get(p.size()-1);//element 199
 				p.insertIntoPage(x, primaryPos);
-				if (colNameBTreeIndex.containsKey(keyColName)) {
-					BPTree bTree = colNameBTreeIndex.get(keyColName);
+				if (colNameTreeIndex.containsKey(keyColName)) {
+					TreeIndex tree = colNameTreeIndex.get(keyColName);
 					Ref recordReference = new Ref(p.getPageName());
-					bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-					colNameBTreeIndex.put(keyColName, bTree);
+					tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+					colNameTreeIndex.put(keyColName, tree);
 				}
 				Tuple t = p.getTuples().remove(p.size() - 1);
 
-				if (colNameBTreeIndex.containsKey(keyColName)) {
-					BPTree bTree = colNameBTreeIndex.get(keyColName);
+				if (colNameTreeIndex.containsKey(keyColName)) {
+					TreeIndex tree = colNameTreeIndex.get(keyColName);
 
-					bTree.delete((Comparable) t.getAttributes().get(primaryPos));
+					tree.delete((Comparable) t.getAttributes().get(primaryPos));
 				}
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
@@ -191,11 +193,11 @@ public class Table implements Serializable {
 		} else {
 			Page p = new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
-			if (colNameBTreeIndex.containsKey(keyColName)) {
-				BPTree bTree = colNameBTreeIndex.get(keyColName);
+			if (colNameTreeIndex.containsKey(keyColName)) {
+				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref recordReference = new Ref(p.getPageName());
-				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-				colNameBTreeIndex.put(keyColName, bTree);
+				tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+				colNameTreeIndex.put(keyColName, tree);
 			}
 			Object keyValue = p.getTuples().get(0).getAttributes().get(primaryPos);
 			pages.addElement(p.getPageName());
@@ -224,11 +226,11 @@ public class Table implements Serializable {
 		if(pages.size()==0){
 			Page p=new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
-			if (colNameBTreeIndex.containsKey(keyColName)) {
-				BPTree bTree = colNameBTreeIndex.get(keyColName);
+			if (colNameTreeIndex.containsKey(keyColName)) {
+				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref recordReference = new Ref(p.getPageName());
-				bTree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-				colNameBTreeIndex.put(keyColName, bTree);
+				tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
+				colNameTreeIndex.put(keyColName, tree);
 			}
 			pages.addElement(p.getPageName());
 			min.addElement(keyV);
@@ -237,8 +239,8 @@ public class Table implements Serializable {
 
 		} else {
 			Comparable keyValue = (Comparable) keyV;
-			if (colNameBTreeIndex.containsKey(keyColName)) {
-				BPTree tree = colNameBTreeIndex.get(keyColName);
+			if (colNameTreeIndex.containsKey(keyColName)) {
+				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref pageReference = tree.searchForInsertion(keyValue);
 				String pageName = this.tableName + pageReference.getPage();
 				int curr = pages.indexOf(pageName);
@@ -259,10 +261,10 @@ public class Table implements Serializable {
 			}
 		}
 
-		Set<String> c = colNameBTreeIndex.keySet();
+		Set<String> c = colNameTreeIndex.keySet();
 		for (int i = 0; i < c.size(); i++) {
 			if (!keyColName.equals(c)) {
-				BPTree tree = colNameBTreeIndex.get(c);
+				TreeIndex tree = colNameTreeIndex.get(c);
 				int index = 0;
 				for (; index < colNames.size(); index++) {
 					if (keyColName.equals(colNames.get(index))) {
@@ -305,8 +307,8 @@ public class Table implements Serializable {
 			// TODO: Is this message appropriate?
 		}
 
-		ArrayList<String> indicesGiven = indicesIHave(htblColNameValue, colNameBTreeIndex);
-		ArrayList<String> allIndices = allTableIndices(colNameBTreeIndex);
+		ArrayList<String> indicesGiven = indicesIHave(htblColNameValue, colNameTreeIndex);
+		ArrayList<String> allIndices = allTableIndices(colNameTreeIndex);
 
 		if (!(indicesGiven.size() == 0)) {
 			String selectedCol = (clusteringKey != null && clusteringKeyHasIndex(indicesGiven, clusteringKey))
@@ -314,12 +316,12 @@ public class Table implements Serializable {
 					: indicesGiven.get(0);
 			boolean isCluster = selectedCol.equals(clusteringKey);
 
-			BPTree bpTree = colNameBTreeIndex.get(selectedCol);
-			GeneralReference pageReference = bpTree.search((Comparable) htblColNameValue.get(selectedCol));
+			TreeIndex tree = colNameTreeIndex.get(selectedCol);
+			GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
 			if (pageReference instanceof Ref) {
 				Ref x = (Ref) pageReference;
 				Page p = deserialize(x.getPage() + "");
-				p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameBTreeIndex, htblColNameValue,
+				p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex, htblColNameValue,
 						allIndices, isCluster);
 				setMinMax(p);
 
@@ -330,7 +332,7 @@ public class Table implements Serializable {
 				OFP.serialize();
 				for (Ref ref : allReferences) {
 					Page p = deserialize(ref.getPage() + "");
-					p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameBTreeIndex, htblColNameValue,
+					p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex, htblColNameValue,
 							allIndices, isCluster);
 					setMinMax(p);
 				}
@@ -508,8 +510,6 @@ public class Table implements Serializable {
 			return false;
 		return true;
 	}
-
-
 	
 	public boolean invalidDeleteEdited(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
 			throws DBAppException {
@@ -565,7 +565,7 @@ public class Table implements Serializable {
 	}
 
 	public ArrayList<String> indicesIHave(Hashtable<String, Object> htblColNameValue,
-			Hashtable<String, BPTree> colNameBTreeIndex) {
+			Hashtable<String, TreeIndex> colNameBTreeIndex) {
 		ArrayList<String> columns = new ArrayList<String>();
 
 		Set<String> keys = htblColNameValue.keySet();
@@ -591,7 +591,7 @@ public class Table implements Serializable {
 		return indicesGiven;
 	}
 
-	public ArrayList<String> allTableIndices(Hashtable<String, BPTree> colNameBTreeIndex) {
+	public ArrayList<String> allTableIndices(Hashtable<String, TreeIndex> colNameBTreeIndex) {
 		ArrayList<String> allTableIndices = new ArrayList<String>();
 		Set<String> keys = colNameBTreeIndex.keySet();
 		for (String key : keys) {
@@ -616,17 +616,17 @@ public class Table implements Serializable {
 	}
 
 	public void createBTreeIndex(String strColName, BPTree bTree, int colPosition) throws DBAppException, IOException {
-		if (colNameBTreeIndex.containsKey(strColName)) {
+		if (colNameTreeIndex.containsKey(strColName)) {
 			throw new DBAppException("BTree index already exists on this column");
 		} else {
-			colNameBTreeIndex.put(strColName, bTree);
+			colNameTreeIndex.put(strColName, bTree);
 		}
 		for (String str : pages) {
 			Page p = deserialize(str);
+			Ref recordReference = new Ref(p.getPageName());
 			
 			int i = 0;
 			for (Tuple t : p.getTuples()) {
-				Ref recordReference = new Ref(p.getPageName());
 				bTree.insert((Comparable) t.getAttributes().get(colPosition), recordReference);
 				i++;
 			}
@@ -634,6 +634,27 @@ public class Table implements Serializable {
 		}
 	}
 
+	public void createRTreeIndex(String strColName, RTree rTree, int colPosition) throws DBAppException, IOException {
+		if (colNameTreeIndex.containsKey(strColName)) {
+			//TODO: does this "STATEMENT" saying RTREE index here work correctly? 
+			throw new DBAppException("RTree index already exists on this column");
+		} else {
+			colNameTreeIndex.put(strColName, rTree);
+		}
+		for (String str : pages) {
+			Page p = deserialize(str);
+			
+			int i = 0;
+			for (Tuple t : p.getTuples()) {
+				Ref recordReference = new Ref(p.getPageName());
+				rTree.insert((Comparable) t.getAttributes().get(colPosition), recordReference);
+				i++;
+			}
+			p.serialize();
+		}
+	}
+
+	
 	public static int getIndexNumber(String pName, int s) {
 		String num = pName.substring(s);
 		return Integer.parseInt(num);
@@ -880,7 +901,7 @@ public class Table implements Serializable {
 		if(arrSQLTerms[0]._strOperator.equals("!="))
 				return 1; 
 		
-		if(!colNameBTreeIndex.containsKey(arrSQLTerms[0]._strColumnName)) {//first is non indexed
+		if(!colNameTreeIndex.containsKey(arrSQLTerms[0]._strColumnName)) {//first is non indexed
 			if(!arrSQLTerms[0]._strColumnName.equals(strClusteringKey)) {//non cluster
 				if(!strarrOperators[0].toLowerCase().equals("and")) //sufficed with or/xor then must be linear
 				  return 1;
@@ -894,21 +915,21 @@ public class Table implements Serializable {
 		for(int i=1;i<arrSQLTerms.length;i++) {
 			if(arrSQLTerms[i]._strOperator.equals("!="))
                return 1;
-			if(colNameBTreeIndex.containsKey(arrSQLTerms[i]._strColumnName)) { //if first index preceeded by or/xor it should be linear;
+			if(colNameTreeIndex.containsKey(arrSQLTerms[i]._strColumnName)) { //if first index preceeded by or/xor it should be linear;
 				if(strarrOperators[i-1].toLowerCase().equals("and"))
 					found=true;
 				else if(arrSQLTerms[i-1]._strColumnName.equals(strClusteringKey)) //cluster=c or index=d
 					found=true;
 				else if(!found) return 1;
 			}
-			if(arrSQLTerms[i]._strColumnName.equals(strClusteringKey)&&!colNameBTreeIndex.containsKey(strClusteringKey)
+			if(arrSQLTerms[i]._strColumnName.equals(strClusteringKey)&&!colNameTreeIndex.containsKey(strClusteringKey)
 					&&!strarrOperators[i-1].toLowerCase().equals("and")) { 
 				clustNondIdx=true;
 				if(nonClustNonIdx)return 1;
 				continue;
 			}
 			
-			if(!colNameBTreeIndex.containsKey(arrSQLTerms[i]._strColumnName)) {
+			if(!colNameTreeIndex.containsKey(arrSQLTerms[i]._strColumnName)) {
 				if(!strarrOperators[i-1].toLowerCase().equals("and"))
 				    return 1;
 				else 
@@ -922,7 +943,7 @@ public class Table implements Serializable {
 	}
 	private int getFirstIndexPos(SQLTerm[] arrSQLTerms) {
 		for(int i=0;i<arrSQLTerms.length;i++) {
-			if(colNameBTreeIndex.containsKey(arrSQLTerms[i]._strColumnName))
+			if(colNameTreeIndex.containsKey(arrSQLTerms[i]._strColumnName))
 				return i;
 		}
 		return -1;
@@ -1042,7 +1063,7 @@ public class Table implements Serializable {
 			return goLinear(_strColumnName,_objValue,_strOperator,pos);
             
 		
-		return (colNameBTreeIndex.containsKey(_strColumnName))?goWithIndex(_strColumnName,_objValue,_strOperator,pos):
+		return (colNameTreeIndex.containsKey(_strColumnName))?goWithIndex(_strColumnName,_objValue,_strOperator,pos):
 			(_strColumnName.equals(strClusteringKey))?goBinary(_strColumnName,_objValue,_strOperator,pos):goLinear(_strColumnName,_objValue,_strOperator,pos);
 	}
 	private int getColPositionWithinTuple(String _strColumnName, Vector<String[]> metaOfTable) {
@@ -1192,8 +1213,8 @@ public class Table implements Serializable {
 		String lastPage=pages.get(pages.size()-1);
 		int lastPageMaxNum=Integer.parseInt(lastPage.substring(tableName.length()));
 		boolean []visited=new boolean[lastPageMaxNum];
-		BPTree b=colNameBTreeIndex.get(_strColumnName);
-		BPTreeLeafNode leaf=b.getLeftmostLeaf();
+		TreeIndex b=colNameTreeIndex.get(_strColumnName);
+		LeafNode leaf=b.getLeftmostLeaf();
 		while(leaf.getNext()!=null) {
 			int i;
 		   for( i=0;i<leaf.getNumberOfKeys();i++) {
@@ -1339,13 +1360,13 @@ public class Table implements Serializable {
 		if (max.size()>0) sb.append(max.get(max.size()-1)+"}\n");
 
 		sb.append("Indexed Columns: \n");
-		for (String col:colNameBTreeIndex.keySet()) {
+		for (String col:colNameTreeIndex.keySet()) {
 			sb.append(col+"\t");
 		}
 		sb.append("Indexes: \n");
-		for (String col:colNameBTreeIndex.keySet()) {
+		for (String col:colNameTreeIndex.keySet()) {
 			sb.append(col+"\n");
-			sb.append(colNameBTreeIndex.get(col)+"\n");
+			sb.append(colNameTreeIndex.get(col)+"\n");
 		}
 		return sb.toString();
 	}
@@ -1407,4 +1428,5 @@ public class Table implements Serializable {
 		System.out.println("Xor="+show(xor));
 		
 	}
+
 }

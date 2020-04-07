@@ -15,6 +15,8 @@ import java.util.Vector;
 
 import javax.swing.tree.TreeNode;
 
+import General.GeneralReference;
+import General.Ref;
 import kalabalaDB.DBAppException;
 
 public abstract class BPTreeNode<T extends Comparable<T>> implements Serializable{
