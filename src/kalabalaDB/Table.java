@@ -10,6 +10,7 @@ import General.LeafNode;
 import General.OverflowPage;
 import General.OverflowReference;
 import General.Ref;
+import General.TreeIndex;
 import RTree1.RTree;
 
 public class Table implements Serializable {

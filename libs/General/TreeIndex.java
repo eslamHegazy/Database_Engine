@@ -1,11 +1,9 @@
-package kalabalaDB;
+package General;
 
 import java.io.IOException;
 
 import BPTree.BPTreeLeafNode;
-import General.GeneralReference;
-import General.LeafNode;
-import General.Ref;
+import kalabalaDB.DBAppException;
 
 public interface TreeIndex<T extends Comparable<T>> {
 	public GeneralReference search(T key) throws DBAppException;

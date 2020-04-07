@@ -9,9 +9,9 @@ import java.util.Queue;
 import General.GeneralReference;
 import General.OverflowReference;
 import General.Ref;
+import General.TreeIndex;
 import kalabalaDB.DBAppException;
 import kalabalaDB.Polygons;
-import kalabalaDB.TreeIndex;
 
 public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>{
 
