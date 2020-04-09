@@ -10,7 +10,7 @@ import BPTree.BPTree;
 import General.GeneralReference;
 import General.Ref;
 import General.TreeIndex;
-import RTree1.RTree;
+import RTree.RTree;
 
 public class DBApp {
 	// static Vector tables=new Vector();
@@ -613,7 +613,6 @@ public class DBApp {
 			}
 		}
 		Iterator<Tuple> out=t.selectFromTable(arrSQLTerms,strarrOperators,metaOfTable);
-		serialize(t);
 		return out;
 	}
 	public void dropTable(String strTableName) throws DBAppException{

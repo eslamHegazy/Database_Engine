@@ -77,5 +77,29 @@ public class Polygons extends Polygon implements Comparable<Polygons>{
 		}
 		return 0;
 	}
-
+	public static void main(String[] args) {
+		Polygon p1 = new Polygon();
+		Polygon p2 = new Polygon();
+		Polygon p3 = new Polygon();
+		p1.addPoint(0, 0);
+		p2.addPoint(0, 0);
+		
+		p3.addPoint(5, 0);
+		p1.addPoint(5, 0);
+		p2.addPoint(5, 0);
+		
+		p3.addPoint(5, 5);
+		p1.addPoint(5, 5);
+		p2.addPoint(5, 5);
+		
+		p3.addPoint(5, 0);
+		p1.addPoint(5, 0);
+		p2.addPoint(5, 0);
+		
+		p3.addPoint(0, 0);
+		
+		System.out.println(p1.equals(p2));
+		System.out.println(p1.equals(p3));
+		System.out.println(p2.equals(p3));
+	}
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import General.GeneralReference;
 import General.Ref;
@@ -402,14 +403,14 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	{
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
 		GeneralReference x= b.search(key);
-		b.serializeNode();
+		b.serializeNode();	//TODO: Can I remove this ?
 		return x;
 	}
 	public Ref searchForInsertion(T key)throws DBAppException
 	{
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
 		Ref x= b.searchForInsertion(key);
-		b.serializeNode();
+		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}
 	/**
@@ -421,7 +422,18 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	}
 
 	
-
+	public ArrayList<GeneralReference> searchMTE(T key) throws DBAppException{ 
+		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		ArrayList<GeneralReference> res =  b.searchMTE(key);
+//		b.serializeNode();		//TODO: Can I remove this ?
+		return res;
+	}
+	public ArrayList<GeneralReference> searchMT(T key) throws DBAppException{ 
+		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		ArrayList<GeneralReference> res =  b.searchMT(key);
+//		b.serializeNode();		//TODO: Can I remove this ?
+		return res;
+	}
 	
 	
 

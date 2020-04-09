@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -179,6 +180,8 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 			int ptr) throws DBAppException, IOException;
 	
 	public abstract GeneralReference search(T key) throws DBAppException;
+	public abstract ArrayList<GeneralReference> searchMT(T key)throws DBAppException;
+	public abstract ArrayList<GeneralReference> searchMTE(T key)throws DBAppException;
 	public abstract Ref searchForInsertion(T key)throws DBAppException;
 
 	/**

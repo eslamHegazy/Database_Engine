@@ -1,4 +1,4 @@
-package RTree1;
+package RTree;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 
+import BPTree.BPTreeNode;
 import General.GeneralReference;
 import General.Ref;
 import kalabalaDB.DBAppException;
 
-public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  implements Serializable
+public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTreeNode<Polygons>  implements Serializable
 {
 	/**
 	 * 
@@ -38,10 +40,10 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @return Node which is child at specified index
 	 * @throws DBAppException 
 	 */
-	public RTreeNode<T> getChild(int index) throws DBAppException 
+	public RTreeNode<Polygons> getChild(int index) throws DBAppException 
 	{
 		if (childrenName[index]==null) return null;
-		RTreeNode<T> child=deserializeNode(childrenName[index]);
+		RTreeNode<Polygons> child=deserializeNode(childrenName[index]);
 		return child;
 	}
 	
@@ -50,7 +52,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	/**
 	 * creating child at specified index
 	 */
-	public void setChild(int index, RTreeNode<T> child) 
+	public void setChild(int index, RTreeNode<Polygons> child) 
 	{
 		if (child==null) childrenName[index]=null;
 		else	childrenName[index] = child.nodeName;
@@ -61,9 +63,9 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @return first child node.
 	 * @throws DBAppException 
 	 */
-	public RTreeNode<T> getFirstChild() throws DBAppException
+	public RTreeNode<Polygons> getFirstChild() throws DBAppException
 	{
-		RTreeNode<T> child=deserializeNode(childrenName[0]);
+		RTreeNode<Polygons> child=deserializeNode(childrenName[0]);
 		return child;
 	}
 	/**
@@ -71,9 +73,9 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @return last child node.
 	 * @throws DBAppException 
 	 */
-	public RTreeNode<T> getLastChild() throws DBAppException
+	public RTreeNode<Polygons> getLastChild() throws DBAppException
 	{
-		RTreeNode<T> child=deserializeNode(childrenName[numberOfKeys]);
+		RTreeNode<Polygons> child=deserializeNode(childrenName[numberOfKeys]);
 		return child;
 	}
 	/**
@@ -95,11 +97,11 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public PushUp<T> insert(T key, Ref recordReference, RTreeInnerNode<T> parent, int ptr) throws DBAppException, IOException
+	public PushUp<Polygons> insert(Polygons key, Ref recordReference, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException, IOException
 	{
 		int index = findIndex(key);
-		RTreeNode<T> b=deserializeNode(childrenName[index]);
-		PushUp<T> pushUp = b.insert(key, recordReference, this, index); //TODO this or name of parent
+		RTreeNode<Polygons> b=deserializeNode(childrenName[index]);
+		PushUp<Polygons> pushUp = b.insert(key, recordReference, this, index); //TODO this or name of parent
 		
 		if(pushUp == null) 
 		{
@@ -109,12 +111,12 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 		
 		if(this.isFull())
 		{
-			RTreeInnerNode<T> newNode = this.split(pushUp);
-			Comparable<T> newKey = newNode.getFirstKey();
+			RTreeInnerNode<Polygons> newNode = this.split(pushUp);
+			Comparable<Polygons> newKey = newNode.getFirstKey();
 			newNode.deleteAt(0, 0);
 			newNode.serializeNode();
 		    b.serializeNode();
-			return new PushUp<T>(newNode, newKey); //TODO recheck
+			return new PushUp<Polygons>(newNode, newKey); //TODO recheck
 		}
 		else
 		{
@@ -134,16 +136,16 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @throws DBAppException 
 	 */
 	@SuppressWarnings("unchecked")
-	public RTreeInnerNode<T> split(PushUp<T> pushup) throws DBAppException, IOException 
+	public RTreeInnerNode<Polygons> split(PushUp<Polygons> pushup) throws DBAppException, IOException 
 	{
-		int keyIndex = this.findIndex((T)pushup.key);
+		int keyIndex = this.findIndex((Polygons)pushup.key);
 		int midIndex = numberOfKeys / 2 - 1;
 		if(keyIndex > midIndex)				//split nodes evenly
 			++midIndex;		
 
 		int totalKeys = numberOfKeys + 1;
 		//move keys to a new node
-		RTreeInnerNode<T> newNode = new RTreeInnerNode<T>(order);
+		RTreeInnerNode<Polygons> newNode = new RTreeInnerNode<Polygons>(order);
 		for (int i = midIndex; i < totalKeys - 1; ++i) 
 		{	
 			newNode.insertRightAt(i - midIndex, this.getKey(i), this.getChild(i+1));
@@ -165,7 +167,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @param key to be looked for
 	 * @return index of that given key
 	 */
-	public int findIndex(T key) 
+	public int findIndex(Polygons key) 
 	{
 		for (int i = 0; i < numberOfKeys; ++i) 
 		{
@@ -181,7 +183,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @param key to be inserted at index
 	 * @throws DBAppException 
 	 */
-	private void insertAt(int index, Comparable<T> key) throws DBAppException 
+	private void insertAt(int index, Comparable<Polygons> key) throws DBAppException 
 	{
 		for (int i = numberOfKeys; i > index; --i) 
 		{
@@ -198,7 +200,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @param leftChild child which this node points to with pointer at left of that index
 	 * @throws DBAppException 
 	 */
-	public void insertLeftAt(int index, Comparable<T> key, RTreeNode<T> leftChild) throws DBAppException 
+	public void insertLeftAt(int index, Comparable<Polygons> key, RTreeNode<Polygons> leftChild) throws DBAppException 
 	{
 		insertAt(index, key);
 		this.setChild(index+1, this.getChild(index));
@@ -210,7 +212,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @param rightChild child which this node points to with pointer at right of that index
 	 * @throws DBAppException 
 	 */
-	public void insertRightAt(int index, Comparable<T> key, RTreeNode<T> rightChild) throws DBAppException
+	public void insertRightAt(int index, Comparable<Polygons> key, RTreeNode<Polygons> rightChild) throws DBAppException
 	{
 		insertAt(index, key);
 		this.setChild(index + 1, rightChild);
@@ -219,18 +221,18 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * delete key and return true or false if it is deleted or not
 	 * @throws DBAppException 
 	 */
-	public boolean delete(T key, RTreeInnerNode<T> parent, int ptr) throws DBAppException //TODO parent
+	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException //TODO parent
 	{
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) > 0) {
-				RTreeNode<T> b=deserializeNode(childrenName[i]);
+				RTreeNode<Polygons> b=deserializeNode(childrenName[i]);
 				done = b.delete(key, this, i);
 				b.serializeNode();
 			}
 			
 		if(!done) {
-			RTreeNode<T> b=deserializeNode(childrenName[numberOfKeys]);
+			RTreeNode<Polygons> b=deserializeNode(childrenName[numberOfKeys]);
 			done = b.delete(key, this, numberOfKeys);
 		    b.serializeNode();
 		}
@@ -256,19 +258,19 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	}
 	
 	// delete Ref not entire key
-	public boolean delete(T key, RTreeInnerNode<T> parent, int ptr, String page_name) throws DBAppException //TODO parent
+	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr, String page_name) throws DBAppException //TODO parent
 , IOException
 	{
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) > 0) {
-				RTreeNode<T> b=deserializeNode(childrenName[i]);
+				RTreeNode<Polygons> b=deserializeNode(childrenName[i]);
 				done = b.delete(key, this, i,page_name);
 				b.serializeNode();
 			}
 			
 		if(!done) {
-			RTreeNode<T> b=deserializeNode(childrenName[numberOfKeys]);
+			RTreeNode<Polygons> b=deserializeNode(childrenName[numberOfKeys]);
 			done = b.delete(key, this, numberOfKeys,page_name);
 		    b.serializeNode();
 		}
@@ -301,12 +303,12 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @return true or false if it can borrow form right sibling or left sibling or it can not
 	 * @throws DBAppException 
 	 */
-	public boolean borrow(RTreeInnerNode<T> parent, int ptr) throws DBAppException
+	public boolean borrow(RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException
 	{
 		//check left sibling
 		if(ptr > 0)
 		{
-			RTreeInnerNode<T> leftSibling = (RTreeInnerNode<T>) parent.getChild(ptr-1);
+			RTreeInnerNode<Polygons> leftSibling = (RTreeInnerNode<Polygons>) parent.getChild(ptr-1);
 			if(leftSibling.numberOfKeys > leftSibling.minKeys())
 			{
 				this.insertLeftAt(0, parent.getKey(ptr-1), leftSibling.getLastChild());
@@ -322,7 +324,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 		//check right sibling
 		if(ptr < parent.numberOfKeys)
 		{
-			RTreeInnerNode<T> rightSibling = (RTreeInnerNode<T>) parent.getChild(ptr+1);
+			RTreeInnerNode<Polygons> rightSibling = (RTreeInnerNode<Polygons>) parent.getChild(ptr+1);
 			if(rightSibling.numberOfKeys > rightSibling.minKeys())
 			{
 				this.insertRightAt(this.numberOfKeys, parent.getKey(ptr), rightSibling.getFirstChild());
@@ -342,12 +344,12 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @param ptr index of pointer in the parent node pointing to the current node
 	 * @throws DBAppException 
 	 */
-	public void merge(RTreeInnerNode<T> parent, int ptr) throws DBAppException
+	public void merge(RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException
 	{
 		if(ptr > 0)
 		{
 			//merge with left
-			RTreeInnerNode<T> leftSibling = (RTreeInnerNode<T>) parent.getChild(ptr-1);
+			RTreeInnerNode<Polygons> leftSibling = (RTreeInnerNode<Polygons>) parent.getChild(ptr-1);
 			leftSibling.merge(parent.getKey(ptr-1), this);
 			parent.deleteAt(ptr-1);		
 			leftSibling.serializeNode();
@@ -355,7 +357,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 		else
 		{
 			//merge with right
-			RTreeInnerNode<T> rightSibling = (RTreeInnerNode<T>) parent.getChild(ptr+1);
+			RTreeInnerNode<Polygons> rightSibling = (RTreeInnerNode<Polygons>) parent.getChild(ptr+1);
 			this.merge(parent.getKey(ptr), rightSibling);
 			parent.deleteAt(ptr);
 			rightSibling.serializeNode();
@@ -369,7 +371,7 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @param foreignNode the node to be merged with the current node
 	 * @throws DBAppException 
 	 */
-	public void merge(Comparable<T> parentKey, RTreeInnerNode<T> foreignNode) throws DBAppException
+	public void merge(Comparable<Polygons> parentKey, RTreeInnerNode<Polygons> foreignNode) throws DBAppException
 	{
 		this.insertRightAt(numberOfKeys, parentKey, foreignNode.getFirstChild());
 		for(int i = 0; i < foreignNode.numberOfKeys; ++i)
@@ -398,18 +400,18 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 	 * @throws DBAppException 
 	 */
 	@Override
-	public GeneralReference search(T key) throws DBAppException 
+	public GeneralReference search(Polygons key) throws DBAppException 
 	{
-		RTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
 		GeneralReference x= b.search(key);
-		b.serializeNode();
+		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}
-	public Ref searchForInsertion(T key)throws DBAppException
+	public Ref searchForInsertion(Polygons key)throws DBAppException
 	{
-		RTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
 		Ref x= b.searchForInsertion(key);
-		b.serializeNode();
+		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}
 	/**
@@ -420,6 +422,18 @@ public class RTreeInnerNode<T extends Comparable<T>> extends RTreeNode<T>  imple
 		deleteAt(index, 1);	
 	}
 
+	public ArrayList<GeneralReference> searchMTE(Polygons key) throws DBAppException{ 
+		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
+		ArrayList<GeneralReference> res =  b.searchMTE(key);
+//		b.serializeNode();		//TODO: Can I remove this ?
+		return res;
+	}
+	public ArrayList<GeneralReference> searchMT(Polygons key) throws DBAppException{ 
+		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
+		ArrayList<GeneralReference> res =  b.searchMT(key);
+//		b.serializeNode();		//TODO: Can I remove this ?
+		return res;
+	}
 	
 
 	

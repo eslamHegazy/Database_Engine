@@ -1,4 +1,4 @@
-package RTree1;
+package RTree;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -13,7 +13,7 @@ import General.TreeIndex;
 import kalabalaDB.DBAppException;
 import kalabalaDB.Polygons;
 
-public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>{
+public class RTree<Polygons extends Comparable<Polygons>> implements Serializable,TreeIndex<Polygons>{
 
 	/**
 	 * 
@@ -22,7 +22,7 @@ public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>
 	//protected String treeName;
 	protected static final long serialVersionUID = 1L;
 	protected int order;
-	protected RTreeNode<T> root;
+	protected RTreeNode<Polygons> root;
 	protected int lastin; 
 	
 	/**
@@ -35,11 +35,11 @@ public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>
 	{	
 		this.order = order;
 		//this.treeName=treeName;
-		root = new RTreeLeafNode<T>(this.order);
+		root = new RTreeLeafNode<Polygons>(this.order);
 		root.setRoot(true);
 		//root.treeName=this.treeName;
 	}
-	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException, IOException {
+	public void updateRef(String oldpage,String newpage,Polygons key,int tableNameLength) throws DBAppException, IOException {
 		GeneralReference gf=search(key);
 		gf.updateRef(oldpage, newpage, tableNameLength);
 	}
@@ -52,12 +52,12 @@ public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>
 	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public void insert(T key, Ref recordReference) throws DBAppException, IOException
+	public void insert(Polygons key, Ref recordReference) throws DBAppException, IOException
 	{
-		PushUp<T> pushUp = root.insert(key, recordReference, null, -1);
+		PushUp<Polygons> pushUp = root.insert(key, recordReference, null, -1);
 		if(pushUp != null)
 		{
-			RTreeInnerNode<T> newRoot = new RTreeInnerNode<T>(order);
+			RTreeInnerNode<Polygons> newRoot = new RTreeInnerNode<Polygons>(order);
 			root.serializeNode();
 			newRoot.insertLeftAt(0, pushUp.key, root);
 			root.deserializeNode(root.nodeName);
@@ -74,7 +74,7 @@ public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>
 	 * @return the reference of the record associated with this key 
 	 * @throws DBAppException 
 	 */
-	public GeneralReference search(T key) throws DBAppException
+	public GeneralReference search(Polygons key) throws DBAppException
 	{
 		return root.search(key);
 	}
@@ -85,20 +85,20 @@ public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>
 	 * @return a boolean to indicate whether the key is successfully deleted or it was not in the tree
 	 * @throws DBAppException 
 	 */
-	public boolean delete(T key) throws DBAppException
+	public boolean delete(Polygons key) throws DBAppException
 	{
 		boolean done = root.delete(key, null, -1);
 		//go down and find the new root in case the old root is deleted
 		while(root instanceof RTreeInnerNode && !root.isRoot())
-			root = ((RTreeInnerNode<T>) root).getFirstChild();
+			root = ((RTreeInnerNode<Polygons>) root).getFirstChild();
 		return done;
 	}
 	// to delete Ref only not the key
-	public boolean delete(T key, String Page_name) throws DBAppException, IOException {
+	public boolean delete(Polygons key, String Page_name) throws DBAppException, IOException {
 		boolean done = root.delete(key, null, -1,Page_name);
 		//go down and find the new root in case the old root is deleted
 		while(root instanceof RTreeInnerNode && !root.isRoot())
-			root = ((RTreeInnerNode<T>) root).getFirstChild();
+			root = ((RTreeInnerNode<Polygons>) root).getFirstChild();
 		return done;
 	}
 	
@@ -113,21 +113,21 @@ public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>
 		String s = "";
 		RTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
 		
-		Queue<RTreeNode<T>> cur = new LinkedList<RTreeNode<T>>(), next;
+		Queue<RTreeNode<Polygons>> cur = new LinkedList<RTreeNode<Polygons>>(), next;
 		cur.add(root);
 		while(!cur.isEmpty())
 		{
-			next = new LinkedList<RTreeNode<T>>();
+			next = new LinkedList<RTreeNode<Polygons>>();
 			while(!cur.isEmpty())
 			{
-				RTreeNode<T> curNode = cur.remove();
+				RTreeNode<Polygons> curNode = cur.remove();
 				System.out.print(curNode);
 				if(curNode instanceof RTreeLeafNode)
 					System.out.print("->");
 				else
 				{
 					System.out.print("{");
-					RTreeInnerNode<T> parent = (RTreeInnerNode<T>) curNode;
+					RTreeInnerNode<Polygons> parent = (RTreeInnerNode<Polygons>) curNode;
 					for(int i = 0; i <= parent.numberOfKeys; ++i)
 					{			
 						try 
@@ -160,22 +160,30 @@ public class RTree<T extends Comparable<T>> implements Serializable,TreeIndex<T>
 		//	</For Testing>
 		return s;
 	}
-	public Ref searchForInsertion(T key) throws DBAppException { //comparable and T???
+	public Ref searchForInsertion(Polygons key) throws DBAppException { //comparable and T???
 		return root.searchForInsertion(key);
 	}
-	public Ref searchRequiredReference(T key)throws DBAppException{
+	public Ref searchRequiredReference(Polygons key)throws DBAppException{
 		search(key);
 		return null;
 		
 	}
 	public RTreeLeafNode getLeftmostLeaf() throws DBAppException {
-		RTreeNode<T> curNode=root;
+		RTreeNode<Polygons> curNode=root;
 		while(!(curNode instanceof RTreeLeafNode)) {
-			RTreeInnerNode <T> x=(RTreeInnerNode)curNode;
+			RTreeInnerNode <Polygons> x=(RTreeInnerNode)curNode;
 			curNode=x.getFirstChild();
 		}
         
 		return (RTreeLeafNode) curNode;
+	}
+	@Override
+	public ArrayList<GeneralReference> searchMTE(Polygons key) throws DBAppException {
+		return root.searchMTE(key);
+	}
+	@Override
+	public ArrayList<GeneralReference> searchMT(Polygons key) throws DBAppException {
+		return root.searchMT(key);
 	}
 	
 }

@@ -185,5 +185,10 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
         
 		return (BPTreeLeafNode) curNode;
 	}
-	
+	public ArrayList<GeneralReference> searchMTE(T key) throws DBAppException{ 
+		return root.searchMTE(key);
+		}
+	public ArrayList<GeneralReference> searchMT(T key) throws DBAppException{ 
+		return root.searchMT(key);
+	}
 }

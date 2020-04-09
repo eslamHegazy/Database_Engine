@@ -11,7 +11,7 @@ import General.OverflowPage;
 import General.OverflowReference;
 import General.Ref;
 import General.TreeIndex;
-import RTree1.RTree;
+import RTree.RTree;
 
 public class Table implements Serializable {
 
@@ -23,7 +23,6 @@ public class Table implements Serializable {
 	private String tableName;
 	private String strClusteringKey;
 	private int primaryPos;
-	//TODO
 	private Hashtable<String, TreeIndex> colNameTreeIndex = new Hashtable<>();
 
 	public Hashtable<String, TreeIndex> getColNameBTreeIndex() {
@@ -118,8 +117,6 @@ public class Table implements Serializable {
 	public static Page deserialize(String name) throws DBAppException {
 		try {
 			FileInputStream fileIn = new FileInputStream("data/" + name + ".class");
-			// FileInputStream fileIn = new FileInputStream("data/"+name + ".ser");
-			// TODO: Check resulting path + check class/ ser
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			Page xx = (Page) in.readObject();
 			in.close();
@@ -713,7 +710,6 @@ public class Table implements Serializable {
 					else if (curr[2].equals("java.awt.Polygon"))
 						key = (Comparable) Polygons.parsePolygon(strKey);
 					else {
-//						TODO:return "-1";
 						throw new DBAppException("Searching for a key of unknown type !");
 					}
 				}
@@ -1203,9 +1199,23 @@ public class Table implements Serializable {
 		}
 		return res;
 	}
-	private ArrayList<Tuple> equalsIndex(String _strColumnName, Object _objValue, String _strOperator, int pos) {
-		//TODO
-		return null;
+	private ArrayList<Tuple> equalsIndex(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException{
+		ArrayList<Tuple> res = new ArrayList<>();
+		String lastPage=pages.get(pages.size()-1);
+		int lastPageMaxNum=Integer.parseInt(lastPage.substring(tableName.length()));
+		boolean []visited=new boolean[lastPageMaxNum];
+		TreeIndex b=colNameTreeIndex.get(_strColumnName);
+		GeneralReference resultReference = b.search((Comparable)_objValue);
+		ArrayList<Ref> referenceList = resultReference.getALLRef();
+		for (int i=0;i<referenceList.size();i++) {
+			Ref currentReference = referenceList.get(i);
+			String pagename = currentReference.getPage();
+			int curPageNum=Integer.parseInt(pagename.substring(tableName.length()));
+			if (visited[curPageNum]) continue;
+			addToResultSet(res, pagename, pos, _objValue, _strOperator);
+			visited[curPageNum] = true;
+		}
+		return res;
 	}
 	private ArrayList<Tuple> ltOrLtlIndex(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException {
 		if(_strColumnName.equals(strClusteringKey))
@@ -1216,7 +1226,7 @@ public class Table implements Serializable {
 		boolean []visited=new boolean[lastPageMaxNum];
 		TreeIndex b=colNameTreeIndex.get(_strColumnName);
 		LeafNode leaf=b.getLeftmostLeaf();
-		while(leaf.getNext()!=null) {
+		while(leaf!=null) {
 			int i;
 		   for( i=0;i<leaf.getNumberOfKeys();i++) {
 			   GeneralReference gr=leaf.getRecord(i);
@@ -1227,7 +1237,7 @@ public class Table implements Serializable {
 				   String pagename=r.getPage();
 				   int curPageNum=Integer.parseInt(pagename.substring(tableName.length()));
 				   if(visited[curPageNum])continue;
-				   res=addToResultSet(res,pagename,pos,_objValue,_strOperator);
+				   addToResultSet(res,pagename,pos,_objValue,_strOperator);
 				   visited[curPageNum]=true;
 			   }
 			   
@@ -1237,18 +1247,47 @@ public class Table implements Serializable {
 		}
 		return res;
 	}
- 	private ArrayList<Tuple> addToResultSet(ArrayList<Tuple> res, String pagename, int pos, Object _objValue,
+	private void addToResultSet(ArrayList<Tuple> res, String pagename, int pos, Object _objValue,
 			String _strOperator) throws DBAppException {
+		switch (_strOperator) {
+		case ("<"):	addToResultSetLESSorEQUAL(res, pagename, pos, _objValue);
+		case ("<="): addToResultSetLESS(res, pagename, pos, _objValue);
+		case ("="): addToResultSetEQUAL(res, pagename, pos, _objValue);
+		//TODO:
+		}
+	}
+ 	private void addToResultSetLESS(ArrayList<Tuple> res, String pagename, int pos, Object _objValue
+ 			) throws DBAppException {
 		Page x=deserialize(pagename);
 		for(int i=0;i<x.getTuples().size();i++) {
-			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))>=0)res.add(x.getTuples().get(i));
-			else if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))==0) {
-				if(_strOperator.length()==1)break;
-				else res.add(x.getTuples().get(i));
-			}
+			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))>0)
+				res.add(x.getTuples().get(i));
 			else break;
 		}
-		return res;
+		return ;
+	}
+ 	private void addToResultSetLESSorEQUAL(ArrayList<Tuple> res, String pagename, int pos, Object _objValue
+ 			) throws DBAppException {
+		Page x=deserialize(pagename);
+		for(int i=0;i<x.getTuples().size();i++) {
+			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))>=0)
+				res.add(x.getTuples().get(i));
+			else break;
+		}
+		return ;
+	}
+	private void addToResultSetEQUAL(ArrayList<Tuple> res, String pagename, int pos, Object _objValue
+ 			) throws DBAppException {
+		Page x=deserialize(pagename);
+		for(int i=0;i<x.getTuples().size();i++) {
+			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))==0)
+				res.add(x.getTuples().get(i));
+			else if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))<0) {
+				//TODO:make sure it is that I finished the records (EQUAL) and now in the records > my key; not the opposite
+				break;
+			}
+		}
+		return ;
 	}
 	private Set<Ref> fillInRef(GeneralReference gr) throws DBAppException {
  		Set<Ref> ref=new HashSet();
@@ -1269,11 +1308,31 @@ public class Table implements Serializable {
 	private ArrayList<Tuple> mtOrMtlIndex(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException {
  		if(_strColumnName.equals(strClusteringKey))
 			return mtOrMtlLinear(_strColumnName, _objValue, _strOperator, pos);
-		//TODO non cluster
  		else {
- 			
+ 			ArrayList<Tuple> res = new ArrayList<>();
+ 			String lastPage=pages.get(pages.size()-1);
+ 			int lastPageMaxNum=Integer.parseInt(lastPage.substring(tableName.length()));
+ 			boolean []visited=new boolean[lastPageMaxNum];
+ 			TreeIndex b=colNameTreeIndex.get(_strColumnName);
+ 			ArrayList<GeneralReference> referenceList = _strOperator.equals(">")?
+ 					b.searchMT((Comparable)_objValue) :
+ 						b.searchMTE((Comparable)_objValue) ;
+// 					searchMT_MTE((Comparable)_objValue);
+// 			ArrayList<Ref> referenceList = resultReference.getALLRef();
+ 			for (int i=0;i<referenceList.size();i++) {
+ 				GeneralReference currentGR= referenceList.get(i);
+ 				ArrayList<Ref> currentRefsForOneKey= currentGR.getALLRef();
+ 				for (int j=0;j<currentRefsForOneKey.size();j++) {
+ 					Ref currentReference = currentRefsForOneKey.get(j);
+	 				String pagename = currentReference.getPage();
+	 				int curPageNum=Integer.parseInt(pagename.substring(tableName.length()));
+	 				if (visited[curPageNum]) continue;
+	 				addToResultSet(res, pagename, pos, _objValue, _strOperator);
+	 				visited[curPageNum] = true;
+ 				}
+ 			}
+ 			return res;
  		}
-		return null;
 	}
 	public void checkQueryValidity(SQLTerm[] arrSQLTerms,String[] strarrOperators, Vector<String[]> metaOfTable) throws DBAppException{
 	//	boolean clusterHasIndex=false;

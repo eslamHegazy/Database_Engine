@@ -1,4 +1,4 @@
-package RTree1;
+package RTree;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -17,13 +18,13 @@ import General.GeneralReference;
 import General.Ref;
 import kalabalaDB.DBAppException;
 
-public abstract class RTreeNode<T extends Comparable<T>> implements Serializable{
+public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implements Serializable{
 	
 	/**
 	 * Abstract class that collects the common functionalities of the inner and leaf nodes
 	 */
 	private static final long serialVersionUID = 1L;
-	protected Comparable<T>[] keys;
+	protected Comparable<Polygons>[] keys;
 	protected int numberOfKeys;
 	protected int order;
 	protected int index;		//for printing the tree
@@ -117,7 +118,7 @@ public abstract class RTreeNode<T extends Comparable<T>> implements Serializable
 	 * @param index the index at which the key is located
 	 * @return the key which is located at the specified index
 	 */
-	public Comparable<T> getKey(int index) 
+	public Comparable<Polygons> getKey(int index) 
 	{
 		return keys[index];
 	}
@@ -127,7 +128,7 @@ public abstract class RTreeNode<T extends Comparable<T>> implements Serializable
 	 * @param index the index of the key to be set
 	 * @param key the new value for the key
 	 */
-	public void setKey(int index, Comparable<T> key) 
+	public void setKey(int index, Comparable<Polygons> key) 
 	{
 		keys[index] = key;
 	}
@@ -143,7 +144,7 @@ public abstract class RTreeNode<T extends Comparable<T>> implements Serializable
 	/**
 	 * @return the last key in this node
 	 */
-	public Comparable<T> getLastKey()
+	public Comparable<Polygons> getLastKey()
 	{
 		return keys[numberOfKeys-1];
 	}
@@ -151,7 +152,7 @@ public abstract class RTreeNode<T extends Comparable<T>> implements Serializable
 	/**
 	 * @return the first key in this node
 	 */
-	public Comparable<T> getFirstKey()
+	public Comparable<Polygons> getFirstKey()
 	{
 		return keys[0];
 	}
@@ -171,13 +172,15 @@ public abstract class RTreeNode<T extends Comparable<T>> implements Serializable
 	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public abstract PushUp<T> insert(T key, 
+	public abstract PushUp<Polygons> insert(Polygons key, 
 			Ref recordReference, 
-			RTreeInnerNode<T> parent, 
+			RTreeInnerNode<Polygons> parent, 
 			int ptr) throws DBAppException, IOException;
 	
-	public abstract GeneralReference search(T key) throws DBAppException;
-	public abstract Ref searchForInsertion(T key)throws DBAppException;
+	public abstract GeneralReference search(Polygons key) throws DBAppException;
+	public abstract ArrayList<GeneralReference> searchMT(Polygons key)throws DBAppException;
+	public abstract ArrayList<GeneralReference> searchMTE(Polygons key)throws DBAppException;
+	public abstract Ref searchForInsertion(Polygons key)throws DBAppException;
 
 	/**
 	 * delete a key from the B+ tree recursively
@@ -187,8 +190,8 @@ public abstract class RTreeNode<T extends Comparable<T>> implements Serializable
 	 * @return true if this node was successfully deleted and false otherwise
 	 * @throws DBAppException 
 	 */
-	public abstract boolean delete(T key, RTreeInnerNode<T> parent, int ptr) throws DBAppException;
-	public abstract boolean delete(T key, RTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException, IOException;
+	public abstract boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException;
+	public abstract boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr,String page_name) throws DBAppException, IOException;
 	
 	/**
 	 * A string represetation for the node
@@ -230,13 +233,13 @@ public abstract class RTreeNode<T extends Comparable<T>> implements Serializable
 		}
 		
 	}
-	public RTreeNode<T> deserializeNode(String name) throws DBAppException {
+	public RTreeNode<Polygons> deserializeNode(String name) throws DBAppException {
 		try {
 		//	if(name == null || name == "")
 		//		return null;
 			FileInputStream fileIn = new FileInputStream("data/"+ name + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
-			RTreeNode<T> BPTN =   (RTreeNode<T>) in.readObject();
+			RTreeNode<Polygons> BPTN =   (RTreeNode<Polygons>) in.readObject();
 			in.close();
 			fileIn.close();
 			return BPTN;
