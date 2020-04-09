@@ -239,10 +239,34 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	}
 	public Ref searchForInsertion(Polygons key)throws DBAppException
 	{
-		for(int i = 0; i < numberOfKeys; ++i)
+		int i=0;
+		for(; i < numberOfKeys; i++){
 			if(this.getKey(i).compareTo(key) > 0)
-				return (Ref)(this.getRecord(i));
-		return (Ref)(records[records.length-1]);
+				return this.refReference((this.getRecord(i)));
+		}	
+		if(i>0){
+			return this.refReference(this.getRecord(i-1));
+		}
+		return null;
+	}
+	private Ref refReference(GeneralReference generalReference) throws DBAppException {
+		if(generalReference instanceof Ref){
+			return (Ref)generalReference;
+		}else{
+				OverflowReference o=(OverflowReference)generalReference;
+				String pageName=o.getFirstPageName();
+					OverflowPage p=o.deserializeOverflowPage(pageName);;
+					while(pageName!=null){
+						p.serialize();
+						p=o.deserializeOverflowPage(pageName);
+						pageName=p.getNext();
+					}
+					Ref r=p.getRefs().get(p.getRefs().size()-1);
+					p.serialize();
+					return r;
+					
+				
+		}
 	}
 	/**
 	 * delete the passed key from the B+ tree
