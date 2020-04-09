@@ -137,7 +137,7 @@ public class Table implements Serializable {
 	}
 
 
-	public void addInPage(int curr, Tuple x, String keyType, String keyColName, int nodeSize) throws DBAppException, IOException {
+	public Hashtable<Tuple,Ref> addInPage(int curr, Tuple x, String keyType, String keyColName, int nodeSize,Hashtable<Tuple,Ref> list) throws DBAppException, IOException {
 		// System.out.println(x+" "+curr);\
 
 		if (curr < pages.size()) {
@@ -160,11 +160,10 @@ public class Table implements Serializable {
 					TreeIndex tree = colNameTreeIndex.get(keyColName);
 					Ref recordReference = new Ref(p.getPageName());
 					tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-					//TODO: Remove the next line ; eslam wrote this todo
-					colNameTreeIndex.put(keyColName, tree);
 
 				}
 				p.serialize();
+				return list;
 			} else {
 				// Tuple t=p.getTuples().get(p.size()-1);//element 199
 				p.insertIntoPage(x, primaryPos);
@@ -172,11 +171,10 @@ public class Table implements Serializable {
 					TreeIndex tree = colNameTreeIndex.get(keyColName);
 					Ref recordReference = new Ref(p.getPageName());
 					tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-					colNameTreeIndex.put(keyColName, tree);
 				}
 				Tuple t = p.getTuples().remove(p.size() - 1);
-
 				if (colNameTreeIndex.containsKey(keyColName)) {
+					list.put(t, new Ref(p.getPageName()));
 					TreeIndex tree = colNameTreeIndex.get(keyColName);
 
 					tree.delete((Comparable) t.getAttributes().get(primaryPos));
@@ -189,7 +187,7 @@ public class Table implements Serializable {
 				addInVector(max, maxx, curr);
 
 				p.serialize();
-				addInPage(curr + 1, t, keyType, keyColName, nodeSize);
+				return addInPage(curr + 1, t, keyType, keyColName, nodeSize,list);
 			}
 		} else {
 			Page p = new Page(getNewPageName());
@@ -198,14 +196,13 @@ public class Table implements Serializable {
 				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref recordReference = new Ref(p.getPageName());
 				tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-				colNameTreeIndex.put(keyColName, tree);
 			}
 			Object keyValue = p.getTuples().get(0).getAttributes().get(primaryPos);
 			pages.addElement(p.getPageName());
 			min.addElement(keyValue);
 			max.addElement(keyValue);
 			p.serialize();
-
+			return list;
 		}
 
 	}
@@ -223,7 +220,7 @@ public class Table implements Serializable {
 //	}
 
 	public void insertSorted(Tuple x, Object keyV,String keyType,String keyColName,int nodeSize,ArrayList colNames) throws DBAppException, IOException{
-		
+		Hashtable<Tuple,Ref> list=new Hashtable<Tuple,Ref>();
 		if(pages.size()==0){
 			Page p=new Page(getNewPageName());
 			p.insertIntoPage(x, primaryPos);
@@ -231,7 +228,6 @@ public class Table implements Serializable {
 				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref recordReference = new Ref(p.getPageName());
 				tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
-				colNameTreeIndex.put(keyColName, tree);
 			}
 			pages.addElement(p.getPageName());
 			min.addElement(keyV);
@@ -243,19 +239,21 @@ public class Table implements Serializable {
 			if (colNameTreeIndex.containsKey(keyColName)) {
 				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref pageReference = tree.searchForInsertion(keyValue);
-				String pageName = this.tableName + pageReference.getPage();
+				String pageName="";
+				if(pageReference==null){
+					pageName=pages.get(pages.size()-1);
+				}
+				pageName = pageReference.getPage();
 				int curr = pages.indexOf(pageName);
-				addInPage(curr, x, keyType, keyColName, nodeSize);
+				list=addInPage(curr, x, keyType, keyColName, nodeSize,list);
 			} else {
-				int lower = 0;
-				int upper = min.size();
 				int curr = 0;
 				for (curr = 0; curr < pages.size(); curr++) {
 					Object minn = (min.get(curr));
 					Object maxx = max.get(curr);
 					if ((keyValue.compareTo(minn) >= 0 && keyValue.compareTo(maxx) <= 0)
 							|| (keyValue.compareTo(minn) < 0) || curr == pages.size() - 1) {
-						addInPage(curr, x, keyType, keyColName, nodeSize);
+						list=addInPage(curr, x, keyType, keyColName, nodeSize,list);
 						break;
 					}
 				}
@@ -263,19 +261,33 @@ public class Table implements Serializable {
 		}
 
 		Set<String> c = colNameTreeIndex.keySet();
-		for (int i = 0; i < c.size(); i++) {
-			if (!keyColName.equals(c)) {
-				TreeIndex tree = colNameTreeIndex.get(c);
+		for (String s:c) {
+			if (!keyColName.equals(s)) {
+				TreeIndex tree = colNameTreeIndex.get(s);
 				int index = 0;
 				for (; index < colNames.size(); index++) {
-					if (keyColName.equals(colNames.get(index))) {
+					if (s.equals(colNames.get(index))) {
 						break;
 					}
 				}
 				Object keyValueOfNonCluster = x.getAttributes().get(index);
-				//TODO: getting NullPointerException here
 				Ref pageReference = tree.searchForInsertion((Comparable) keyValueOfNonCluster);
+				if(pageReference==null){
+					pageReference=new Ref(pages.get(0));
+				}
 				tree.insert((Comparable) keyValueOfNonCluster, pageReference);
+				Set<Tuple> st=list.keySet();
+				for(Tuple t:st){
+					if(!t.equals(x)){
+						Object keyValueOfNonClusterT = t.getAttributes().get(index);
+						tree.delete((Comparable)keyValueOfNonClusterT,list.get(t).getPage());
+						Ref pageReferenceT = tree.searchForInsertion((Comparable) keyValueOfNonClusterT);
+						if(pageReference==null){
+							pageReference=new Ref(pages.get(0));
+						}
+						tree.insert((Comparable) keyValueOfNonCluster, pageReferenceT);
+					}
+				}
 			}
 		}
 		

@@ -41,34 +41,44 @@ public class DBAppTest {
 		htblColNameType.put("id", "java.lang.Integer");
 		htblColNameType.put("name", "java.lang.String");
 		htblColNameType.put("gpa", "java.lang.Double");
+		htblColNameType.put("shape", "java.awt.Polygon");
 		dbApp.createTable( strTableName, "id", htblColNameType );
 		dbApp.createBTreeIndex( strTableName, "gpa" );
-		
+		dbApp.createBTreeIndex( strTableName, "id" );		
+		dbApp.createRTreeIndex( strTableName, "shape" );
+
 		Hashtable htblColNameValue = new Hashtable( );
 		htblColNameValue.put("id", new Integer( 2343432 ));
 		htblColNameValue.put("name", new String("Ahmed Noor" ) );
 		htblColNameValue.put("gpa", new Double( 0.95 ) );
+		htblColNameValue.put("shape", new Polygons(  ) );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 453455 ));
 		htblColNameValue.put("name", new String("Ahmed Noor" ) );
 		htblColNameValue.put("gpa", new Double( 0.95 ) );
+		htblColNameValue.put("shape", new Polygons() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 5674567 ));
 		htblColNameValue.put("name", new String("Dalia Noor" ) );
 		htblColNameValue.put("gpa", new Double( 1.25 ) );
+		htblColNameValue.put("shape", new Polygons() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue);
+
 		htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 23498 ));
 		htblColNameValue.put("name", new String("John Noor" ) );
 		htblColNameValue.put("gpa", new Double( 1.5 ) );
+		htblColNameValue.put("shape", new Polygons() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 78452 ));
 		htblColNameValue.put("name", new String("Zaky Noor" ) );
 		htblColNameValue.put("gpa", new Double( 0.88 ) );
+		htblColNameValue.put("shape", new Polygons( ) );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
 //		
 //		for (int i=0;i<50;i++) {
 //			htblColNameValue.clear( );
