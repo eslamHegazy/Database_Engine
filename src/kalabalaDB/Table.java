@@ -752,7 +752,25 @@ public class Table implements Serializable {
         }
         else if(linearScGu==2){
         	//single clustering without index preceeded or sufficed with or/xor , no other non indexed appears in query
-        	//TODO
+
+        	int pos=getColPositionWithinTuple(arrSQLTerms[0]._strColumnName,metaOfTable);
+			current=getArrayOfTuples(arrSQLTerms[0]._strColumnName, arrSQLTerms[0]._objValue,strarrOperators[0],pos);
+			for(int k=1;k<arrSQLTerms.length;k++) {
+    			pos=getColPositionWithinTuple(arrSQLTerms[k]._strColumnName, metaOfTable);
+    			if(strarrOperators[k-1].toLowerCase().equals("and")) { //operation on the current
+    				for(int z=0;z<current.size();z++) {
+            			if(!checkTupleInCurrent(arrSQLTerms[k],current.get(z),pos)) {
+            				current.remove(z--);
+            			}
+            			}
+    			}else {
+    				 //set operation between 2 indices
+    				 next=getArrayOfTuples(arrSQLTerms[k]._strColumnName, arrSQLTerms[k]._objValue, arrSQLTerms[k]._strOperator,pos);
+    				 current=setOperation(current, next, strarrOperators[k-1]);
+    			}
+    		}
+        	
+        	        	
         	
         }else {
         	int leadingIndexPosition=getFirstIndexPos(arrSQLTerms); //index to start with 
@@ -862,6 +880,9 @@ public class Table implements Serializable {
 			}
 			else if(arrSQLTerms[0]._strColumnName.equals(strClusteringKey)&&!strarrOperators[0].toLowerCase().equals("and"))
 				clustNondIdx=true;//clustering non indexed sufficed with or/xor
+		}
+		else {
+			found = true;
 		}
 		
 		
