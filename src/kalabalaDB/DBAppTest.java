@@ -25,105 +25,11 @@ import General.Ref;
 
 
 public class DBAppTest {
-	static void faUpTs() throws Exception{
-//		DBApp d = new DBApp();
-//		d.init();
-//		Hashtable htblColNameType = new Hashtable();
-//		htblColNameType.put("k1", "java.util.Date");
-//		htblColNameType.put("c2", "java.lang.Boolean");
-//		htblColNameType.put("c3", "java.lang.Integer");
-//		d.createTable("fathy", "k1", htblColNameType);
-//		for (int i=0;i<30;i++) {
-//			Hashtable htblColNameValue
-		String strTableName = "Student";
-		DBApp dbApp = new DBApp( );
-		dbApp.init();
-		
-		Hashtable htblColNameType = new Hashtable( );
-		htblColNameType.put("id", "java.lang.Integer");
-		htblColNameType.put("name", "java.lang.String");
-		htblColNameType.put("gpa", "java.lang.Double");
-		htblColNameType.put("shape", "java.awt.Polygon");
-		
-		dbApp.createTable( strTableName, "id", htblColNameType );
-		
-		dbApp.createBTreeIndex( strTableName, "gpa" );
-		dbApp.createBTreeIndex( strTableName, "id" );		
-		dbApp.createRTreeIndex( strTableName, "shape" );
-
-		Hashtable htblColNameValue = new Hashtable( );
-		htblColNameValue.put("id", new Integer( 2343432 ));
-		htblColNameValue.put("name", new String("Ahmed Noor" ) );
-		htblColNameValue.put("gpa", new Double( 0.95 ) );
-		htblColNameValue.put("shape", new Polygon()); //check Polygon work correctly
-		dbApp.insertIntoTable( strTableName , htblColNameValue );
-		
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 453455 ));
-		htblColNameValue.put("name", new String("Ahmed Noor" ) );
-		htblColNameValue.put("gpa", new Double( 0.95 ) );
-		htblColNameValue.put("shape", randomPolygon() );
-		dbApp.insertIntoTable( strTableName , htblColNameValue );
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 5674567 ));
-		htblColNameValue.put("name", new String("Dalia Noor" ) );
-		htblColNameValue.put("gpa", new Double( 1.25 ) );
-		htblColNameValue.put("shape",randomPolygon() );
-		dbApp.insertIntoTable( strTableName , htblColNameValue);
-
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 23498 ));
-		htblColNameValue.put("name", new String("John Noor" ) );
-		htblColNameValue.put("gpa", new Double( 1.5 ) );
-		htblColNameValue.put("shape", randomPolygon() );
-		dbApp.insertIntoTable( strTableName , htblColNameValue );
-		htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 78452 ));
-		htblColNameValue.put("name", new String("Zaky Noor" ) );
-		htblColNameValue.put("gpa", new Double( 0.88 ) );
-		htblColNameValue.put("shape", randomPolygon( ) );
-		dbApp.insertIntoTable( strTableName , htblColNameValue );
-		
-		
-//		for (int i=0;i<6;i++) {
-		for (int i=0;i<50;i++) {
-			htblColNameValue.clear( );
-			htblColNameValue.put("id", new Integer( 76000+(int)(Math.random()*5000) ));
-			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
-			double gpa = 1.0*((int)(1+Math.random()*100))/100;
-			htblColNameValue.put("gpa", new Double( gpa ) );
-			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
-			dbApp.insertIntoTable( strTableName , htblColNameValue );
-		}
-		
-		
-		
-	}
-	static void tsSel1() throws DBAppException{
-		DBApp d = new DBApp();
-		d.init();
-		SQLTerm[] arrSQLTerms = new SQLTerm[2];
-		String[] strarrOperators = new String[1];
-		SQLTerm s = new SQLTerm();
-		s._strTableName= "Student";
-		s._strColumnName = "id";
-		s._strOperator = "=";
-		s._objValue = 77556;
-		arrSQLTerms[0]=s;
-		arrSQLTerms[1]= new SQLTerm();
-		arrSQLTerms[1]._strTableName= "Student";
-		arrSQLTerms[1]._strColumnName = "name";
-		arrSQLTerms[1]._strOperator = "=";
-		arrSQLTerms[1]._objValue = "Ahmed Noor";
-		strarrOperators[0]="XoR";
-		Iterator<Tuple> res = d.selectFromTable(arrSQLTerms, strarrOperators);
-		while(res.hasNext()) {
-			System.out.println(res.next());
-		}
-	}
+	
+	
 	public static void main(String[] args)throws Exception {
-//		clear();
-//		faUpTs();
+		clear();
+		faUpTs();
 		showAt0s();
 //		tsSel1();
 		
@@ -214,6 +120,105 @@ public class DBAppTest {
 //		Table t = d.deserialize("tabl");
 //		t.printIndices();
 	}
+
+	
+	static void faUpTs() throws Exception{
+//		DBApp d = new DBApp();
+//		d.init();
+//		Hashtable htblColNameType = new Hashtable();
+//		htblColNameType.put("k1", "java.util.Date");
+//		htblColNameType.put("c2", "java.lang.Boolean");
+//		htblColNameType.put("c3", "java.lang.Integer");
+//		d.createTable("fathy", "k1", htblColNameType);
+//		for (int i=0;i<30;i++) {
+//			Hashtable htblColNameValue
+		String strTableName = "Student";
+		DBApp dbApp = new DBApp( );
+		dbApp.init();
+		
+		Hashtable htblColNameType = new Hashtable( );
+		htblColNameType.put("id", "java.lang.Integer");
+		htblColNameType.put("name", "java.lang.String");
+		htblColNameType.put("gpa", "java.lang.Double");
+		htblColNameType.put("shape", "java.awt.Polygon");
+		
+		dbApp.createTable( strTableName, "id", htblColNameType );
+		
+		dbApp.createBTreeIndex( strTableName, "gpa" );
+		dbApp.createBTreeIndex( strTableName, "id" );		
+		dbApp.createRTreeIndex( strTableName, "shape" );
+
+		Hashtable htblColNameValue = new Hashtable( );
+		htblColNameValue.put("id", new Integer( 2343432 ));
+		htblColNameValue.put("name", new String("Ahmed Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.95 ) );
+		htblColNameValue.put("shape", new Polygon()); //check Polygon work correctly
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 453455 ));
+		htblColNameValue.put("name", new String("Ahmed Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.95 ) );
+		htblColNameValue.put("shape", randomPolygon() );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 5674567 ));
+		htblColNameValue.put("name", new String("Dalia Noor" ) );
+		htblColNameValue.put("gpa", new Double( 1.25 ) );
+		htblColNameValue.put("shape",randomPolygon() );
+		dbApp.insertIntoTable( strTableName , htblColNameValue);
+
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 23498 ));
+		htblColNameValue.put("name", new String("John Noor" ) );
+		htblColNameValue.put("gpa", new Double( 1.5 ) );
+		htblColNameValue.put("shape", randomPolygon() );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 78452 ));
+		htblColNameValue.put("name", new String("Zaky Noor" ) );
+		htblColNameValue.put("gpa", new Double( 0.88 ) );
+		htblColNameValue.put("shape", randomPolygon( ) );
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		
+		for (int i=0;i<6;i++) {
+//		for (int i=0;i<50;i++) {
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( 76000+(int)(Math.random()*5000) ));
+			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
+			double gpa = 1.0*((int)(1+Math.random()*100))/100;
+			htblColNameValue.put("gpa", new Double( gpa ) );
+			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
+		}
+		
+		
+		
+	}
+	static void tsSel1() throws DBAppException{
+		DBApp d = new DBApp();
+		d.init();
+		SQLTerm[] arrSQLTerms = new SQLTerm[2];
+		String[] strarrOperators = new String[1];
+		SQLTerm s = new SQLTerm();
+		s._strTableName= "Student";
+		s._strColumnName = "id";
+		s._strOperator = "=";
+		s._objValue = 77556;
+		arrSQLTerms[0]=s;
+		arrSQLTerms[1]= new SQLTerm();
+		arrSQLTerms[1]._strTableName= "Student";
+		arrSQLTerms[1]._strColumnName = "name";
+		arrSQLTerms[1]._strOperator = "=";
+		arrSQLTerms[1]._objValue = "Ahmed Noor";
+		strarrOperators[0]="XoR";
+		Iterator<Tuple> res = d.selectFromTable(arrSQLTerms, strarrOperators);
+		while(res.hasNext()) {
+			System.out.println(res.next());
+		}
+	}
+
 	static void tst9() throws DBAppException, IOException{
 		String strTableName= "Bol";
 		String strClusteringKey = "A";
