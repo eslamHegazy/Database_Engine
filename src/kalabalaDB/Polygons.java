@@ -4,6 +4,16 @@ import java.awt.Dimension;
 import java.awt.Polygon;
 
 public class Polygons extends Polygon implements Comparable<Polygons>{
+	public Polygons() {
+		super();
+	}
+	public Polygons(Polygon p) {
+		super();
+		for (int i=0;i<p.npoints;i++) {
+			addPoint(p.xpoints[i], p.ypoints[i]);
+		}
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i=0;i<npoints;i++) {
@@ -76,6 +86,16 @@ public class Polygons extends Polygon implements Comparable<Polygons>{
 			return -1;
 		}
 		return 0;
+	}
+	public boolean equals(Object o) {
+		Polygons p = (Polygons) o;
+//		if (p==null ) return false;
+		if (npoints!=p.npoints) return false;
+		for (int i=0;i<npoints;i++) {
+			if (xpoints[i]!=p.xpoints[i]) return false;
+			if (ypoints[i]!=p.ypoints[i]) return false;
+		}
+		return true;
 	}
 	public static void main(String[] args) {
 		Polygon p1 = new Polygon();

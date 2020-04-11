@@ -434,7 +434,18 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 //		b.serializeNode();		//TODO: Can I remove this ?
 		return res;
 	}
-	
+//	public ArrayList<GeneralReference> searchlTE(T key) throws DBAppException{ 
+//		BPTreeNode <T> b=deserializeNode(childrenName[0]);
+//		ArrayList<GeneralReference> res =  b.searchlTE(key);
+////		b.serializeNode();		//TODO: Can I remove this ?
+//		return res;
+//	}
+//	public ArrayList<GeneralReference> searchlT(T key) throws DBAppException{ 
+//		BPTreeNode <T> b=deserializeNode(childrenName[0]);
+//		ArrayList<GeneralReference> res =  b.searchlT(key);
+////		b.serializeNode();		//TODO: Can I remove this ?
+//		return res;
+//	}
 	
 
 }

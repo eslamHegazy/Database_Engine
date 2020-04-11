@@ -51,8 +51,9 @@ public class DBAppTest {
 		htblColNameValue.put("id", new Integer( 2343432 ));
 		htblColNameValue.put("name", new String("Ahmed Noor" ) );
 		htblColNameValue.put("gpa", new Double( 0.95 ) );
-		htblColNameValue.put("shape", new Polygons(  ) );
+		htblColNameValue.put("shape", new Polygons());
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
 		htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 453455 ));
 		htblColNameValue.put("name", new String("Ahmed Noor" ) );
@@ -79,16 +80,17 @@ public class DBAppTest {
 		htblColNameValue.put("shape", new Polygons( ) );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-//		
-//		for (int i=0;i<50;i++) {
-//			htblColNameValue.clear( );
-//			htblColNameValue.put("id", new Integer( 76000+(int)(Math.random()*5000) ));
-//			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
-//			double gpa = 1.0*((int)(1+Math.random()*100))/100;
-//			htblColNameValue.put("gpa", new Double( gpa ) );
-//			dbApp.insertIntoTable( strTableName , htblColNameValue );
-//		}
-//		
+		
+		for (int i=0;i<50;i++) {
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( 76000+(int)(Math.random()*5000) ));
+			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
+			double gpa = 1.0*((int)(1+Math.random()*100))/100;
+			htblColNameValue.put("gpa", new Double( gpa ) );
+			htblColNameValue.put("shape", Polygons.parsePolygons("(0,0),(7,6)" ) );
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
+		}
+		
 //		
 	}
 	public static void main(String[] args)throws Exception {

@@ -1,14 +1,11 @@
 package RTree;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import BPTree.BPTreeNode;
 import General.GeneralReference;
 import General.Ref;
 import kalabalaDB.DBAppException;
@@ -19,10 +16,10 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-//	private BPTreeNode<T>[] children;
+//	private RTreeNode<T>[] children;
 	private String[]childrenName;
 	/**
-	 * create BPTreeNode given order.
+	 * create RTreeNode given order.
 	 * @param n
 	 * @throws IOException 
 	 * @throws DBAppException 
@@ -435,6 +432,18 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 		return res;
 	}
 	
+//	public ArrayList<GeneralReference> searchLTE(Polygons key) throws DBAppException{ 
+//		RTreeNode <Polygons> b=deserializeNode(childrenName[0]);
+//		ArrayList<GeneralReference> res =  b.searchLTE(key);
+////		b.serializeNode();		//TODO: Can I remove this ?
+//		return res;
+//	}
+//	public ArrayList<GeneralReference> searchLT(Polygons key) throws DBAppException{ 
+//		RTreeNode <Polygons> b=deserializeNode(childrenName[0]);
+//		ArrayList<GeneralReference> res =  b.searchLT(key);
+////		b.serializeNode();		//TODO: Can I remove this ?
+//		return res;
+//	}
 
 	
 	

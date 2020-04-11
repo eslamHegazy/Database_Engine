@@ -26,7 +26,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 	protected int lastin; 
 	
 	/**
-	 * Creates an empty B+ tree
+	 * Creates an empty R tree
 	 * @param order the maximum number of keys in the nodes of the tree
 	 * @throws IOException 
 	 * @throws DBAppException 
@@ -46,7 +46,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 	
 	
 	/**
-	 * Inserts the specified key associated with the given record in the B+ tree
+	 * Inserts the specified key associated with the given record in the R tree
 	 * @param key the key to be inserted
 	 * @param recordReference the reference of the record associated with the key
 	 * @throws IOException 
@@ -103,7 +103,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 	}
 	
 	/**
-	 * Returns a string representation of the B+ tree.
+	 * Returns a string representation of the R tree.
 	 */
 	public String toString()
 	{	
@@ -185,5 +185,12 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 	public ArrayList<GeneralReference> searchMT(Polygons key) throws DBAppException {
 		return root.searchMT(key);
 	}
+//	public ArrayList<GeneralReference> searcHlTE(Polygons key) throws DBAppException {
+//		return root.searchLTE(key);
+//	}
+//	@Override
+//	public ArrayList<GeneralReference> searchlT(Polygons key) throws DBAppException {
+//		return root.searchLT(key);
+//	}
 	
 }

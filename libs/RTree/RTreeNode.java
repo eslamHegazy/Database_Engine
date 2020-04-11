@@ -1,7 +1,6 @@
 package RTree;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -11,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Vector;
 
 import General.GeneralReference;
@@ -97,7 +95,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	
 	
 	/**
-	 * @return a boolean indicating whether this node is the root of the B+ tree
+	 * @return a boolean indicating whether this node is the root of the R tree
 	 */
 	public boolean isRoot()
 	{
@@ -163,7 +161,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	public abstract int minKeys();
 
 	/**
-	 * insert a key with the associated record reference in the B+ tree
+	 * insert a key with the associated record reference in the R tree
 	 * @param key the key to be inserted
 	 * @param recordReference a pointer to the record on the hard disk
 	 * @param parent the parent of the current node
@@ -183,8 +181,8 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	public abstract Ref searchForInsertion(Polygons key)throws DBAppException;
 
 	/**
-	 * delete a key from the B+ tree recursively
-	 * @param key the key to be deleted from the B+ tree
+	 * delete a key from the R tree recursively
+	 * @param key the key to be deleted from the R tree
 	 * @param parent the parent of the current node
 	 * @param ptr the index of the parent pointer that points to this node 
 	 * @return true if this node was successfully deleted and false otherwise
@@ -239,10 +237,10 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 		//		return null;
 			FileInputStream fileIn = new FileInputStream("data/"+ name + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
-			RTreeNode<Polygons> BPTN =   (RTreeNode<Polygons>) in.readObject();
+			RTreeNode<Polygons> RTN =   (RTreeNode<Polygons>) in.readObject();
 			in.close();
 			fileIn.close();
-			return BPTN;
+			return RTN;
 		}
 		catch(IOException e) {
 			throw new DBAppException("IO Exception");

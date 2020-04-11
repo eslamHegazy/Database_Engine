@@ -1,14 +1,9 @@
 package RTree;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import BPTree.BPTreeLeafNode;
 import General.GeneralReference;
 import General.LeafNode;
 import General.OverflowPage;
@@ -97,7 +92,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	}
 	
 	/**
-	 * insert the specified key associated with a given record refernce in the B+ tree
+	 * insert the specified key associated with a given record refernce in the R tree
 	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
@@ -111,7 +106,8 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		while (index < numberOfKeys && getKey(index).compareTo(key) < 0)
 			++index;
 		
-		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
+//		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
+		if (index< numberOfKeys && getKey(index).equals(key)) {
 			GeneralReference ref = records[index];
 			if (ref.isOverflow()) {
 				//done:
@@ -141,7 +137,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		{
 			RTreeNode<Polygons> newNode = this.split(key, recordReference);
 			Comparable<Polygons> newKey = newNode.getFirstKey();
-			newNode.serializeNode(); //TODO type cast or create in BPTreeNode
+			newNode.serializeNode(); //TODO type cast or create in RTreeNode
 			return new PushUp<Polygons>(newNode, newKey);
 		}
 		else
@@ -233,7 +229,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	public GeneralReference search(Polygons key) 
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
-			if(this.getKey(i).compareTo(key) == 0)
+			if(this.getKey(i).equals(key))
 				return this.getRecord(i);
 		return null;
 	}
@@ -269,13 +265,14 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		}
 	}
 	/**
-	 * delete the passed key from the B+ tree
+	 * delete the passed key from the R tree
 	 * @throws DBAppException 
 	 */
 	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException 
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
-			if(keys[i].compareTo(key) == 0)
+//			if(keys[i].compareTo(key) == 0)
+			if(keys[i].equals(key))
 			{
 				this.deleteAt(i);
 				if(i == 0 && ptr > 0)
@@ -303,7 +300,8 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr,String page_name) throws DBAppException, IOException 
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
-			if(keys[i].compareTo(key) == 0)
+//			if(keys[i].compareTo(key) == 0)
+			if(keys[i].equals(key))
 			{
 				// handle deleting only one ref not the entire key
 				if(records[i] instanceof Ref)
@@ -500,6 +498,37 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		}
 	}
 
+//	public void searchLTE(Polygons key,ArrayList<GeneralReference> res)throws DBAppException{
+//		int i = 0;
+//		boolean flag = true;
+//		for(; i < numberOfKeys && flag; ++i) {
+//			if(this.getKey(i).compareTo(key) <= 0) {
+//				res.add(this.getRecord(i));
+//			}
+//			else {
+//				flag = false;
+//			}
+//		}
+//		if ( flag && next!=null){//don't need to check i==numberOfKeys because I am traversing till the end;rightmost leaf
+//			RTreeLeafNode nxt = (RTreeLeafNode)deserializeNode(next);
+//			nxt.searchMTE(key,res);
+//		}
+//		
+//	}
+//	public void searchLT(Polygons key, ArrayList<GeneralReference> res) throws DBAppException{
+//		boolean flag = true;
+//		for(int i=0; i < numberOfKeys && flag; ++i)
+//			if(this.getKey(i).compareTo(key) < 0) {
+//				res.add(this.getRecord(i));
+//			}
+//			else {
+//				flag = false;
+//			}
+//		if (flag && next!=null) {
+//			RTreeLeafNode nxt = (RTreeLeafNode)deserializeNode(next);
+//			nxt.searchMT(key,res);
+//		}
+//	}
 
 
 	

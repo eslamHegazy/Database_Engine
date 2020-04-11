@@ -1,6 +1,7 @@
 package kalabalaDB;
 
 
+import java.awt.Polygon;
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -175,10 +176,10 @@ public class DBApp {
 					try {
 						Class colType = Class.forName(type);
 						Class parameterType = htblColNameValue.get(name).getClass();
-						// System.out.println(colType+" "+parameterType);
 						Class polyOriginal = Class.forName("java.awt.Polygon");
 						if (colType == polyOriginal) {
-							colType = Class.forName("kalabalaDB.Polygons");
+							Polygons p = new Polygons((Polygon)htblColNameValue.get(name));
+							htblColNameValue.put(name, p);
 						}
 						if (!colType.equals(parameterType)) {
 							throw new DBAppException("DATA types 8alat");
@@ -205,6 +206,8 @@ public class DBApp {
 
 
 		newEntry.addAttribute(new Date());
+		int id = y.getLastID(true);	//please check getLastId body before copying 
+		newEntry.addAttribute(id);
 		y.insertSorted(newEntry, keyValue,keyType,keyColName,nodeSize,colNames); // TODO
 		serialize(y);
 
@@ -281,6 +284,7 @@ public class DBApp {
 				Class parameterType = htblColNameValue.get(str).getClass();
 				Class polyOriginal = Class.forName("java.awt.Polygon");
 				if (colType == polyOriginal) {
+					//TODO: Eslam: I think this is true  here only; NEED TO TEST IT
 					colType = Class.forName("kalabalaDB.Polygons");
 				}
 				System.out.println(colType+" "+parameterType);
@@ -393,7 +397,6 @@ public class DBApp {
 					}
 					Date date = new Date();
 					current.getAttributes().setElementAt(date, current.getAttributes().size()-1);
-	
 					i++;
 				}
 				j++;
@@ -438,12 +441,17 @@ public class DBApp {
 					Set<String> keyss = htblColNameValue.keySet();
 					for(String key : keyss)
 					{
-						if(key == line[1])
+						if(key.equals(line[1]))
 						{
 							return line[3];
 						}
 					}
 					
+//					  String val = (String) htblColNameValue.get(line[1]);
+//					  if (val!=null){
+//					  	return line[3];
+//					  }
+					 
 				}
 			}
 		}

@@ -15,4 +15,6 @@ public interface TreeIndex<T extends Comparable<T>> {
 	public LeafNode getLeftmostLeaf() throws DBAppException ;
 	public ArrayList<GeneralReference> searchMTE(T key) throws DBAppException;
 	public ArrayList<GeneralReference> searchMT(T key) throws DBAppException;
+//	public ArrayList<GeneralReference> searchlTE(T key) throws DBAppException;
+//	public ArrayList<GeneralReference> searchlT(T key) throws DBAppException;
 }

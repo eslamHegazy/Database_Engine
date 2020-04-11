@@ -499,6 +499,38 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			nxt.searchMT(key,res);
 		}
 	}
+	
+//	public void searchLTE(T key,ArrayList<GeneralReference> res)throws DBAppException{
+//		int i = 0;
+//		boolean flag = true;
+//		for(; i < numberOfKeys && flag; ++i) {
+//			if(this.getKey(i).compareTo(key) <= 0) {
+//				res.add(this.getRecord(i));
+//			}
+//			else {
+//				flag = false;
+//			}
+//		}
+//		if ( flag && next!=null){//don't need to check i==numberOfKeys because I am traversing till the end;rightmost leaf
+//			BPTreeLeafNode nxt = (BPTreeLeafNode)deserializeNode(next);
+//			nxt.searchMTE(key,res);
+//		}
+//		
+//	}
+//	public void searchLT(T key, ArrayList<GeneralReference> res) throws DBAppException{
+//		boolean flag = true;
+//		for(int i=0; i < numberOfKeys && flag; ++i)
+//			if(this.getKey(i).compareTo(key) < 0) {
+//				res.add(this.getRecord(i));
+//			}
+//			else {
+//				flag = false;
+//			}
+//		if (flag && next!=null) {
+//			BPTreeLeafNode<T> nxt = (BPTreeLeafNode<T>)deserializeNode(next);
+//			nxt.searchMT(key,res);
+//		}
+//	}
 
 
 	

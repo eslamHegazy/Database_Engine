@@ -1,5 +1,6 @@
 package kalabalaDB;
 
+import java.awt.Polygon;
 import java.io.*;
 import java.util.*;
 
@@ -23,8 +24,12 @@ public class Table implements Serializable {
 	private String tableName;
 	private String strClusteringKey;
 	private int primaryPos;
+	private int lastID;
 	private Hashtable<String, TreeIndex> colNameTreeIndex = new Hashtable<>();
-
+	public int getLastID(boolean increment) {
+		if (increment) return lastID++;
+		return lastID;
+	}
 	public Hashtable<String, TreeIndex> getColNameBTreeIndex() {
 		return colNameTreeIndex;
 	}
@@ -136,7 +141,7 @@ public class Table implements Serializable {
 
 	public Hashtable<Tuple,Ref> addInPage(int curr, Tuple x, String keyType, String keyColName, int nodeSize,Hashtable<Tuple,Ref> list) throws DBAppException, IOException {
 		// System.out.println(x+" "+curr);\
-
+		
 		if (curr < pages.size()) {
 			String pageName = pages.get(curr);
 
@@ -324,8 +329,8 @@ public class Table implements Serializable {
 			String selectedCol = (clusteringKey != null && clusteringKeyHasIndex(indicesGiven, clusteringKey))
 					? clusteringKey
 					: indicesGiven.get(0);
-			boolean isCluster = selectedCol.equals(clusteringKey);
-
+			boolean isCluster = clusteringKey != null && selectedCol.equals(clusteringKey);
+			
 			TreeIndex tree = colNameTreeIndex.get(selectedCol);
 			GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
 			if (pageReference instanceof Ref) {
@@ -448,15 +453,9 @@ public class Table implements Serializable {
 		return allReferences;
 
 	}
+
 	public boolean invalidDelete(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
 			throws DBAppException {
-//		return invalidDeleteIplus1(htblColNameValue, metaOfTable);
-		return invalidDeleteEdited(htblColNameValue, metaOfTable);
-//		return invalidDeleteJ(htblColNameValue, metaOfTable);
-	}
-
-	public boolean invalidDeleteIplus1(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
-			throws DBAppException {
 		Set<String> keys = htblColNameValue.keySet();
 		for (String key : keys) {
 			int i;
@@ -467,73 +466,8 @@ public class Table implements Serializable {
 						Class parameterType = htblColNameValue.get(key).getClass();
 						Class polyOriginal = Class.forName("java.awt.Polygon");
 						if (colType == polyOriginal) {
-							colType = Class.forName("kalabalaDB.Polygons");
-						}
-//						System.out.println(colType + " " + parameterType);
-						if (!colType.equals(parameterType))
-							return true;
-						else
-							break;
-					} catch (ClassNotFoundException e) {
-						throw new DBAppException("Class Not Found Exception");
-					}
-				}
-			}
-			if (i + 1 == metaOfTable.size())
-				return true;
-		}
-		return false;
-	}
-
-
-	public boolean invalidDeleteJ(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
-			throws DBAppException {
-		Set<String> keys = htblColNameValue.keySet();
-		int j =0 ;
-		for (String key : keys) {
-			int i;
-			
-			for (i = 0; i < metaOfTable.size(); i++) {
-				if (metaOfTable.get(i)[1].equals(key)) {
-					try {
-						Class colType = Class.forName(metaOfTable.get(i)[2]);
-						Class parameterType = htblColNameValue.get(key).getClass();
-						Class polyOriginal = Class.forName("java.awt.Polygon");
-						if (colType == polyOriginal) {
-							colType = Class.forName("kalabalaDB.Polygons");
-						}
-//						System.out.println(colType + " " + parameterType);
-						if (!colType.equals(parameterType))
-							return true;
-						else
-							j++;
-//							break;
-					} catch (ClassNotFoundException e) {
-						throw new DBAppException("Class Not Found Exception");
-					}
-				}
-			}
-//			if (j == metaOfTable.size())
-//				return false;
-		}
-		if (j==htblColNameValue.size())
-			return false;
-		return true;
-	}
-	
-	public boolean invalidDeleteEdited(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable)
-			throws DBAppException {
-		Set<String> keys = htblColNameValue.keySet();
-		for (String key : keys) {
-			int i;
-			for (i = 0; i < metaOfTable.size(); i++) {
-				if (metaOfTable.get(i)[1].equals(key)) {
-					try {
-						Class colType = Class.forName(metaOfTable.get(i)[2]);
-						Class parameterType = htblColNameValue.get(key).getClass();
-						Class polyOriginal = Class.forName("java.awt.Polygon");
-						if (colType == polyOriginal) {
-							colType = Class.forName("kalabalaDB.Polygons");
+							Polygons p = new Polygons((Polygon)htblColNameValue.get(key));
+							htblColNameValue.put(key, p);
 						}
 //						System.out.println(colType + " " + parameterType);
 						if (!colType.equals(parameterType))
@@ -592,7 +526,7 @@ public class Table implements Serializable {
 		ArrayList<String> indicesGiven = new ArrayList<String>();
 		for (int i = 0; i < indices.size(); i++) {
 			for (int j = 0; j < columns.size(); j++) {
-				if (indices.get(i) == columns.get(j)) {
+				if (indices.get(i).equals(columns.get(j))) {//TODO:.equals
 					indicesGiven.add(columns.get(j));
 
 				}
@@ -615,7 +549,7 @@ public class Table implements Serializable {
 	public boolean clusteringKeyHasIndex(ArrayList<String> indices, String clusteringKey) {
 		if (clusteringKey != null) {
 			for (int i = 0; i < indices.size(); i++) {
-				if (indices.get(i) == clusteringKey) {
+				if (indices.get(i).equals( clusteringKey)) {//TODO:.equals
 					return true;
 				}
 			}
@@ -720,7 +654,7 @@ public class Table implements Serializable {
 					else if (curr[2].equals("java.lang.Boolean"))
 						key = Boolean.parseBoolean(strKey);
 					else if (curr[2].equals("java.awt.Polygon"))
-						key = (Comparable) Polygons.parsePolygon(strKey);
+						key = (Polygons) Polygons.parsePolygon(strKey);
 					else {
 						throw new DBAppException("Searching for a key of unknown type !");
 					}
@@ -732,7 +666,14 @@ public class Table implements Serializable {
 			throw new DBAppException("Class Cast Exception");
 		}
 	}
-	
+	/**
+	 * performs binary search
+	 * @param strTableName
+	 * @param strKey
+	 * 
+	 * @return
+	 * @throws DBAppException
+	 */
 	public String SearchInTable(String strTableName, Object strKey) throws DBAppException {
 		return SearchInTable(strTableName, parseObject(strTableName, strKey));
 	}
@@ -864,8 +805,8 @@ public class Table implements Serializable {
 		Comparable x=(Comparable)t.getAttributes().get(pos);
 		Comparable y=(Comparable)sqlTerm._objValue;
 		switch(sqlTerm._strOperator) {
-		case "=":return x.compareTo(y)==0;
-		case "!=":return x.compareTo(y)!=0;
+		case "=": return (x instanceof Polygons)? x.equals(y): x.compareTo(y)==0;
+		case "!=":return (x instanceof Polygons)? !x.equals(y): x.compareTo(y)!=0;
 		case ">":return x.compareTo(y)>0;
 		case ">=":return x.compareTo(y)>=0;
 		case "<":return x.compareTo(y)<0;
@@ -907,6 +848,9 @@ public class Table implements Serializable {
 		boolean found=false;
 		boolean clustNondIdx=false;
 		boolean nonClustNonIdx=false;
+		
+		boolean abod_eso = true;
+		
 		if(arrSQLTerms[0]._strOperator.equals("!="))
 				return 1; 
 		
@@ -929,7 +873,7 @@ public class Table implements Serializable {
 					found=true;
 				else if(arrSQLTerms[i-1]._strColumnName.equals(strClusteringKey)) //cluster=c or index=d
 					found=true;
-				else if(!found) return 1;
+				else if(!found)  abod_eso = false;//return 1;
 			}
 			if(arrSQLTerms[i]._strColumnName.equals(strClusteringKey)&&!colNameTreeIndex.containsKey(strClusteringKey)
 					&&!strarrOperators[i-1].toLowerCase().equals("and")) { 
@@ -948,6 +892,7 @@ public class Table implements Serializable {
             
 		}
 		if(clustNondIdx&&!nonClustNonIdx) return 2; //only single clustering non indexed sufficed or preceeded with or/xor
+		if (!abod_eso ) return 1;
 		return 0;
 	}
 	private int getFirstIndexPos(SQLTerm[] arrSQLTerms) {
@@ -1117,9 +1062,12 @@ public class Table implements Serializable {
 			Page x=deserialize(pages.get(i));
 			for(int j=0;j<x.getTuples().size();j++) {
 				//TODO POLYGON RECHECK
-				if(((Comparable)x.getTuples().get(j).getAttributes().get(pos)).compareTo((Comparable)_objValue)==0)
-					res.add(x.getTuples().get(j));
-				
+				Comparable esoKey = (Comparable)x.getTuples().get(j).getAttributes().get(pos);
+				Comparable objValue = (Comparable)_objValue;
+				if(esoKey.compareTo(objValue)==0) {
+					if (! (esoKey instanceof Polygons) || esoKey.equals(objValue))
+						res.add(x.getTuples().get(j));
+				}
 			}
 		}
 		return res;
@@ -1130,12 +1078,14 @@ public class Table implements Serializable {
 		for(int i=0;i<pages.size();i++) {
 			if(((Comparable) min.get(i)).compareTo((Comparable)_objValue)>0)break;
 			if(((Comparable) min.get(i)).compareTo((Comparable)_objValue)==0&&_strOperator.length()==1)break;
+			//TOTO:Polygons; line before; NO NEED as <=/>= is based on area; no points ==>CompareTo is fine here
 			Page x=deserialize(pages.get(i));
 			int j=0;
 			while(j<x.getTuples().size()&&((Comparable)x.getTuples().get(j).getAttributes().get(pos)).compareTo((Comparable)_objValue)<0) 
 			       	res.add(x.getTuples().get(j++));
 			if(_strOperator.length()==2) {
-				while(j<x.getTuples().size()&&((Comparable)x.getTuples().get(j).getAttributes().get(pos)).compareTo((Comparable)_objValue)==0) 
+				while(j<x.getTuples().size()&&((Comparable)x.getTuples().get(j).getAttributes().get(pos)).compareTo((Comparable)_objValue)==0)
+					//TODO:Polygons; line before ; NO NEED as <=/>= is based on area; no points ==>CompareTo is fine here
 			       	res.add(x.getTuples().get(j++));
 			}
 
@@ -1181,13 +1131,19 @@ public class Table implements Serializable {
 		String[] searchResult = SearchInTable(tableName, _objValue).split("#");
 		String startPage = searchResult[0];
 		int startPageIndex = getPageIndex(startPage);
-		int startTupleIndex = Integer.parseInt(searchResult[1]); 
+		int startTupleIndex = Integer.parseInt(searchResult[1]);
+		
 		ArrayList<Tuple> res = new ArrayList<>();
 		for (int pageIdx = startPageIndex ,tupleIdx = startTupleIndex; pageIdx<pages.size(); pageIdx++,tupleIdx=0) {
+			//TODO: We are looping LINEARLY OVER PAGES ? Should we make it binary ??
 			if(((Comparable) min.get(pageIdx)).compareTo((Comparable)_objValue)>0)break;
-			Page currentPage = deserialize(pages.get(pageIdx)); 
-			while (tupleIdx<currentPage.getTuples().size()  &&	((Comparable)currentPage.getTuples().get(tupleIdx).getAttributes().get(pos)).compareTo(_objValue)==0 )
-				res.add(currentPage.getTuples().get(tupleIdx++));			
+			Page currentPage = deserialize(pages.get(pageIdx));
+			Comparable cmp ;
+			while (tupleIdx<currentPage.getTuples().size()  &&	
+					( cmp = (Comparable)currentPage.getTuples().get(tupleIdx).getAttributes().get(pos)).compareTo(_objValue)==0 )
+				//TODO:Polygons; line before:: Ya rab tsht8l
+				if (! (cmp instanceof Polygons) || cmp.equals(_objValue))
+					res.add(currentPage.getTuples().get(tupleIdx++));			
 		}
 
 		return res;
@@ -1200,7 +1156,6 @@ public class Table implements Serializable {
 		
 	}
 	private ArrayList<Tuple> goWithIndex(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException {
-		// TODO Auto-generated method stub
 		ArrayList<Tuple> res=new ArrayList();
 		switch(_strOperator) {
 		case ">":
@@ -1346,6 +1301,39 @@ public class Table implements Serializable {
  			return res;
  		}
 	}
+	
+	
+//	private ArrayList<Tuple> ALTERNATIVEltOrLtlIndex(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException {
+// 		if(_strColumnName.equals(strClusteringKey))
+//			return mtOrMtlLinear(_strColumnName, _objValue, _strOperator, pos);
+// 		else {
+// 			ArrayList<Tuple> res = new ArrayList<>();
+// 			String lastPage=pages.get(pages.size()-1);
+// 			int lastPageMaxNum=Integer.parseInt(lastPage.substring(tableName.length()));
+// 			boolean []visited=new boolean[lastPageMaxNum];
+// 			TreeIndex b=colNameTreeIndex.get(_strColumnName);
+// 			ArrayList<GeneralReference> referenceList = _strOperator.equals("<")?
+// 					b.searchlT((Comparable)_objValue) :
+// 						b.searchlTE((Comparable)_objValue) ;
+//// 					searchMT_MTE((Comparable)_objValue);
+//// 			ArrayList<Ref> referenceList = resultReference.getALLRef();
+// 			for (int i=0;i<referenceList.size();i++) {
+// 				GeneralReference currentGR= referenceList.get(i);
+// 				ArrayList<Ref> currentRefsForOneKey= currentGR.getALLRef();
+// 				for (int j=0;j<currentRefsForOneKey.size();j++) {
+// 					Ref currentReference = currentRefsForOneKey.get(j);
+//	 				String pagename = currentReference.getPage();
+//	 				int curPageNum=Integer.parseInt(pagename.substring(tableName.length()));
+//	 				if (visited[curPageNum]) continue;
+//	 				addToResultSet(res, pagename, pos, _objValue, _strOperator);
+//	 				visited[curPageNum] = true;
+// 				}
+// 			}
+// 			return res;
+// 		}
+//	}
+//	 
+	
 	public void checkQueryValidity(SQLTerm[] arrSQLTerms,String[] strarrOperators, Vector<String[]> metaOfTable) throws DBAppException{
 	//	boolean clusterHasIndex=false;
 		for(SQLTerm x:arrSQLTerms) {
@@ -1362,7 +1350,8 @@ public class Table implements Serializable {
 						Class parameterType = x._objValue.getClass();
 						Class polyOriginal = Class.forName("java.awt.Polygon");
 						if (colType == polyOriginal) {
-							colType = Class.forName("kalabalaDB.Polygons");
+							//TODO:Don't forget to test this !!!
+							x._objValue = new Polygons((Polygon) x._objValue);
 						}
 						if (!colType.equals(parameterType)) {
 							throw new DBAppException("DATA types 8alat");
