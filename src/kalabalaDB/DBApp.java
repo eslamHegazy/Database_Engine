@@ -443,13 +443,13 @@ public class DBApp {
 					{
 						if(key.equals(line[1]))
 						{
-							return line[3];
+							return ""+htblColNameValue.get(key);
 						}
 					}
 					
 //					  String val = (String) htblColNameValue.get(line[1]);
 //					  if (val!=null){
-//					  	return line[3];
+//					  	return ///?line[3];
 //					  }
 					 
 				}

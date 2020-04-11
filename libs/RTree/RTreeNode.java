@@ -213,8 +213,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 		return s;
 	}
 		
-	
-	
+
 	
 	public void serializeNode() throws DBAppException 
 	{

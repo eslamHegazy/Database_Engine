@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import BPTree.BPTreeInnerNode;
+import BPTree.BPTreeLeafNode;
+import BPTree.BPTreeNode;
 import General.GeneralReference;
 import General.OverflowReference;
 import General.Ref;
@@ -110,29 +113,33 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		
 		//	<For Testing>
 		// node :  (id)[k1|k2|k3|k4]{P1,P2,P3,}
-		String s = "";
-		RTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
+		StringBuilder sb = new StringBuilder();
+		BPTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
 		
-		Queue<RTreeNode<Polygons>> cur = new LinkedList<RTreeNode<Polygons>>(), next;
+		Queue<RTreeNode> cur = new LinkedList<RTreeNode>(), next;
 		cur.add(root);
 		while(!cur.isEmpty())
 		{
-			next = new LinkedList<RTreeNode<Polygons>>();
+			next = new LinkedList<RTreeNode>();
 			while(!cur.isEmpty())
 			{
-				RTreeNode<Polygons> curNode = cur.remove();
-				System.out.print(curNode);
+				RTreeNode curNode = cur.remove();
+//				System.out.print(curNode);
+				sb.append(curNode);
 				if(curNode instanceof RTreeLeafNode)
-					System.out.print("->");
+//					System.out.print("->");
+					sb.append("->");
 				else
 				{
-					System.out.print("{");
-					RTreeInnerNode<Polygons> parent = (RTreeInnerNode<Polygons>) curNode;
+//					System.out.print("{");
+					sb.append("{");
+					RTreeInnerNode parent = (RTreeInnerNode) curNode;
 					for(int i = 0; i <= parent.numberOfKeys; ++i)
 					{			
 						try 
 						{
-							System.out.print(parent.getChild(i).index+",");
+//							System.out.print(parent.getChild(i).index+",");
+							sb.append(parent.getChild(i).index+",");
 							next.add(parent.getChild(i));
 						}
 						catch (DBAppException e) {
@@ -140,26 +147,32 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 							e.printStackTrace();
 						}
 					}
-					System.out.print("} ");
+//					System.out.print("} ");
+					sb.append("}");
 				}
 				
 			}
-			System.out.println();
+//			System.out.println();
+			sb.append("\n");
 			cur = next;
 		}
 		
-		ArrayList<OverflowReference> tobePrinted  = RTreeLeafNode.pagesToPrint;
-		System.out.println("\n The Overflow refrences are : \n");
+		ArrayList<OverflowReference> tobePrinted  = BPTreeLeafNode.pagesToPrint;
+//		System.out.println("\n The Overflow refrences are : \n");
+		sb.append("\n The Overflow refrences are : \n");
 		
 		for(int i=0;i<tobePrinted.size();i++)
 		{
-			System.out.println("refrence number : " + (i+1) +" is :\n");
-			System.out.println(tobePrinted.get(i).toString());
+//			System.out.println("refrence number : " + (i+1) +" is :\n");
+//			System.out.println(tobePrinted.get(i).toString());
+			sb.append("refrence number : " + (i+1) +" is :\n");
+			sb.append(tobePrinted.get(i).toString());
 		}
 			
 		//	</For Testing>
-		return s;
+		return sb.toString();
 	}
+	
 	public Ref searchForInsertion(Polygons key) throws DBAppException { //comparable and T???
 		return root.searchForInsertion(key);
 	}

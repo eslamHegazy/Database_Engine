@@ -449,6 +449,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 				else
 				{
 					key += ","+((OverflowReference)records[i]).getFirstPageName();
+					if (pagesToPrint==null) pagesToPrint=new ArrayList<OverflowReference>();
 					pagesToPrint.add((OverflowReference) records[i]);
 				}
 			
@@ -460,7 +461,6 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		s += "]";
 		return s;
 	}
-
 	
 	
 	public ArrayList<GeneralReference> searchMTE(Polygons key) throws DBAppException{

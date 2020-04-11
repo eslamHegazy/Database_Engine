@@ -769,7 +769,6 @@ public class Table implements Serializable {
     				 current=setOperation(current, next, strarrOperators[k-1]);
     			}
     		}
-        	
         	        	
         	
         }else {
