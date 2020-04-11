@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Vector;
@@ -84,6 +85,7 @@ public class DBAppTest {
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		
+//		for (int i=0;i<6;i++) {
 		for (int i=0;i<50;i++) {
 			htblColNameValue.clear( );
 			htblColNameValue.put("id", new Integer( 76000+(int)(Math.random()*5000) ));
@@ -95,11 +97,36 @@ public class DBAppTest {
 		}
 		
 		
+		
+	}
+	static void tsSel1() throws DBAppException{
+		DBApp d = new DBApp();
+		d.init();
+		SQLTerm[] arrSQLTerms = new SQLTerm[2];
+		String[] strarrOperators = new String[1];
+		SQLTerm s = new SQLTerm();
+		s._strTableName= "Student";
+		s._strColumnName = "id";
+		s._strOperator = "=";
+		s._objValue = 77556;
+		arrSQLTerms[0]=s;
+		arrSQLTerms[1]= new SQLTerm();
+		arrSQLTerms[1]._strTableName= "Student";
+		arrSQLTerms[1]._strColumnName = "name";
+		arrSQLTerms[1]._strOperator = "=";
+		arrSQLTerms[1]._objValue = "Ahmed Noor";
+		strarrOperators[0]="XoR";
+		Iterator<Tuple> res = d.selectFromTable(arrSQLTerms, strarrOperators);
+		while(res.hasNext()) {
+			System.out.println(res.next());
+		}
 	}
 	public static void main(String[] args)throws Exception {
-		clear();
-		faUpTs();
-		sas();
+//		clear();
+//		faUpTs();
+		showAt0s();
+//		tsSel1();
+		
 //		clear();
 //		tst1(30);
 //		tstInvalidDelete();
@@ -131,7 +158,7 @@ public class DBAppTest {
 //		DBApp d = new DBApp();
 //		d.init();
 //		d.printAllPagesInAllTables("lol");
-//		sas();
+//		showAt0s();
 //		Table t = d.deserialize("Esso Table");
 //		BPTree b = t.getColNameBTreeIndex().get("the key");
 //		System.out.println(b);
@@ -384,6 +411,7 @@ public class DBAppTest {
 			System.out.println("About to delete");
 			d.deleteFromTable("Bol", h);
 			d.printAllPagesInAllTables("tst5-"+i);
+			
 		}
 //		Hashtable h = new Hashtable<>();
 //		h.put("C1",7);
@@ -410,7 +438,7 @@ public class DBAppTest {
 		t.put("C3", 321.0122121);
 		int key = 3;
 		d.updateTable("T1", ""+key, t);
-		d.printAllPagesInAllTables("tst44_en");
+//		d.printAllPagesInAllTables("tst44_en");
 	}
 	
 	static void tst3() throws Exception{
@@ -419,7 +447,7 @@ public class DBAppTest {
 		tst1(d);
 		d.printAllPagesInAllTables("tst1done");
 		d=new DBApp();
-		d.printAllPagesInAllTables("new DBApp");
+//		d.printAllPagesInAllTables("new DBApp");
 		
 	}
 	static void tst4() throws DBAppException, IOException{
@@ -595,7 +623,7 @@ public class DBAppTest {
 		System.out.println("Elapsed Time= "+dur+" seconds");
 		out.println("Elapsed Time= "+dur+" seconds");
 		out.flush();
-		dbApp.printAllPagesInAllTables("tst2_dataAfter");
+//		dbApp.printAllPagesInAllTables("tst2_dataAfter");
 		
 	}
 
@@ -611,7 +639,7 @@ public class DBAppTest {
 		return p;
 	}
 	
-	public static void sas() throws Exception{
+	public static void showAt0s() throws Exception{
 		File data = new File("data");
 		String[] list = data.list();
 		File fasa= new File("data/0s/");

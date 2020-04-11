@@ -741,7 +741,7 @@ public class Table implements Serializable {
 		if(j!=i+1)throw new DBAppException("Number of terms does not match number of operators");
 		if(i==0) { //only one attribute like , where id=5 
 			int pos=getColPositionWithinTuple(arrSQLTerms[0]._strColumnName,metaOfTable);
-			current=getArrayOfTuples(arrSQLTerms[0]._strColumnName, arrSQLTerms[0]._objValue,strarrOperators[0],pos);
+			current=getArrayOfTuples(arrSQLTerms[0]._strColumnName, arrSQLTerms[0]._objValue, arrSQLTerms[0]._strOperator,pos);
 		}else {
         //boolean[]chosen=new boolean[i];
 		int linearScGu = linearScanGuranteed(arrSQLTerms, strarrOperators);
@@ -1375,8 +1375,12 @@ public class Table implements Serializable {
 						}
 						if (!colType.equals(parameterType)) {
 							throw new DBAppException("DATA types 8alat");
-
-						}}
+						}
+						else {
+							break;
+						}
+					 
+					 }
 					   catch(ClassNotFoundException e) {
 						   throw new DBAppException("Class Not Found Exception");
 					   }
@@ -1384,7 +1388,8 @@ public class Table implements Serializable {
 						// clusterHasIndex=true;
 				 }
 			 }
-			 if(i==metaOfTable.size()) throw new DBAppException("Column "+x._strColumnName+" doesn't exist");
+			 if(i==metaOfTable.size()) 
+				 throw new DBAppException("Column "+x._strColumnName+" doesn't exist");
 		 }
 		for(String x:strarrOperators) {
 			x=x.toLowerCase();
