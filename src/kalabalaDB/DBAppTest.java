@@ -28,7 +28,7 @@ public class DBAppTest {
 	
 	
 	public static void main(String[] args)throws Exception {
-		clear();
+	//	clear();
 		faUpTs();
 		showAt0s();
 //		tsSel1();
@@ -182,14 +182,14 @@ public class DBAppTest {
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
 		
-		for (int i=0;i<6;i++) {
+		for (int i=0;i<25;i++) {
 //		for (int i=0;i<50;i++) {
 			htblColNameValue.clear( );
-			htblColNameValue.put("id", new Integer( 76000+(int)(Math.random()*5000) ));
+			htblColNameValue.put("id", new Integer( i ));
 			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
 			double gpa = 1.0*((int)(1+Math.random()*100))/100;
 			htblColNameValue.put("gpa", new Double( gpa ) );
-			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
+			htblColNameValue.put("shape", new Polygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
 			dbApp.insertIntoTable( strTableName , htblColNameValue );
 		}
 		

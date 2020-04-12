@@ -111,6 +111,12 @@ public class OverflowReference extends GeneralReference implements Serializable
 	{
 		return deserializeOverflowPage(firstPageName).ALLgetRefs();
 	}
+	public Ref getLastRef() throws DBAppException {
+		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
+		Ref ref=firstPage.getLastRef();
+		firstPage.serialize();
+		return ref;
+	}
 	
 }
 

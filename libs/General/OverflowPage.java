@@ -131,10 +131,12 @@ public class OverflowPage implements Serializable{
 		}
 		if (i<refs.size()) {
 			refs.get(i-1).setPage(newpage);
+			return true;
 		}
 		if (i==refs.size()) {
-			OverflowPage nextPage=deserialize(next);
-			if (nextPage!=null && nextPage.updateRef(oldpage, newpage, tableNameLength)) {
+	//		System.out.println(next);
+			OverflowPage nextPage;
+			if (next!=null&& (nextPage=deserialize(next)).updateRef(oldpage, newpage, tableNameLength)) {
 				nextPage.serialize();
 				return true;
 			}
@@ -252,6 +254,16 @@ public class OverflowPage implements Serializable{
 			}
 		}	
 		return result;
+	}
+	public Ref getLastRef() throws DBAppException {
+		if(next!=null){
+			OverflowPage nextPage=deserialize(next);
+			Ref ref=nextPage.getLastRef();
+			nextPage.serialize();
+			return ref;
+		}else{
+			return refs.get(refs.size()-1);
+		}
 	}
 	
 }
