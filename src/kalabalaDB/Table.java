@@ -189,9 +189,10 @@ public class Table implements Serializable {
 						min.addElement(keyValue);
 						max.addElement(keyValue);
 						n.serialize();
-					}System.out.println("change ref "+p.getPageName()+" "+newp+" "+(Comparable) t.getAttributes().get(primaryPos));
+					}
+//					System.out.println("change ref "+p.getPageName()+" "+newp+" "+(Comparable) t.getAttributes().get(primaryPos));
 					tree.updateRef(p.getPageName(),newp,(Comparable) t.getAttributes().get(primaryPos),tableName.length());
-					System.out.println("changed ref "+getClusterReference(t.getAttributes().get(primaryPos), keyColName));
+//					System.out.println("changed ref "+getClusterReference(t.getAttributes().get(primaryPos), keyColName));
 				}
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
@@ -253,7 +254,7 @@ public class Table implements Serializable {
 			if (colNameTreeIndex.containsKey(keyColName)) {
 				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref pageReference = tree.searchForInsertion(keyValue);
-				System.out.println("searchForInsertion "+pageReference);
+//				System.out.println("searchForInsertion "+pageReference);
 				String pageName="";
 				if(pageReference==null){
 					pageName=pages.get(pages.size()-1);
@@ -287,7 +288,7 @@ public class Table implements Serializable {
 				}
 				Object keyValueOfNonCluster = x.getAttributes().get(index);
 				Ref pageReference = getClusterReference(keyV,keyColName);
-				System.out.println("keyValue and its ref "+keyV+" "+pageReference+"\n");
+//				System.out.println("keyValue and its ref "+keyV+" "+pageReference+"\n");
 				tree.insert((Comparable) keyValueOfNonCluster, pageReference);
 				Set<Tuple> st=list.keySet();
 				for(Tuple t:st){
@@ -297,7 +298,7 @@ public class Table implements Serializable {
 						Ref pageReferenceT = getClusterReference(t.getAttributes().get(primaryPos),keyColName);
 						//tree.insert((Comparable) keyValueOfNonClusterT, pageReferenceT);
 						tree.updateRef(list.get(t), pageReferenceT.getPage(), (Comparable) keyValueOfNonClusterT, tableName.length());
-					}
+//					}
 				}
 			}
 		}
@@ -426,7 +427,7 @@ public class Table implements Serializable {
 						break;
 					}
 				}
-				System.out.println(i);
+//				System.out.println(i);
 				attributeIndex.add(i);
 			}
 			for (int i = 0; i < pages.size(); i++) {

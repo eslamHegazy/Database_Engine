@@ -181,9 +181,10 @@ public class DBAppTest {
 		htblColNameValue.put("shape", randomPolygon( ) );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-		
-		for (int i=0;i<25;i++) {
+		for (int i=0;i<1500;i++) {
+//		for (int i=0;i<25;i++) {
 //		for (int i=0;i<50;i++) {
+			System.out.println(i);
 			htblColNameValue.clear( );
 			htblColNameValue.put("id", new Integer( i ));
 			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
