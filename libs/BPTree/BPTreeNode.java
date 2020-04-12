@@ -255,8 +255,6 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		
 	}
 
-	
-
-	
+	public abstract BPTreeLeafNode searchForUpdateRef(T key) throws DBAppException;
 
 }

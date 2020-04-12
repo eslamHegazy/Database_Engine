@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import BPTree.BPTreeLeafNode;
 import General.GeneralReference;
 import General.LeafNode;
 import General.OverflowPage;
@@ -530,6 +531,21 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 //		}
 //	}
 
-
+	public RTreeLeafNode searchForUpdateRef(Polygons key) {
+		return this;
+	}
+	public void updateRef(String oldpage,String newpage,Polygons key,int tableNameLength) throws DBAppException{
+		GeneralReference gf;
+		for(int i = 0; i < numberOfKeys; ++i)
+			if(this.getKey(i).equals(key)) {
+				gf = getRecord(i);
+				gf.updateRef(oldpage, newpage, tableNameLength);
+				if (gf instanceof Ref) {
+					this.serializeNode();
+				}
+				return;
+			}
+	}
+	
 	
 }

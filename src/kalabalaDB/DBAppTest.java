@@ -28,7 +28,7 @@ public class DBAppTest {
 	
 	
 	public static void main(String[] args)throws Exception {
-	//	clear();
+		clear();
 		faUpTs();
 		showAt0s();
 //		tsSel1();

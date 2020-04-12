@@ -446,6 +446,13 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 ////		b.serializeNode();		//TODO: Can I remove this ?
 //		return res;
 //	}
+	//TODO:Copy to R-TREE
+	public BPTreeLeafNode searchForUpdateRef(T key) throws DBAppException{
+		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
+		BPTreeLeafNode x= b.searchForUpdateRef(key);
+//		b.serializeNode();	//TODO: Can I remove this ?
+		return x;
+	}
+	//TODO:ENDED COPY YO R-TEEE
 	
-
 }

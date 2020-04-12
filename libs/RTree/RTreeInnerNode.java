@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import BPTree.BPTreeLeafNode;
+import BPTree.BPTreeNode;
 import General.GeneralReference;
 import General.Ref;
 import kalabalaDB.DBAppException;
@@ -444,7 +446,13 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 ////		b.serializeNode();		//TODO: Can I remove this ?
 //		return res;
 //	}
-
+	
+	public RTreeLeafNode searchForUpdateRef(Polygons key) throws DBAppException{
+		RTreeNode b=deserializeNode(childrenName[findIndex(key)]);
+		RTreeLeafNode x= b.searchForUpdateRef(key);
+//		b.serializeNode();	//TODO: Can I remove this ?
+		return x;
+	}
 	
 	
 

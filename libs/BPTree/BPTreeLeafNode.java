@@ -531,7 +531,23 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 //			nxt.searchMT(key,res);
 //		}
 //	}
-
-
+	//TODO:COPY TO R-TREE
+	public BPTreeLeafNode searchForUpdateRef(T key) {
+		return this;
+	}
+	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException{
+		GeneralReference gf;
+		for(int i = 0; i < numberOfKeys; ++i)
+			if(this.getKey(i).compareTo(key) == 0) {
+				//TODO: In RTREE . MAKE IT .equals
+				gf = getRecord(i);
+				gf.updateRef(oldpage, newpage, tableNameLength);
+				if (gf instanceof Ref) {
+					this.serializeNode();
+				}
+				return;
+			}
+	}
 	
+	//TODO:ENDED COPY TO R-TREE
 }

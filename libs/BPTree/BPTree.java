@@ -38,12 +38,23 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		root.setRoot(true);
 		//root.treeName=this.treeName;
 	}
+	
+	//TODO: COPY TO R-TREE
 	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException, IOException {
-		GeneralReference gf=search(key);
-		gf.updateRef(oldpage, newpage, tableNameLength);
+//		GeneralReference gf=search(key);
+//		gf.updateRef(oldpage, newpage, tableNameLength);
+
+		BPTreeLeafNode leaf = searchForUpdateRef(key);
+		leaf.updateRef(oldpage,newpage,key,tableNameLength);
+		
+		leaf.serializeNode();
+	}
+	public BPTreeLeafNode searchForUpdateRef(T key) throws DBAppException{
+		return root.searchForUpdateRef(key);
 	}
 	
 	
+	//TODO:END COPY TO R-TREE
 	/**
 	 * Inserts the specified key associated with the given record in the B+ tree
 	 * @param key the key to be inserted
