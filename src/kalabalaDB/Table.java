@@ -291,7 +291,7 @@ public class Table implements Serializable {
 				tree.insert((Comparable) keyValueOfNonCluster, pageReference);
 				Set<Tuple> st=list.keySet();
 				for(Tuple t:st){
-					if(!t.equals(x)){
+//					if(!t.equals(x)){
 						Object keyValueOfNonClusterT = t.getAttributes().get(index);
 						//tree.delete((Comparable)keyValueOfNonClusterT,list.get(t));
 						Ref pageReferenceT = getClusterReference(t.getAttributes().get(primaryPos),keyColName);
