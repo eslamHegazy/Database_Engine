@@ -30,7 +30,7 @@ public class OverflowReference extends GeneralReference implements Serializable
 	public OverflowPage deserializeOverflowPage(String firstPageName2) throws DBAppException {
 
 		try {
-			FileInputStream fileIn = new FileInputStream("data/"+ this.firstPageName + ".class");
+			FileInputStream fileIn = new FileInputStream("data/"+ firstPageName2 + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			OverflowPage OFP =   (OverflowPage) in.readObject();
 			in.close();

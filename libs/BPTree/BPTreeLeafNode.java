@@ -241,7 +241,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	{
 		int i=0;
 		for(; i < numberOfKeys; i++){
-			if(this.getKey(i).compareTo(key) > 0)
+			if(this.getKey(i).compareTo(key) >= 0)
 				return this.refReference((this.getRecord(i)));
 		}	
 		if(i>0){

@@ -238,7 +238,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	{
 		int i=0;
 		for(; i < numberOfKeys; i++){
-			if(this.getKey(i).compareTo(key) > 0)
+			if(this.getKey(i).compareTo(key) >= 0)
 				return this.refReference((this.getRecord(i)));
 		}	
 		if(i>0){

@@ -176,7 +176,7 @@ public class Table implements Serializable {
 				}
 				Tuple t = p.getTuples().remove(p.size() - 1);
 				if (colNameTreeIndex.containsKey(keyColName)) {
-					list.put(t, p.getPageName());
+					
 					TreeIndex tree = colNameTreeIndex.get(keyColName);
 					String newp="";
 					if(curr+1<pages.size()){
@@ -190,10 +190,11 @@ public class Table implements Serializable {
 						max.addElement(keyValue);
 						n.serialize();
 					}
-//					System.out.println("change ref "+p.getPageName()+" "+newp+" "+(Comparable) t.getAttributes().get(primaryPos));
+					//System.out.println("change ref "+p.getPageName()+" "+newp+" "+(Comparable) t.getAttributes().get(primaryPos));
 					tree.updateRef(p.getPageName(),newp,(Comparable) t.getAttributes().get(primaryPos),tableName.length());
-//					System.out.println("changed ref "+getClusterReference(t.getAttributes().get(primaryPos), keyColName));
+					//System.out.println("changed ref "+getClusterReference(t.getAttributes().get(primaryPos), keyColName));
 				}
+				list.put(t, p.getPageName());
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
 				min.remove(curr);
@@ -202,6 +203,7 @@ public class Table implements Serializable {
 				addInVector(max, maxx, curr);
 
 				p.serialize();
+				//System.out.println(Arrays.asList(list.keySet()));
 				return addInPage(curr + 1, t, keyType, keyColName, nodeSize,false,list);
 			}
 		} else {
@@ -254,7 +256,7 @@ public class Table implements Serializable {
 			if (colNameTreeIndex.containsKey(keyColName)) {
 				TreeIndex tree = colNameTreeIndex.get(keyColName);
 				Ref pageReference = tree.searchForInsertion(keyValue);
-//				System.out.println("searchForInsertion "+pageReference);
+				//System.out.println("searchForInsertion "+pageReference + "     " + keyValue);
 				String pageName="";
 				if(pageReference==null){
 					pageName=pages.get(pages.size()-1);
@@ -275,7 +277,7 @@ public class Table implements Serializable {
 				}
 			}
 		}
-
+		Set<Tuple> st=list.keySet();
 		Set<String> c = colNameTreeIndex.keySet();
 		for (String s:c) {
 			if (!keyColName.equals(s)) {
@@ -290,7 +292,8 @@ public class Table implements Serializable {
 				Ref pageReference = getClusterReference(keyV,keyColName);
 //				System.out.println("keyValue and its ref "+keyV+" "+pageReference+"\n");
 				tree.insert((Comparable) keyValueOfNonCluster, pageReference);
-				Set<Tuple> st=list.keySet();
+				//System.out.println(pageReference.getPage());
+				
 				for(Tuple t:st){
 //					if(!t.equals(x)){
 						Object keyValueOfNonClusterT = t.getAttributes().get(index);
@@ -302,7 +305,7 @@ public class Table implements Serializable {
 				}
 			}
 		}
-		
+		//System.out.println(Arrays.asList(c));
 //		Set<String> c = colNameBTreeIndex.keySet();
 //		for (String curColName : c) {
 //			if (curColName.equals(keyColName)) continue;
@@ -336,7 +339,7 @@ public class Table implements Serializable {
 				ref=oref.getLastRef();
 			}
 		}else{
-			for(int i=0;i<pages.size();i++){
+			for(int i=pages.size()-1;i>=0;i--){
 				if(keyValue.compareTo(min.get(i))>=0&&keyValue.compareTo(max.get(i))<=0){
 					ref=new Ref(pages.get(i));
 					break;
@@ -353,7 +356,7 @@ public class Table implements Serializable {
 			throw new DBAppException("false operation");
 			// TODO: Is this message appropriate?
 		}
-
+		
 		ArrayList<String> indicesGiven = indicesIHave(htblColNameValue, colNameTreeIndex);
 		ArrayList<String> allIndices = allTableIndices(colNameTreeIndex);
 
@@ -361,7 +364,7 @@ public class Table implements Serializable {
 			String selectedCol = (clusteringKey != null && clusteringKeyHasIndex(indicesGiven, clusteringKey))
 					? clusteringKey
 					: indicesGiven.get(0);
-			boolean isCluster = clusteringKey != null && selectedCol.equals(clusteringKey);
+			boolean isCluster = clusteringKey != null && selectedCol.equals(strClusteringKey);
 			
 			TreeIndex tree = colNameTreeIndex.get(selectedCol);
 			GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
@@ -374,29 +377,41 @@ public class Table implements Serializable {
 
 			} else {
 				OverflowReference x = (OverflowReference) pageReference;
-				OverflowPage OFP = x.deserializeOverflowPage(x.getFirstPageName());
-				Set<Ref> allReferences = deleteFromBPTree(OFP);
+				OverflowPage OFP = x.getFirstPage();
+				Set<Ref> allReferences = getRefFromBPTree(OFP);
+				//System.out.println(allReferences);
 				OFP.serialize();
 				for (Ref ref : allReferences) {
-					Page p = deserialize(ref.getPage() + "");
-					p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex, htblColNameValue,
-							allIndices, isCluster);
-					setMinMax(p);
+					if(ref != null)
+					{
+						Page p = deserialize(ref.getPage() + "");
+						//System.out.println(ref.getPage());
+						p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex, htblColNameValue,
+								allIndices, isCluster);
+						setMinMax(p);
+					}
+					
 				}
 
 			}
 
 		} else if (clusteringKey != null) {
+			
 			for (int i = 0; i < pages.size(); i++) {
-				if (((Comparable) htblColNameValue.get(clusteringKey)).compareTo(((Comparable) min.get(i))) < 0) {
+				//System.out.println(htblColNameValue.get(strClusteringKey));
+				//System.out.println(clusteringKey);
+				if (((Comparable) htblColNameValue.get(strClusteringKey)).compareTo(((Comparable) min.get(i))) < 0) {
+					//System.out.println(pages.size());
 					break;
+					
 				}
-				if (((Comparable) htblColNameValue.get(clusteringKey)).compareTo(((Comparable) max.get(i))) >= 0
-						&& ((Comparable) htblColNameValue.get(clusteringKey))
+				//System.out.println(pages.size());
+				if (((Comparable) htblColNameValue.get(strClusteringKey)).compareTo(((Comparable) min.get(i))) >= 0
+						&& ((Comparable) htblColNameValue.get(strClusteringKey))
 								.compareTo(((Comparable) max.get(i))) <= 0) {
-
+					//System.out.println(min.get(i));
 					Page page = deserialize(pages.get(i));
-					page.deleteInPageWithBS(htblColNameValue, metaOfTable, clusteringKey, primaryPos);
+					page.deleteInPageWithBS(htblColNameValue, metaOfTable, clusteringKey, primaryPos , strClusteringKey);
 					if (page.getTuples().size() == 0) {
 						File f = new File("data/" + page.getPageName() + ".class");
 						f.delete();
@@ -465,9 +480,50 @@ public class Table implements Serializable {
 
 	}
 
-	public Set<Ref> deleteFromBPTree(OverflowPage OFP) throws DBAppException {
-		Set<Ref> allReferences = new HashSet<>();
-		allReferences.addAll(OFP.getRefs());
+	public Set<Ref> getRefFromBPTree(OverflowPage OFP) throws DBAppException {
+		Set<Ref> allReferences = new HashSet<Ref>();
+		Vector<Ref> xx = new Vector<Ref>();
+		xx.addAll(OFP.getRefs());
+		//System.out.println(xx);
+		//System.out.println(OFP.getRefs().size());
+		/*allReferences.add(OFP.getRefs().get(0));
+		for(int i = 1 ; i < OFP.getRefs().size() ; i++)
+		{
+			//System.out.println(OFP.getRefs().get(i).getPage().equals(OFP.getRefs().get(i-1).getPage()));
+			if(OFP.getRefs().get(i).getPage().equals(OFP.getRefs().get(i-1).getPage()))
+				break;
+			else
+			{
+				System.out.println(OFP.getRefs().get(i));
+				allReferences.add(OFP.getRefs().get(i));
+			}
+			
+		}*/
+		boolean notFound = true;
+		for(int i = 0 ; i < OFP.getRefs().size();i++)
+		{
+			for(int j = i+1 ; j < xx.size();j++)
+			{
+				notFound = true;
+				if(OFP.getRefs().get(i).equals(xx.get(j)))
+				{
+					notFound = false;
+					break;
+				}
+				else
+				{
+					
+					
+				}
+				
+			}
+			if(notFound == true)
+			{
+				allReferences.add(OFP.getRefs().get(i));
+			}
+		}
+		System.out.println(allReferences);
+		System.out.println(OFP.getRefs());
 		OverflowPage nextOFP;
 		boolean notNull = true;
 		if (OFP.getNext() != null) {
@@ -475,13 +531,16 @@ public class Table implements Serializable {
 			while (notNull) {
 				allReferences.addAll(nextOFP.getRefs());
 				if (nextOFP.getNext() != null) {
+					nextOFP.serialize();
 					nextOFP = nextOFP.deserialize(nextOFP.getNext());
 				} else {
 					notNull = false;
 				}
-				nextOFP.serialize();
+				
 			}
+			nextOFP.serialize();
 		}
+		//System.out.println(allReferences);
 		return allReferences;
 
 	}
