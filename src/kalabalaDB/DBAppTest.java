@@ -43,8 +43,8 @@ public class DBAppTest {
 	static void deleteTest(DBApp dbApp) throws DBAppException
 	{
 		Hashtable htblColNameValue = new Hashtable();
-		//htblColNameValue.put("id" , 23498123);
-		htblColNameValue.put("name", "Arousiiii");	
+		htblColNameValue.put("id" , 23498);
+		htblColNameValue.put("name", "John Noor");	
 		dbApp.deleteFromTable("Student", htblColNameValue);
 	}
 	static void faUpTs(DBApp dbApp) throws Exception{
@@ -70,10 +70,12 @@ public class DBAppTest {
 		
 		//dbApp.createBTreeIndex( strTableName, "gpa" );
 		dbApp.createBTreeIndex( strTableName, "id" );		
-		//dbApp.createRTreeIndex( strTableName, "shape" );
+		dbApp.createRTreeIndex( strTableName, "shape" );
 		dbApp.createBTreeIndex( strTableName, "name" );
 
 		Hashtable htblColNameValue = new Hashtable( );
+		
+		
 		htblColNameValue.put("id", new Integer( 2343432 ));
 		htblColNameValue.put("name", new String("Ahmed Noor" ) );
 		htblColNameValue.put("gpa", new Double( 0.95 ) );
@@ -148,7 +150,7 @@ public class DBAppTest {
 		htblColNameValue.put("shape", randomPolygon() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-		htblColNameValue.clear( );
+		/*htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 23498123 ));
 		htblColNameValue.put("name", new String("Arousiiii" ) );
 		htblColNameValue.put("gpa", new Double( 1.5 ) );
@@ -197,7 +199,14 @@ public class DBAppTest {
 			dbApp.insertIntoTable( strTableName , htblColNameValue );
 		}*/
 		
-		
+		/*for(int i = 0 ; i < 20 ; i++) {
+			htblColNameValue.clear( );
+			htblColNameValue.put("id", new Integer( i ));
+			htblColNameValue.put("name", new String("Arousiiii" ) );
+			htblColNameValue.put("gpa", new Double( 1.5 ) );
+			htblColNameValue.put("shape", randomPolygon() );
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
+		}*/
 		
 	}
 	static void tsSel1() throws DBAppException{

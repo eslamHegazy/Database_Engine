@@ -196,7 +196,7 @@ public class Page implements Serializable {
 
 	public static void deleteFromOverFlow(OverflowReference ofr, String pageName, TreeIndex tree, Object value)
 			throws DBAppException {
-		if (ofr.getFirstPageName() != null) {
+		//if (ofr.getFirstPageName() != null) {
 			// System.out.println(ofr.getFirstPageName());
 			OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
 			for (int i = 0; i < ofp.getRefs().size(); i++) {
@@ -246,7 +246,7 @@ public class Page implements Serializable {
 					}
 				}
 			}
-		}
+		//}
 	}
 
 	public void deleteInPageWithBS(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable,

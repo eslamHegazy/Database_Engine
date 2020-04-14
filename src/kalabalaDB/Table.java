@@ -483,7 +483,7 @@ public class Table implements Serializable {
 	public Set<Ref> getRefFromBPTree(OverflowPage OFP) throws DBAppException {
 		Set<Ref> allReferences = new HashSet<Ref>();
 		Vector<Ref> xx = new Vector<Ref>();
-		xx.addAll(OFP.getRefs());
+		//xx.addAll(OFP.getRefs());
 		//System.out.println(xx);
 		//System.out.println(OFP.getRefs().size());
 		/*allReferences.add(OFP.getRefs().get(0));
@@ -500,12 +500,19 @@ public class Table implements Serializable {
 			
 		}*/
 		boolean notFound = true;
+		boolean notFound1 = true;
+		boolean first = true;
 		for(int i = 0 ; i < OFP.getRefs().size();i++)
 		{
-			for(int j = i+1 ; j < xx.size();j++)
+			if(first)
+			{
+				xx.add(OFP.getRefs().get(0));
+				first = false;
+			}
+			for(int j = 0 ; j < xx.size();j++)
 			{
 				notFound = true;
-				if(OFP.getRefs().get(i).equals(xx.get(j)))
+				if(OFP.getRefs().get(i).getPage().equals(xx.get(j).getPage()))
 				{
 					notFound = false;
 					break;
@@ -519,17 +526,40 @@ public class Table implements Serializable {
 			}
 			if(notFound == true)
 			{
-				allReferences.add(OFP.getRefs().get(i));
+				xx.add(OFP.getRefs().get(i));
 			}
 		}
-		System.out.println(allReferences);
-		System.out.println(OFP.getRefs());
+		//allReferences.addAll(xx);
+		//System.out.println(allReferences);
+		//System.out.println(OFP.getRefs());
 		OverflowPage nextOFP;
 		boolean notNull = true;
 		if (OFP.getNext() != null) {
 			nextOFP = OFP.deserialize(OFP.getNext());
 			while (notNull) {
-				allReferences.addAll(nextOFP.getRefs());
+				//allReferences.addAll(nextOFP.getRefs());
+				for(int i = 0 ; i < nextOFP.getRefs().size();i++)
+				{
+					for(int j = 0 ; j < xx.size();j++)
+					{
+						notFound1 = true;
+						if(nextOFP.getRefs().get(i).getPage().equals(xx.get(j).getPage()))
+						{
+							notFound1 = false;
+							break;
+						}
+						else
+						{
+							
+							
+						}
+						
+					}
+					if(notFound1 == true)
+					{
+						xx.add(nextOFP.getRefs().get(i));
+					}
+				}
 				if (nextOFP.getNext() != null) {
 					nextOFP.serialize();
 					nextOFP = nextOFP.deserialize(nextOFP.getNext());
@@ -540,6 +570,7 @@ public class Table implements Serializable {
 			}
 			nextOFP.serialize();
 		}
+		allReferences.addAll(xx);
 		//System.out.println(allReferences);
 		return allReferences;
 
