@@ -11,7 +11,6 @@ import kalabalaDB.DBAppException;
 
 public class OverflowReference extends GeneralReference implements Serializable 
 	{
-
 	public void setFirstPageName(String firstPageName) {
 		this.firstPageName = firstPageName;
 	}
@@ -44,6 +43,7 @@ public class OverflowReference extends GeneralReference implements Serializable
 			throw new DBAppException("Class Not Found Exception");
 		}
 	}
+	
 	public void setFirstPage(OverflowPage firstPage) throws DBAppException, IOException {
 		OverflowPage Page=firstPage;
 		firstPageName=Page.getPageName();

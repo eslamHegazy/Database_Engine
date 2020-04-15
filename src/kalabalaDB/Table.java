@@ -379,7 +379,7 @@ public class Table implements Serializable {
 				OverflowReference x = (OverflowReference) pageReference;
 				OverflowPage OFP = x.getFirstPage();
 				Set<Ref> allReferences = getRefFromBPTree(OFP);
-				//System.out.println(allReferences);
+				System.out.println(allReferences);
 				OFP.serialize();
 				for (Ref ref : allReferences) {
 					if(ref != null)

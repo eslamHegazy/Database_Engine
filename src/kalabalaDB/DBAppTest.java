@@ -35,7 +35,7 @@ public class DBAppTest {
 		dbApp.init();
 		faUpTs(dbApp);
 		//showAt0s();
-		deleteTest(dbApp);
+		//deleteTest(dbApp);
 		showAt0s();
 
 	}
@@ -43,8 +43,12 @@ public class DBAppTest {
 	static void deleteTest(DBApp dbApp) throws DBAppException
 	{
 		Hashtable htblColNameValue = new Hashtable();
-		htblColNameValue.put("id" , 23498);
-		htblColNameValue.put("name", "John Noor");	
+		//htblColNameValue.put("id" , 2);
+		htblColNameValue.put("name", "Arousiiii");
+		Polygon p1 = new Polygon();
+		p1.addPoint(1, 9);
+		p1.addPoint(8, 0);
+		//htblColNameValue.put("shape", p1);
 		dbApp.deleteFromTable("Student", htblColNameValue);
 	}
 	static void faUpTs(DBApp dbApp) throws Exception{
@@ -68,7 +72,7 @@ public class DBAppTest {
 		
 		dbApp.createTable( strTableName, "id", htblColNameType );
 		
-		//dbApp.createBTreeIndex( strTableName, "gpa" );
+		dbApp.createBTreeIndex( strTableName, "gpa" );
 		dbApp.createBTreeIndex( strTableName, "id" );		
 		dbApp.createRTreeIndex( strTableName, "shape" );
 		dbApp.createBTreeIndex( strTableName, "name" );
@@ -150,13 +154,13 @@ public class DBAppTest {
 		htblColNameValue.put("shape", randomPolygon() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		
-		/*htblColNameValue.clear( );
-		htblColNameValue.put("id", new Integer( 23498123 ));
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 1111111111 ));
 		htblColNameValue.put("name", new String("Arousiiii" ) );
 		htblColNameValue.put("gpa", new Double( 1.5 ) );
 		htblColNameValue.put("shape", randomPolygon() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
-		htblColNameValue.clear( );
+		/*htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 23 ));
 		htblColNameValue.put("name", new String("Arousiiii" ) );
 		htblColNameValue.put("gpa", new Double( 1.5 ) );
@@ -187,8 +191,8 @@ public class DBAppTest {
 		htblColNameValue.put("shape", randomPolygon() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		//for (int i=0;i<1500;i++) {
-		/*for (int i=0;i<10;i++) {
-//		for (int i=0;i<50;i++) {
+		/*for (int i=0;i<10;i++) {*/
+		for (int i=0;i<10;i++) {
 			//System.out.println(i);
 			htblColNameValue.clear( );
 			htblColNameValue.put("id", new Integer( i ));
@@ -197,16 +201,16 @@ public class DBAppTest {
 			htblColNameValue.put("gpa", new Double( gpa ) );
 			htblColNameValue.put("shape", new Polygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
 			dbApp.insertIntoTable( strTableName , htblColNameValue );
-		}*/
+		}
 		
-		/*for(int i = 0 ; i < 20 ; i++) {
+		for(int i = 0 ; i < 5 ; i++) {
 			htblColNameValue.clear( );
 			htblColNameValue.put("id", new Integer( i ));
 			htblColNameValue.put("name", new String("Arousiiii" ) );
 			htblColNameValue.put("gpa", new Double( 1.5 ) );
 			htblColNameValue.put("shape", randomPolygon() );
 			dbApp.insertIntoTable( strTableName , htblColNameValue );
-		}*/
+		}
 		
 	}
 	static void tsSel1() throws DBAppException{

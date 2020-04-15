@@ -152,7 +152,7 @@ public class Page implements Serializable {
 			Hashtable<String, TreeIndex> colNameTreeIndex, Hashtable<String, Object> htblColNameValue,
 			ArrayList<String> allIndices, boolean isCluster) throws DBAppException {
 		int index = 0;
-		int lastOcc = tuples.size() - 1;
+		int lastOcc = tuples.size();
 		if (isCluster) {
 			lastOcc = bsLastOcc((Comparable) htblColNameValue.get(clusteringKey), primarypos) + 1;
 			for (index = lastOcc - 1; index >= 0 && tuples.get(index).getAttributes().get(primarypos)
@@ -165,7 +165,7 @@ public class Page implements Serializable {
 		for (int i = 0; i < metaOfTable.size(); i++) {
 			x.add(metaOfTable.get(i)[1]);
 		}
-		for (int k = index; k <= Math.min(tuples.size() - 1, lastOcc); k++) {
+		for (int k = index; k <= Math.min(tuples.size()-1, lastOcc); k++) {
 			Tuple t = tuples.get(k);
 			if (validDelete(x, htblColNameValue, t)) {
 				for (int i = 0; i < tuples.get(k).getAttributes().size() - 2; i++) {
@@ -173,11 +173,25 @@ public class Page implements Serializable {
 						if (allIndices.get(j).equals(x.get(i))) {
 							TreeIndex tree = colNameTreeIndex.get(allIndices.get(j));
 							GeneralReference gr = tree.search((Comparable) tuples.get(k).getAttributes().get(i));
+							
 							if (gr instanceof Ref) {
+								//System.out.println("asd");
 								tree.delete((Comparable) tuples.get(k).getAttributes().get(i));
 							} else {
-								OverflowReference ofr = (OverflowReference) gr;
-								deleteFromOverFlow(ofr, this.pageName, tree, tuples.get(k).getAttributes().get(i));
+								if(gr instanceof OverflowReference)
+								{
+									OverflowReference ofr = (OverflowReference) gr;
+									{
+									
+											//System.out.println(ofr.getFirstPageName() + "  " + this.pageName + "  " + tree.toString()+ "  " +tuples.get(k).getAttributes().get(i));
+											deleteFromOverFlow(ofr, this.pageName, tree, tuples.get(k).getAttributes().get(i));
+											//System.out.println("hi");
+											//System.out.println(ofr.getFirstPageName() + "  " + this.pageName + "  " + tree.toString()+ "  " +tuples.get(k).getAttributes().get(i));
+										
+									}
+									
+								}
+								
 								// System.out.println(this.pageName);
 							}
 						}
@@ -196,21 +210,31 @@ public class Page implements Serializable {
 
 	public static void deleteFromOverFlow(OverflowReference ofr, String pageName, TreeIndex tree, Object value)
 			throws DBAppException {
-		//if (ofr.getFirstPageName() != null) {
-			// System.out.println(ofr.getFirstPageName());
+		//System.out.println(ofr.getFirstPageName());
+		File tmpDir = new File("data/" + ofr.getFirstPageName() + ".class");
+		boolean exists = tmpDir.exists();
+		if (exists) {
+			//System.out.println(ofr.getFirstPageName());
+			
 			OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
 			for (int i = 0; i < ofp.getRefs().size(); i++) {
 				if (ofp.getRefs().get(i).getPage().equals(pageName)) {
 					ofp.getRefs().remove(i);
+					//System.out.println("hello");
 					if (ofp.getRefs().size() == 0) {
+						
 						if (ofp.getNext() == null) {
 							tree.delete((Comparable) value);
-						} else {
+							System.out.println("asdasdasdasd");
+						} 
+						else {
 							ofr.setFirstPageName(ofp.getNext());
+
 						}
 						File f = new File("data/" + ofp.getPageName() + ".class");
 						f.delete();
-					} else {
+					} 
+					else {
 						ofp.serialize();
 					}
 					return;
@@ -224,29 +248,43 @@ public class Page implements Serializable {
 					for (int i = 0; i < nextOFP.getRefs().size(); i++) {
 						if (nextOFP.getRefs().get(i).getPage().equals(pageName)) {
 							nextOFP.getRefs().remove(i);
-							if (nextOFP.getRefs().size() == 0) {
+							if (nextOFP.getRefs().size() == 0 && nextOFP.getNext() != null) {
 								before.setNext(nextOFP.getNext());
 								before.serialize();
 								File f = new File("data/" + nextOFP.getPageName() + ".class");
 								f.delete();
-								notNull = false;
-							} else {
+								//notNull = false;
+							} 
+							if(nextOFP.getRefs().size() == 0 && nextOFP.getNext() == null)
+							{
+								System.out.println("hi");
+								before.setNext(null);
+								before.serialize();
+								File f = new File("data/" + nextOFP.getPageName() + ".class");
+								f.delete();
+								//notNull = false;
+							}
+							else {
 								nextOFP.serialize();
 								before.serialize();
-								notNull = false;
+								//notNull = false;
 							}
 							return;
 						}
 					}
 					if (nextOFP.getNext() != null) {
+						//System.out.println("asdads");
+						before.serialize();
 						before = nextOFP;
-						nextOFP = nextOFP.deserialize(nextOFP.getNext());
+						nextOFP.serialize();
+						nextOFP = before.deserialize(before.getNext());
 					} else {
+						
 						notNull = false;
 					}
 				}
 			}
-		//}
+		}
 	}
 
 	public void deleteInPageWithBS(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable,

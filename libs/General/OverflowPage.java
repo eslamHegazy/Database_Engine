@@ -121,30 +121,44 @@ public class OverflowPage implements Serializable{
 	public String getPageName() {
 		return pageName;
 	}
-	public boolean updateRef(String oldpage, String newpage, int tableNameLength) throws DBAppException  {
+	public void updateRef(String oldpage, String newpage, int tableNameLength) throws DBAppException  {
+//		int i=0;
+//		int old = Integer.parseInt(oldpage.substring(tableNameLength));
+//		for (;i<refs.size()&&Integer.parseInt(refs.get(i).getPage().substring(tableNameLength))<=old;i++);
+//		//i--;
+//		if (i==0) {
+//			return false;
+//		}
+//		if (i<refs.size()) {
+//			refs.get(i-1).setPage(newpage);
+//			return true;
+//		}
+//		if (i==refs.size()) {
+//	//		System.out.println(next);
+//			OverflowPage nextPage;
+//			if (next!=null&& (nextPage=deserialize(next)).updateRef(oldpage, newpage, tableNameLength)) {
+//				nextPage.serialize();
+//				return true;
+//			}
+//			else {
+//				refs.get(i-1).setPage(newpage);
+//			}
+//		}
+//		return false;
 		int i=0;
-		int old = Integer.parseInt(oldpage.substring(tableNameLength));
-		for (;i<refs.size()&&Integer.parseInt(refs.get(i).getPage().substring(tableNameLength))<=old;i++);
-		//i--;
-		if (i==0) {
-			return false;
+		for(;i<refs.size();i++){
+			if(oldpage.equals(refs.get(i).getPage())){
+				refs.get(i).setPage(newpage);
+				return;
+			}
 		}
-		if (i<refs.size()) {
-			refs.get(i-1).setPage(newpage);
-			return true;
-		}
-		if (i==refs.size()) {
-	//		System.out.println(next);
+		if(i==refs.size()){
 			OverflowPage nextPage;
-			if (next!=null&& (nextPage=deserialize(next)).updateRef(oldpage, newpage, tableNameLength)) {
+			if (next!=null ) {
+				(nextPage=deserialize(next)).updateRef(oldpage, newpage, tableNameLength);
 				nextPage.serialize();
-				return true;
-			}
-			else {
-				refs.get(i-1).setPage(newpage);
-			}
+			}	
 		}
-		return false;
 	}
 	
 	public void serialize() throws DBAppException{
