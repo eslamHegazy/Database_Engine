@@ -1,0 +1,76 @@
+Name: Student
+Clustering key: id @ pos=3
+Pages:
+{Student0, Student1, Student2, Student3}
+Min:
+{0, 3, 8, 2343432}
+Max:
+{3, 7, 2343432, 1111111111}
+Indexed Columns: 
+gpa	id	name	shape	Indexes: 
+gpa
+(9)[0.25|0.88|0.956| | ]{0,13,10,8,}
+(0)[0.01,Student1|0.14,Student0|0.21,Student1|0.23,Student2| ]->(13)[0.25,Student1|0.43,Student2|0.54,Student0|0.6,Student1|0.76,Student1]->(10)[0.88,Student2|0.91,Student0|0.95,Node6| | ]->(8)[0.956,Student2|1.25,Student3|1.5,Node10| | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node6: 
+Student3 , Student0 , 
+refrence number : 2 is :
+The overflow page:Node10: 
+Student3 , Student2 , Student2 , Student2 , Student2 , 
+The overflow page:Node15: 
+Student1 , Student1 , Student0 , Student0 , Student0 , 
+The overflow page:Node36: 
+Student1 , Student1 , 
+
+id
+(4)[4|7|78452| | ]{1,7,14,3,}
+(1)[0,Node32|1,Node22|2,Node35|3,Node23| ]->(7)[4,Node26|5,Student1|6,Student1| | ]->(14)[7,Student1|8,Student2|9,Student2|12,Student2|23498,Node9]->(3)[78452,Student2|2343432,Node4|5674567,Student3|1111111111,Student3| ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node32: 
+Student0 , Student0 , 
+refrence number : 2 is :
+The overflow page:Node22: 
+Student0 , Student0 , Student0 , 
+refrence number : 3 is :
+The overflow page:Node35: 
+Student0 , Student0 , 
+refrence number : 4 is :
+The overflow page:Node23: 
+Student1 , Student1 , Student0 , 
+refrence number : 5 is :
+The overflow page:Node26: 
+Student1 , Student1 , Student1 , 
+refrence number : 6 is :
+The overflow page:Node9: 
+Student2 , Student2 , Student2 , 
+refrence number : 7 is :
+The overflow page:Node4: 
+Student3 , Student2 , 
+
+name
+(6)[Arousiiii|Johnasd Noor|YDWE Noor| | ]{2,12,5,11,}
+(2)[42ZG Noor,Student0|483T Noor,Student1|5KDX Noor,Student1|Ahmed Noor,Node5| ]->(12)[Arousiiii,Node33|Dalia Noor,Student3|FYZE Noor,Student1|H2K0 Noor,Student2|John Noor,Node11]->(5)[Johnasd Noor,Student2|Johnnnn Noor,Student1|MGXZ Noor,Student1|VUOM Noor,Student2|W9ES Noor,Student1]->(11)[YDWE Noor,Student0|YTIM Noor,Student0|Zaky Noor,Student2| | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node5: 
+Student3 , Student2 , Student0 , 
+refrence number : 2 is :
+The overflow page:Node33: 
+Student3 , Student0 , Student0 , Student0 , Student1 , 
+The overflow page:Node38: 
+Student1 , 
+refrence number : 3 is :
+The overflow page:Node11: 
+Student2 , Student2 , Student2 , Student1 , 
+
+shape
+(2)[315|1880|2301|2475| ]{0,3,4,1,5,}
+(0)[0,Node21|63,Student3|78,Student1| | ]->(3)[315,Student0|1221,Student0|1813,Student1| | ]->(4)[1880,Student3|1968,Student2|1978,Student0|2242,Student0| ]->(1)[2301,Student2|2352,Student1|2397,Student3| | ]->(5)[2475,Student2|2808,Student2|2958,Student2|3306,Student1| ]->
+
+ The Overflow refrences are : 
+
