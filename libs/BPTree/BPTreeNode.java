@@ -182,7 +182,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	public abstract GeneralReference search(T key) throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMT(T key)throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMTE(T key)throws DBAppException;
-	public abstract Ref searchForInsertion(T key)throws DBAppException;
+	public abstract Ref searchForInsertion(T key,int tableLength)throws DBAppException;
 
 	/**
 	 * delete a key from the B+ tree recursively

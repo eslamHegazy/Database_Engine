@@ -182,8 +182,8 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		return sb.toString();
 	}
 	
-	public Ref searchForInsertion(Polygons key) throws DBAppException { //comparable and T???
-		return root.searchForInsertion(key);
+	public Ref searchForInsertion(Polygons key,int tableLength) throws DBAppException { //comparable and T???
+		return root.searchForInsertion(key, tableLength);
 	}
 	public Ref searchRequiredReference(Polygons key)throws DBAppException{
 		search(key);

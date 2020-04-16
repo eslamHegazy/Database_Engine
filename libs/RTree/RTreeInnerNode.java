@@ -406,10 +406,10 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}
-	public Ref searchForInsertion(Polygons key)throws DBAppException
+	public Ref searchForInsertion(Polygons key,int tableLength)throws DBAppException
 	{
 		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
-		Ref x= b.searchForInsertion(key);
+		Ref x= b.searchForInsertion(key,tableLength);
 		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}

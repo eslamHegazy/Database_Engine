@@ -279,5 +279,25 @@ public class OverflowPage implements Serializable{
 			return refs.get(refs.size()-1);
 		}
 	}
-	
+	public Ref getMaxRefPage(int tableLength) throws DBAppException {
+		return getMaxRefPage(tableLength,refs.get(0));
+	}
+	private Ref getMaxRefPage(int tableLength, Ref ref) throws DBAppException {
+		for(int i=0;i<refs.size();i++){
+			if(getIntInRefPage(ref, tableLength)<getIntInRefPage(refs.get(i), tableLength)){
+				ref=refs.get(i);
+			}
+		}
+		if(next==null){
+			return ref;
+		}else{
+			OverflowPage nextPage=deserialize(next);
+			Ref reff=nextPage.getMaxRefPage(tableLength, ref);
+			nextPage.serialize();
+			return reff;
+		}
+	}
+	private static int getIntInRefPage(Ref ref,int tableLength){
+		return Integer.parseInt(ref.getPage().substring(tableLength));
+	}
 }

@@ -180,8 +180,8 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		return sb.toString();
 	}
 	
-	public Ref searchForInsertion(T key) throws DBAppException { //comparable and T???
-		return root.searchForInsertion(key);
+	public Ref searchForInsertion(T key,int tableLength) throws DBAppException { //comparable and T???
+		return root.searchForInsertion(key,tableLength);
 	}
 	public Ref searchRequiredReference(T key)throws DBAppException{
 		search(key);

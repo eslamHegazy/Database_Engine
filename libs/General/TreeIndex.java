@@ -9,7 +9,7 @@ import kalabalaDB.Polygons;
 
 public interface TreeIndex<T extends Comparable<T>> {
 	public GeneralReference search(T key) throws DBAppException;
-	public Ref searchForInsertion(T key) throws DBAppException ;
+	public Ref searchForInsertion(T key,int tableLength) throws DBAppException ;
 	public boolean delete(T key) throws DBAppException;
 	public boolean delete(T key, String Page_name) throws DBAppException, IOException;
 	public void insert(T key, Ref recordReference) throws DBAppException, IOException;

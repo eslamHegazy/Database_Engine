@@ -406,10 +406,10 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		b.serializeNode();	//TODO: Can I remove this ?
 		return x;
 	}
-	public Ref searchForInsertion(T key)throws DBAppException
+	public Ref searchForInsertion(T key,int tableLength)throws DBAppException
 	{
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
-		Ref x= b.searchForInsertion(key);
+		Ref x= b.searchForInsertion(key,tableLength);
 		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}

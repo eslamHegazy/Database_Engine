@@ -107,8 +107,8 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		while (index < numberOfKeys && getKey(index).compareTo(key) < 0)
 			++index;
 		
-//		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
-		if (index< numberOfKeys && getKey(index).equals(key)) {
+		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
+//		if (index< numberOfKeys && getKey(index).equals(key)) {
 			GeneralReference ref = records[index];
 			if (ref.isOverflow()) {
 				//done:
@@ -234,33 +234,36 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 				return this.getRecord(i);
 		return null;
 	}
-	public Ref searchForInsertion(Polygons key)throws DBAppException
+	public Ref searchForInsertion(Polygons key,int tableLength)throws DBAppException
 	{
 		int i=0;
 		for(; i < numberOfKeys; i++){
 			if(this.getKey(i).compareTo(key) >= 0)
-				return this.refReference((this.getRecord(i)));
+				return this.refReference((this.getRecord(i)),tableLength);
 		}	
 		if(i>0){
-			return this.refReference(this.getRecord(i-1));
+			return this.refReference(this.getRecord(i-1),tableLength);
 		}
 		return null;
 	}
-	private Ref refReference(GeneralReference generalReference) throws DBAppException {
+	private Ref refReference(GeneralReference generalReference,int tableLength) throws DBAppException {
 		if(generalReference instanceof Ref){
 			return (Ref)generalReference;
 		}else{
 				OverflowReference o=(OverflowReference)generalReference;
 				String pageName=o.getFirstPageName();
-					OverflowPage p=o.deserializeOverflowPage(pageName);;
-					while(pageName!=null){
-						p.serialize();
-						p=o.deserializeOverflowPage(pageName);
-						pageName=p.getNext();
-					}
-					Ref r=p.getRefs().get(p.getRefs().size()-1);
+					OverflowPage p=o.deserializeOverflowPage(pageName);
+					Ref r=p.getMaxRefPage(tableLength);
 					p.serialize();
 					return r;
+//					while(pageName!=null){
+//						p.serialize();
+//						p=o.deserializeOverflowPage(pageName);
+//						pageName=p.getNext();
+//					}
+//					Ref r=p.getRefs().get(p.getRefs().size()-1);
+//					p.serialize();
+//					return r;
 					
 				
 		}

@@ -100,18 +100,25 @@ public class Page implements Serializable {
 
 	public void insertIntoPage(Tuple x, int pos) {
 		Comparable nKey = (Comparable) x.getAttributes().get(pos);
-		int lower = 0;
-		int upper = tuples.size() - 1;
-		if (upper == -1) {
-			tuples.addElement(x);
-		} else {
-			int ans = binarySearch(nKey, pos);
-			if (ans == tuples.size()) {
-				tuples.add(x);
-			} else {
-				tuples.insertElementAt(x, ans);
+//		int lower = 0;
+//		int upper = tuples.size() - 1;
+//		if (upper == -1) {
+//			tuples.addElement(x);
+//		} else {
+//			int ans = binarySearch(nKey, pos);
+//			if (ans == tuples.size()) {
+//				tuples.add(x);
+//			} else {
+//				tuples.insertElementAt(x, ans);
+//			}
+//		}
+		for(int i=0;i<tuples.size();i++){
+			if(nKey.compareTo(tuples.get(i).getAttributes().get(pos))<0){
+				tuples.insertElementAt(x, i);
+				return;
 			}
 		}
+		tuples.insertElementAt(x, tuples.size());
 	}
 
 	public void serialize() throws DBAppException {

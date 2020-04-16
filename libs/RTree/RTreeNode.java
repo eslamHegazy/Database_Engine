@@ -181,7 +181,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	public abstract GeneralReference search(Polygons key) throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMT(Polygons key)throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMTE(Polygons key)throws DBAppException;
-	public abstract Ref searchForInsertion(Polygons key)throws DBAppException;
+	public abstract Ref searchForInsertion(Polygons key,int tableLength)throws DBAppException;
 
 	/**
 	 * delete a key from the R tree recursively
