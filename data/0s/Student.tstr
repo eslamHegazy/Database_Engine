@@ -5,75 +5,51 @@ Pages:
 Min:
 {0, 3, 8, 2343432}
 Max:
-{3, 7, 2343432, 1111111111}
+{2, 7, 2343432, 5674567}
 Indexed Columns: 
-shape	name	gpa	id	Indexes: 
-shape
-(2)[936|2450|2809| | ]{0,1,3,4,}
-(0)[0,Node19|63,Student2|713,Student2| | ]->(1)[936,Student3|1300,Student0|1350,Student0|1520,Student0|2288,Student1]->(3)[2450,Student2|2475,Node38|2808,Student0| | ]->(4)[2809,Student2|2850,Student0|2968,Student1|3016,Student2|3248,Student3]->
+gpa	id	name	shape	Indexes: 
+gpa
+(9)[0.51|0.81|0.956| | ]{0,15,11,8,}
+(0)[0.18,Student2|0.19,Student1|0.22,Student2|0.41,Student0| ]->(15)[0.51,Student1|0.56,Student0|0.64,Student0| | ]->(11)[0.81,Student1|0.88,Student2|0.94,Student1|0.95,Node7| ]->(8)[0.956,Student3|0.98,Student1|1.25,Student3| | ]->
 
  The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node7: 
+Student2 , Student0 , 
+
+id
+(4)[3|6|9| | ]{1,12,14,7,}
+(1)[0,Node36|1,Node24|2,Node38| | ]->(12)[3,Node26|4,Node29|5,Student1| | ]->(14)[6,Student1|7,Student1|8,Student2|9,Student2| ]->(7)[9,Student2|9,Student2|78452,Student2| | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node36: 
+Student0 , 
+refrence number : 2 is :
+The overflow page:Node24: 
+Student0 , Student0 , 
+refrence number : 3 is :
+The overflow page:Node38: 
+Student0 , 
+refrence number : 4 is :
+The overflow page:Node26: 
+Student1 , 
+refrence number : 5 is :
+The overflow page:Node29: 
+Student1 , 
 
 name
-(6)[GQA5 Noor|Johnasd Noor|QIG7 Noor| | ]{2,10,5,11,}
-(2)[6SEI Noor,Student1|AVT7 Noor,Student1|Ahmed Noor,Node5|Arousiiii,Node35|Dalia Noor,Student3]->(10)[GQA5 Noor,Student0|J6KN Noor,Student0|John Noor,Node10| | ]->(5)[Johnasd Noor,Student2|Johnnnn Noor,Student0|LP70 Noor,Student2|NWJV Noor,Student1| ]->(11)[QIG7 Noor,Student0|V8P9 Noor,Student1|YPIY Noor,Student2|ZG65 Noor,Student1|Zaky Noor,Student2]->
+(6)[Dalia Noor|IF9U Noor|PTWF Noor|YOQ6 Noor| ]{2,13,5,10,16,}
+(2)[02IH Noor,Student1|2XTY Noor,Student1|Ahmed Noor,Node5| | ]->(13)[Dalia Noor,Student3|EKKA Noor,Student1|GH3J Noor,Student0|IF9U Noor,Student2| ]->(5)[IF9U Noor,Student2|IF9U Noor,Student2|IF9U Noor,Student2| | ]->(10)[PTWF Noor,Student0|QK6I Noor,Student2|VV85 Noor,Student0| | ]->(16)[YOQ6 Noor,Student1|YOUL Noor,Student1|Zaky Noor,Student2| | ]->
 
  The Overflow refrences are : 
 refrence number : 1 is :
 The overflow page:Node5: 
 Student3 , Student2 , Student0 , 
-refrence number : 2 is :
-The overflow page:Node35: 
-Student3 , Student0 , Student0 , Student0 , Student1 , 
-The overflow page:Node39: 
-Student1 , 
-refrence number : 3 is :
-The overflow page:Node10: 
-Student2 , Student2 , Student2 , Student1 , 
 
-gpa
-(9)[0.31|0.58|0.956| | ]{0,14,12,8,}
-(0)[0.01,Student2|0.02,Student1|0.09,Student1|0.25,Student2| ]->(14)[0.31,Student0|0.42,Student0|0.52,Student1| | ]->(12)[0.58,Student0|0.88,Node25|0.92,Student1|0.95,Node6| ]->(8)[0.956,Student3|1.25,Student3|1.5,Node11| | ]->
+shape
+(2)[960| | | | ]{0,1,}
+(0)[0,Node6|63,Student2|960,Student0| | ]->(1)[960,Student0|960,Student0|960,Student0| | ]->
 
  The Overflow refrences are : 
-refrence number : 1 is :
-The overflow page:Node25: 
-Student2 , Student1 , 
-refrence number : 2 is :
-The overflow page:Node6: 
-Student2 , Student0 , 
-refrence number : 3 is :
-The overflow page:Node11: 
-Student3 , Student2 , Student2 , Student2 , Student2 , 
-The overflow page:Node17: 
-Student0 , Student1 , Student0 , Student0 , Student0 , 
-The overflow page:Node37: 
-Student1 , Student1 , 
-
-id
-(4)[4|7|78452| | ]{1,7,13,3,}
-(1)[0,Node33|1,Node22|2,Node36|3,Node24| ]->(7)[4,Node26|5,Student1|6,Student1| | ]->(13)[7,Student1|8,Student2|9,Student2|12,Student2|23498,Node9]->(3)[78452,Student2|2343432,Node4|5674567,Student3|1111111111,Student3| ]->
-
- The Overflow refrences are : 
-refrence number : 1 is :
-The overflow page:Node33: 
-Student0 , Student0 , 
-refrence number : 2 is :
-The overflow page:Node22: 
-Student0 , Student0 , Student0 , 
-refrence number : 3 is :
-The overflow page:Node36: 
-Student0 , Student0 , 
-refrence number : 4 is :
-The overflow page:Node24: 
-Student1 , Student0 , Student1 , 
-refrence number : 5 is :
-The overflow page:Node26: 
-Student1 , Student1 , Student1 , 
-refrence number : 6 is :
-The overflow page:Node9: 
-Student2 , Student2 , Student2 , 
-refrence number : 7 is :
-The overflow page:Node4: 
-Student3 , Student2 , 
 

@@ -35,7 +35,7 @@ public class DBAppTest {
 		dbApp.init();
 		faUpTs(dbApp);
 		//showAt0s();
-		//deleteTest(dbApp);
+		deleteTest(dbApp);
 		showAt0s();
 
 	}
@@ -43,8 +43,9 @@ public class DBAppTest {
 	static void deleteTest(DBApp dbApp) throws DBAppException
 	{
 		Hashtable htblColNameValue = new Hashtable();
-		//htblColNameValue.put("id" , 2);
-		htblColNameValue.put("name", "Arousiiii");
+		//htblColNameValue.put("id" , 1111111111);
+		//htblColNameValue.put("name", "Arousiiii");
+		htblColNameValue.put("gpa" , 1.5);
 		Polygon p1 = new Polygon();
 		p1.addPoint(1, 9);
 		p1.addPoint(8, 0);
@@ -93,6 +94,13 @@ public class DBAppTest {
 		htblColNameValue.put("id", new Integer( 2343432 ));
 		htblColNameValue.put("name", new String("Ahmed Noor" ) );
 		htblColNameValue.put("gpa", new Double( 0.956 ) );
+		htblColNameValue.put("shape", new Polygon()); //check Polygon work correctly
+		dbApp.insertIntoTable( strTableName , htblColNameValue );
+		
+		htblColNameValue.clear( );
+		htblColNameValue.put("id", new Integer( 1111111111 ));
+		htblColNameValue.put("name", new String("Arousiiii" ) );
+		htblColNameValue.put("gpa", new Double( 1.5 ) );
 		htblColNameValue.put("shape", new Polygon()); //check Polygon work correctly
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		

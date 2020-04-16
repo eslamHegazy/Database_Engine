@@ -564,14 +564,14 @@ public class Table implements Serializable {
 					}
 				}
 				if (nextOFP.getNext() != null) {
-					nextOFP.serialize();
+					//nextOFP.serialize();
 					nextOFP = nextOFP.deserialize(nextOFP.getNext());
 				} else {
 					notNull = false;
 				}
 				
 			}
-			nextOFP.serialize();
+			//nextOFP.serialize();
 		}
 		allReferences.addAll(xx);
 		//System.out.println(allReferences);
