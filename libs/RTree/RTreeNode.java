@@ -222,6 +222,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	{
 		try 
 		{
+			System.out.println("IO||||\t serialize:node:"+nodeName);
 			FileOutputStream fileOut = new FileOutputStream("data/"+ this.nodeName+ ".class");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(this);
@@ -235,6 +236,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	}
 	public RTreeNode<Polygons> deserializeNode(String name) throws DBAppException {
 		try {
+			System.out.println("IO||||\t deserialize:node:"+name);
 		//	if(name == null || name == "")
 		//		return null;
 			FileInputStream fileIn = new FileInputStream("data/"+ name + ".class");

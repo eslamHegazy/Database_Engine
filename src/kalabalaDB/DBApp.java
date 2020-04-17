@@ -499,6 +499,7 @@ public class DBApp {
 	}
 	public static void serialize(Table table) throws DBAppException {
 		try {
+			System.out.println("IO||||\t serialize:table:"+table.getTableName());
 			FileOutputStream fileOut = new FileOutputStream("data/"+table.getTableName() + ".class");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(table);
@@ -513,6 +514,7 @@ public class DBApp {
 
 	public static Table deserialize(String tableName) throws DBAppException {
 		try {
+			System.out.println("IO||||\t deserialize:table:"+tableName);
 			FileInputStream fileIn = new FileInputStream("data/"+tableName + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			
@@ -534,6 +536,7 @@ public class DBApp {
 
 	public static Vector readFile(String path) throws DBAppException {
 		try {
+			System.out.println("IO||||\t readFile :"+path);
 			String currentLine = "";
 			FileReader fileReader = new FileReader(path);
 			BufferedReader br = new BufferedReader(fileReader);

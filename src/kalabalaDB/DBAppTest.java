@@ -29,8 +29,8 @@ public class DBAppTest {
 	
 	
 	public static void main(String[] args)throws Exception {
-//		clear();
-//		tst10_h0();
+		clear();
+		tst10_h0();
 //		showAt0s();
 //		tst10_h1();
 //		showAt0s();

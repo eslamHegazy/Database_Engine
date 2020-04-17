@@ -121,6 +121,7 @@ public class Table implements Serializable {
 
 	public static Page deserialize(String name) throws DBAppException {
 		try {
+			System.out.println("IO||||\t serialize:page:"+name);
 			FileInputStream fileIn = new FileInputStream("data/" + name + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			Page xx = (Page) in.readObject();

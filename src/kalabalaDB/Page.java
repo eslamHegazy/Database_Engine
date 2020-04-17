@@ -123,6 +123,7 @@ public class Page implements Serializable {
 
 	public void serialize() throws DBAppException {
 		try {
+			System.out.println("IO||||\t serialize:page:"+pageName);
 			FileOutputStream fileOut = new FileOutputStream("data/" + pageName + ".class");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(this);
