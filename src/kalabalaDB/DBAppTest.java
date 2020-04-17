@@ -37,7 +37,41 @@ public class DBAppTest {
 		//showAt0s();
 		deleteTest(dbApp);
 		showAt0s();
+		selectWRabenaYstorha(dbApp);
+		dbApp.ignoreMe();
 
+	}
+
+	private static void selectWRabenaYstorha(DBApp dbApp) throws DBAppException {
+		SQLTerm[] arrSQLTerms = new SQLTerm[2];
+		String[] strarrOperators = new String[1];
+		SQLTerm s = new SQLTerm();
+		s._strTableName= "Student";
+		s._strColumnName = "gpa";
+		s._strOperator = ">";
+		s._objValue =0.95;
+		arrSQLTerms[1]=s;
+		arrSQLTerms[0]= new SQLTerm();
+		arrSQLTerms[0]._strTableName= "Student";
+		arrSQLTerms[0]._strColumnName = "name";
+		arrSQLTerms[0]._strOperator = "=";
+		arrSQLTerms[0]._objValue ="Ahmed Noor" ;
+		strarrOperators[0]="or";
+		//long startTime = System.nanoTime();
+		Iterator<Tuple> res = dbApp.selectFromTable(arrSQLTerms, strarrOperators);
+		//long endTime = System.nanoTime();
+
+		// get difference of two nanoTime values
+		//long timeElapsed = endTime - startTime;
+
+		//System.out.println("Execution time in nanoseconds  : " + timeElapsed);
+
+		//System.out.println("Execution time in milliseconds : " + 
+			//					timeElapsed / 1000000);
+		System.out.println();
+		while(res.hasNext()) {
+			System.out.println(res.next());
+		}
 	}
 
 	static void deleteTest(DBApp dbApp) throws DBAppException
@@ -73,8 +107,8 @@ public class DBAppTest {
 		
 		dbApp.createTable( strTableName, "id", htblColNameType );
 		
-		dbApp.createBTreeIndex( strTableName, "gpa" );
-		dbApp.createBTreeIndex( strTableName, "id" );		
+	//	dbApp.createBTreeIndex( strTableName, "gpa" );
+//		dbApp.createBTreeIndex( strTableName, "id" );		
 		dbApp.createRTreeIndex( strTableName, "shape" );
 		dbApp.createBTreeIndex( strTableName, "name" );
 
@@ -204,7 +238,7 @@ public class DBAppTest {
 			//System.out.println(i);
 			htblColNameValue.clear( );
 			htblColNameValue.put("id", new Integer( i ));
-			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" Noor" ) );
+			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+"Noor" ) );
 			double gpa = 1.0*((int)(1+Math.random()*100))/100;
 			htblColNameValue.put("gpa", new Double( gpa ) );
 			htblColNameValue.put("shape", new Polygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
@@ -230,7 +264,7 @@ public class DBAppTest {
 		s._strTableName= "Student";
 		s._strColumnName = "id";
 		s._strOperator = "=";
-		s._objValue = 77556;
+		s._objValue =9;
 		arrSQLTerms[0]=s;
 		arrSQLTerms[1]= new SQLTerm();
 		arrSQLTerms[1]._strTableName= "Student";
@@ -239,6 +273,7 @@ public class DBAppTest {
 		arrSQLTerms[1]._objValue = "Ahmed Noor";
 		strarrOperators[0]="XoR";
 		Iterator<Tuple> res = d.selectFromTable(arrSQLTerms, strarrOperators);
+		System.out.println();
 		while(res.hasNext()) {
 			System.out.println(res.next());
 		}

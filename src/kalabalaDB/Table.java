@@ -383,10 +383,11 @@ public class Table implements Serializable {
 				OverflowPage OFP = x.getFirstPage();
 				Set<Ref> allReferences = getRefFromBPTree(OFP);
 				System.out.println(allReferences);
-				OFP.serialize();
+			//	OFP.serialize();
 				for (Ref ref : allReferences) {
 					if(ref != null)
 					{
+						System.out.println(ref.getPage());
 						Page p = deserialize(ref.getPage() + "");
 						//System.out.println(ref.getPage());
 						p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex, htblColNameValue,
@@ -870,6 +871,8 @@ public class Table implements Serializable {
 		}else {
         //boolean[]chosen=new boolean[i];
 		int linearScGu = linearScanGuranteed(arrSQLTerms, strarrOperators);
+		//System.out.println();
+		System.out.println((linearScGu==1)?"linear scan":(linearScGu==2)?"binary and indx only":"sweet lovely indices");
         if(linearScGu==1) { 
         	//at least non indexed column preceeded by or/xor , question if only the cluster is the non indexed 
         	//preceeded by or/xor should we also do linear??
@@ -879,7 +882,8 @@ public class Table implements Serializable {
         	//single clustering without index preceeded or sufficed with or/xor , no other non indexed appears in query
 
         	int pos=getColPositionWithinTuple(arrSQLTerms[0]._strColumnName,metaOfTable);
-			current=getArrayOfTuples(arrSQLTerms[0]._strColumnName, arrSQLTerms[0]._objValue,strarrOperators[0],pos);
+			current=getArrayOfTuples(arrSQLTerms[0]._strColumnName, arrSQLTerms[0]._objValue,arrSQLTerms[0]._strOperator,pos);
+			//System.out.println(Arrays.asList(current));
 			for(int k=1;k<arrSQLTerms.length;k++) {
     			pos=getColPositionWithinTuple(arrSQLTerms[k]._strColumnName, metaOfTable);
     			if(strarrOperators[k-1].toLowerCase().equals("and")) { //operation on the current
@@ -897,7 +901,8 @@ public class Table implements Serializable {
         	        	
         	
         }else {
-        	int leadingIndexPosition=getFirstIndexPos(arrSQLTerms); //index to start with 
+        	int leadingIndexPosition=getFirstIndexPos(arrSQLTerms); //index to start with
+       // 	System.out.println(leadingIndexPosition);
         	if(leadingIndexPosition==-1) {
         		//no existing indices this case all the operators are ands , so will we go linear 
         		//or if the cluster exists we search with it
@@ -906,10 +911,12 @@ public class Table implements Serializable {
         	}else {//its guranteed inshallah that first index is either in first position
         		//or all its previous columns are anded to it(clustering key excluded)
         		String firstIndex=arrSQLTerms[leadingIndexPosition]._strColumnName;
+        		//System.out.println(firstIndex);
         		Object value=arrSQLTerms[leadingIndexPosition]._objValue;
         		String op=arrSQLTerms[leadingIndexPosition]._strOperator;
         		int pos=getColPositionWithinTuple(firstIndex,metaOfTable);
         		current=getArrayOfTuples(firstIndex, value, op,pos);
+        		//System.out.println(Arrays.asList(current));
         		//filters what come before index
         		for(int k=leadingIndexPosition-1;k>=0;k--) {
         			pos=getColPositionWithinTuple(arrSQLTerms[k]._strColumnName, metaOfTable);
@@ -932,6 +939,7 @@ public class Table implements Serializable {
         			}else {
         				 //set operation between 2 indices
         				 next=getArrayOfTuples(arrSQLTerms[k]._strColumnName, arrSQLTerms[k]._objValue, arrSQLTerms[k]._strOperator,pos);
+        				//g System.out.println(Arrays.asList(next));
         				 current=setOperation(current, next, strarrOperators[k-1]);
         			}
         		}
@@ -1160,7 +1168,7 @@ public class Table implements Serializable {
 	private ArrayList<Tuple> getArrayOfTuples(String _strColumnName, Object _objValue, String _strOperator,int pos) throws DBAppException  {
 		if(_strOperator.equals("!="))
 			return goLinear(_strColumnName,_objValue,_strOperator,pos);
-            
+     //    System.out.println(_strOperator);  
 		
 		return (colNameTreeIndex.containsKey(_strColumnName))?goWithIndex(_strColumnName,_objValue,_strOperator,pos):
 			(_strColumnName.equals(strClusteringKey))?goBinary(_strColumnName,_objValue,_strOperator,pos):goLinear(_strColumnName,_objValue,_strOperator,pos);
@@ -1241,7 +1249,10 @@ public class Table implements Serializable {
 
 	private ArrayList<Tuple> mtOrMtlLinear(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException {
 		ArrayList<Tuple> res=new ArrayList();
-		for(int i=pages.size()-1;i>=0;i++) {
+	//	System.out.println("p"+pages.size());
+		//System.out.println("m"+max.size());
+		for(int i=pages.size()-1;i>=0;i--) {
+			System.out.println(i);
 			if(((Comparable) max.get(i)).compareTo((Comparable)_objValue)<0)break;
 			if(((Comparable) max.get(i)).compareTo((Comparable)_objValue)==0&&_strOperator.length()==1)break;
 			Page x=deserialize(pages.get(i));
@@ -1262,6 +1273,7 @@ public class Table implements Serializable {
 	private ArrayList<Tuple> goBinary(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException {
 		// TODO Auto-generated method stub
 		ArrayList<Tuple> res=new ArrayList();
+	//	System.out.println(_strOperator);
 		switch(_strOperator) {
 		case ">":
 		case ">=": res=mtOrMtlBinary( _strColumnName,  _objValue, _strOperator,pos);break;
@@ -1274,10 +1286,11 @@ public class Table implements Serializable {
 	}
 	private ArrayList<Tuple> equalsBinary(String _strColumnName, Object _objValue, String _strOperator, int pos) throws DBAppException{
 		String[] searchResult = SearchInTable(tableName, _objValue).split("#");
+		//System.out.println(searchResult.length);
 		String startPage = searchResult[0];
 		int startPageIndex = getPageIndex(startPage);
 		int startTupleIndex = Integer.parseInt(searchResult[1]);
-		
+		//System.out.println(startPageIndex+","+startTupleIndex);
 		ArrayList<Tuple> res = new ArrayList<>();
 		for (int pageIdx = startPageIndex ,tupleIdx = startTupleIndex; pageIdx<pages.size(); pageIdx++,tupleIdx=0) {
 			//TODO: We are looping LINEARLY OVER PAGES ? Should we make it binary ??
@@ -1315,14 +1328,17 @@ public class Table implements Serializable {
 		ArrayList<Tuple> res = new ArrayList<>();
 		String lastPage=pages.get(pages.size()-1);
 		int lastPageMaxNum=Integer.parseInt(lastPage.substring(tableName.length()));
-		boolean []visited=new boolean[lastPageMaxNum];
+		boolean []visited=new boolean[lastPageMaxNum+1];
 		TreeIndex b=colNameTreeIndex.get(_strColumnName);
 		GeneralReference resultReference = b.search((Comparable)_objValue);
+		if(resultReference==null)return res;
 		ArrayList<Ref> referenceList = resultReference.getALLRef();
+		//System.out.println(Arrays.asList(referenceList));
 		for (int i=0;i<referenceList.size();i++) {
 			Ref currentReference = referenceList.get(i);
 			String pagename = currentReference.getPage();
 			int curPageNum=Integer.parseInt(pagename.substring(tableName.length()));
+		//	System.out.println(curPageNum);
 			if (visited[curPageNum]) continue;
 			addToResultSet(res, pagename, pos, _objValue, _strOperator);
 			visited[curPageNum] = true;
@@ -1396,7 +1412,7 @@ public class Table implements Serializable {
 				res.add(x.getTuples().get(i));
 			else if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))<0) {
 				//TODO:make sure it is that I finished the records (EQUAL) and now in the records > my key; not the opposite
-				break;
+			//	break;
 			}
 		}
 		return ;

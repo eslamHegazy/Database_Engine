@@ -283,9 +283,11 @@ public class DBApp {
 				Class colType = Class.forName(types.get(pos));
 				Class parameterType = htblColNameValue.get(str).getClass();
 				Class polyOriginal = Class.forName("java.awt.Polygon");
-				if (colType == polyOriginal) {
+				
+				if (colType.equals(polyOriginal)) {
 					//TODO: Eslam: I think this is true  here only; NEED TO TEST IT
-					colType = Class.forName("kalabalaDB.Polygons");
+					//colType = Class.forName("kalabalaDB.Polygons");
+					htblColNameValue.put(str, new Polygons((Polygon) htblColNameValue.get(str)));
 				}
 				System.out.println(colType+" "+parameterType);
 				
@@ -295,10 +297,10 @@ public class DBApp {
 			}		
 			
 			
-			// if the key is indexed use binary search
+			// if the key is indexed use tree index
 			if(key_index)
 			{
-				
+				System.out.println("INDEX USED");
 				TreeIndex key_tree = y.getColNameBTreeIndex().get(key_column_name);
 				GeneralReference GR = key_tree.search(key);  // the result of the search in the B+ tree
 				ArrayList<Ref> references = GR.getALLRef();  // the entire references where the key exists
@@ -309,44 +311,63 @@ public class DBApp {
 				
 				for(String p_name:hs)
 				{
+					//System.out.println("The page name : "+p_name);
 					Page p = Table.deserialize(p_name); 
+					
 					int i=0;
 					while (i < p.getTuples().size()) 
 					{
 						Tuple current = p.getTuples().get(i);
 		
 						if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
-							continue;
+							{
+							i++;
+							Comparable c = (Comparable)current.getAttributes().get(y.getPrimaryPos());
+							if(c.compareTo(key) < 0)
+								continue;
+							
+							break;
+							}
+						
 						
 						// loop over the current tuple 
-						for (int k = 0; k < current.getAttributes().size()-1; k++) 
+						//System.out.println(current.getAttributes().size());
+						for (int k = 0; k < current.getAttributes().size()-2; k++) 
 						{
 							System.out.printf("k=%d, %s\n",k,colnames.get(k));
 							if (htblColNameValue.containsKey(colnames.get(k))) 
 							{
 								System.out.println(k+", before :"+current);
-								current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
-								System.out.println(k+", after :"+current);
-								// update the trees
+								
 								if(indexed.get(k))
 								{	
+									System.out.println("index changed on "+ colnames.get(k));
 									TreeIndex t = y.getColNameBTreeIndex().get(colnames.get(k));
+									System.out.println("The tree before "+t.toString());
 									Comparable old_value = (Comparable)current.getAttributes().get(k);
 									Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
 									t.delete(old_value, p_name);
 									t.insert(new_value, new Ref(p_name));
-
+									System.out.println("The tree after "+t.toString());
+									
 								}
+	
+								current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
+								
+								System.out.println(k+", after :"+current);
+								// update the trees
+								
 							
 							}
 							
 						}
 						Date date = new Date();
-						current.getAttributes().setElementAt(date, current.getAttributes().size()-1);
+						current.getAttributes().setElementAt(date, current.getAttributes().size()-2);
 		
 						i++;
 					}
-					System.out.println("page after: "+p);
+					
+					System.out.println("page after: \n"+p);
 					p.serialize();
 				}
 				
@@ -354,6 +375,7 @@ public class DBApp {
 			// if the key is not indexed use the Binary search
 			else
 			{
+			System.out.println("BINARY SEARCH USED");
 			String[] searchResult = y.SearchInTable(strTableName, strClusteringKey).split("#");
 			Page p = Table.deserialize(searchResult[0]);
 			int i = Integer.parseInt(searchResult[1]);
@@ -370,33 +392,43 @@ public class DBApp {
 	
 					if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
 					{
+						i++;
 						flag = false;
 						break;
 					}
 	
-					for (int k = 0; k < current.getAttributes().size()-1; k++) 
+					for (int k = 0; k < current.getAttributes().size()-2; k++) 
 					{
 						System.out.printf("k=%d, %s\n",k,colnames.get(k));
 						if (htblColNameValue.containsKey(colnames.get(k))) {
+							
 							System.out.println(k+", before :"+current);
-							current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
-							System.out.println(k+", after :"+current);
 							
 							// update the trees
 							if(indexed.get(k))
 							{
+								System.out.println("index changed on "+ colnames.get(k));
 								TreeIndex t = y.getColNameBTreeIndex().get(colnames.get(k));
+								System.out.println("The tree before "+t.toString());
 								Comparable old_value = (Comparable)current.getAttributes().get(k);
 								Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
 								t.delete(old_value, searchResult[0]);
 								t.insert(new_value, new Ref(searchResult[0]));
+								System.out.println("The tree after "+t.toString());
+
 							}
+							
+							current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
+							System.out.println(k+", after :"+current);
+							
+						
+							
 							
 						}
 						
 					}
 					Date date = new Date();
-					current.getAttributes().setElementAt(date, current.getAttributes().size()-1);
+					current.getAttributes().setElementAt(date, current.getAttributes().size()-2);
 					i++;
 				}
 				j++;
@@ -708,6 +740,16 @@ public class DBApp {
 //		System.out.println("hii 4");
 //		dbApp.printAllPagesInAllTables();
 ////		 */
+	}
+
+	public void ignoreMe() throws DBAppException {
+		Table y = deserialize("Student");
+		TreeIndex x=y.getColNameBTreeIndex().get("id");
+		if(x.search(2343432)!=null) {
+			System.out.println("felsaleem");
+		}else {
+			System.out.println("we are doomed");
+		}
 	}
 
 	

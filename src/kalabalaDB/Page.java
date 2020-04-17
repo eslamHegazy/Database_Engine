@@ -243,7 +243,7 @@ public class Page implements Serializable {
 							ofr.setFirstPageName(ofp.getNext());
 
 						}
-						
+							
 						File f = new File("data/" + ofp.getPageName() + ".class");
 						//System.out.println("deleted");
 						f.delete();
@@ -298,7 +298,7 @@ public class Page implements Serializable {
 				}
 			
 		}
-		else
+		else //recently removed
 		{
 			tree.delete((Comparable) value);
 		}
