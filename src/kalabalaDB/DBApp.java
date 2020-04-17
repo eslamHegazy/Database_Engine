@@ -318,20 +318,17 @@ public class DBApp {
 					while (i < p.getTuples().size()) 
 					{
 						Tuple current = p.getTuples().get(i);
-						Comparable c = (Comparable)current.getAttributes().get(y.getPrimaryPos());
-						if (c.compareTo(key)!=0) 
+		
+						if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
 							{
 							i++;
-
+							Comparable c = (Comparable)current.getAttributes().get(y.getPrimaryPos());
 							if(c.compareTo(key) < 0)
 								continue;
 							
 							break;
 							}
-						else if (!c.equals(key)) {//FOR Polygons
-							i++;
-							continue;
-						}
+						
 						
 						// loop over the current tuple 
 						//System.out.println(current.getAttributes().size());
@@ -393,18 +390,13 @@ public class DBApp {
 				{
 					Tuple current = p.getTuples().get(i);
 	
-//					if (!current.getAttributes().get(y.getPrimaryPos()).equals(key))
-					if ( ((Comparable)current.getAttributes().get(y.getPrimaryPos())).compareTo(key)!=0) 
+					if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
 					{
 						i++;
 						flag = false;
 						break;
 					}
-					else if (!((Comparable)current.getAttributes().get(y.getPrimaryPos())).equals(key)){
-						i++;
-						continue;
-					}
-					
+	
 					for (int k = 0; k < current.getAttributes().size()-2; k++) 
 					{
 						System.out.printf("k=%d, %s\n",k,colnames.get(k));
