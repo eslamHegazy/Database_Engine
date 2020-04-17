@@ -29,19 +29,40 @@ public class DBAppTest {
 	
 	
 	public static void main(String[] args)throws Exception {
-		clear();
-		//dbApp.init();
-		DBApp dbApp = new DBApp( );
-		dbApp.init();
-		faUpTs(dbApp);
-		//showAt0s();
-		deleteTest(dbApp);
+//		clear();
+//		tst10();
+//		showAt0s();
+//		tst10_h1();
+//		showAt0s();
+//		tst10_h2();
+//		showAt0s();
+		tst10_h3();
 		showAt0s();
-		selectWRabenaYstorha(dbApp);
-		dbApp.ignoreMe();
-
 	}
 
+	static void tst10_h1() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		Polygon pk = new Polygon();
+//		pk.addPoint(0, 0); pk.addPoint(0, 3); pk.addPoint(3, 0); pk.addPoint(3, 3);
+//		pk.addPoint(0, 0); pk.addPoint(3, 0); pk.addPoint(0, 3);
+//		pk.addPoint(6, 6); pk.addPoint(6, 9); pk.addPoint(9, 6); pk.addPoint(9, 9);
+		pk = Polygons.parsePolygon("(1,5),(2,-7),(31,4),(9,8)");
+		Hashtable htblColNameValue = new Hashtable<>();
+		htblColNameValue.put("d", 192);
+		d.updateTable("t", Polygons.clstrString(pk), htblColNameValue);
+	}
+	static void tst10_h2() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		d.createRTreeIndex("t", "p");
+	}
+	static void tst10_h3() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		Polygon pk = new Polygon();
+		pk.addPoint(0, 0); pk.addPoint(3, 0); pk.addPoint(0, 3);
+		Hashtable htblColNameValue = new Hashtable<>();
+		htblColNameValue.put("p", pk);
+		d.deleteFromTable("t", htblColNameValue);
+	}
 	private static void selectWRabenaYstorha(DBApp dbApp) throws DBAppException {
 		SQLTerm[] arrSQLTerms = new SQLTerm[2];
 		String[] strarrOperators = new String[1];
@@ -86,20 +107,15 @@ public class DBAppTest {
 		//htblColNameValue.put("shape", p1);
 		dbApp.deleteFromTable("Student", htblColNameValue);
 	}
+	static void faUpTs() throws Exception{ DBApp d = new DBApp(); d.init(); faUpTs(d);}
 	static void faUpTs(DBApp dbApp) throws Exception{
 //		DBApp d = new DBApp();
 //		d.init();
-//		Hashtable htblColNameType = new Hashtable();
-//		htblColNameType.put("k1", "java.util.Date");
-//		htblColNameType.put("c2", "java.lang.Boolean");
-//		htblColNameType.put("c3", "java.lang.Integer");
-//		d.createTable("fathy", "k1", htblColNameType);
-//		for (int i=0;i<30;i++) {
-//			Hashtable htblColNameValue
+
 		String strTableName = "Student";
 		
 		
-		Hashtable htblColNameType = new Hashtable( );
+		Hashtable htblColNameType = new Hashtable();
 		htblColNameType.put("id", "java.lang.Integer");
 		htblColNameType.put("name", "java.lang.String");
 		htblColNameType.put("gpa", "java.lang.Double");
@@ -112,7 +128,7 @@ public class DBAppTest {
 		dbApp.createRTreeIndex( strTableName, "shape" );
 		dbApp.createBTreeIndex( strTableName, "name" );
 
-		Hashtable htblColNameValue = new Hashtable( );
+		Hashtable htblColNameValue = new Hashtable();
 		
 		
 		htblColNameValue.put("id", new Integer( 2343432 ));
@@ -279,6 +295,57 @@ public class DBAppTest {
 		}
 	}
 
+	static void tst10() throws DBAppException,IOException{
+		DBApp dbApp = new DBApp();
+		dbApp.init();
+		Hashtable htblColNameType = new Hashtable<>();
+		String strTableName="t";
+		htblColNameType.put("p", "java.awt.Polygon");
+		htblColNameType.put("d", "java.lang.Integer");
+		
+		dbApp.createTable( "t", "p", htblColNameType);
+				
+//		dbApp.createRTreeIndex( strTableName, "p" );
+
+		Hashtable htblColNameValue = new Hashtable();
+		Polygon p1;
+		
+		htblColNameValue.clear();
+		p1 = new Polygon(); 
+		p1.addPoint(0, 0); p1.addPoint(0, 3); p1.addPoint(3, 0); p1.addPoint(3, 3);
+		htblColNameValue.put("p", p1);
+		htblColNameValue.put("d", (int)(Math.random()*11));
+		dbApp.insertIntoTable(strTableName, htblColNameValue);
+		
+		htblColNameValue.clear();
+		p1 = new Polygon(); 
+		p1.addPoint(6, 6); p1.addPoint(6, 9); p1.addPoint(9, 6); p1.addPoint(9, 9);
+		htblColNameValue.put("p", p1);
+		htblColNameValue.put("d", (int)(Math.random()*11));
+		dbApp.insertIntoTable(strTableName, htblColNameValue);
+		
+		htblColNameValue.clear();
+		p1 = new Polygon(); 
+		p1.addPoint(1, 5); p1.addPoint(2, -7); p1.addPoint(31, 4); p1.addPoint(9, 8);
+		htblColNameValue.put("p", p1);
+		htblColNameValue.put("d", (int)(Math.random()*11));
+		dbApp.insertIntoTable(strTableName, htblColNameValue);
+		
+		htblColNameValue.clear();
+		p1 = new Polygon(); 
+		p1.addPoint(0, 0); p1.addPoint(6, 0); p1.addPoint(0, 3);
+		htblColNameValue.put("p", p1);
+		htblColNameValue.put("d", (int)(Math.random()*11));
+		dbApp.insertIntoTable(strTableName, htblColNameValue);
+		
+		htblColNameValue.clear();
+		p1 = new Polygon(); 
+		p1.addPoint(0, 0); p1.addPoint(3, 0); p1.addPoint(0, 3);
+		htblColNameValue.put("p", p1);
+		htblColNameValue.put("d", (int)(Math.random()*11));
+		dbApp.insertIntoTable(strTableName, htblColNameValue);
+		
+	}
 	static void tst9() throws DBAppException, IOException{
 		String strTableName= "Bol";
 		String strClusteringKey = "A";

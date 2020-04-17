@@ -17,7 +17,7 @@ import RTree.RTree;
 public class Table implements Serializable {
 
 
-	private Vector<String> pages = new Vector();
+	private Vector<String> pages = new Vector<>();
 	private int MaximumRowsCountinPage;
 	private Vector<Object> min = new Vector<>();
 	private Vector<Object> max = new Vector<>();
@@ -431,13 +431,12 @@ public class Table implements Serializable {
 						max.setElementAt(maxx, i);
 						page.serialize();
 					}
-					{
-					}
+					
 
 				}
 			}
 		} else {
-			Vector<Integer> attributeIndex = new Vector();
+			Vector<Integer> attributeIndex = new Vector<>();
 			Set<String> keys = htblColNameValue.keySet();
 			for (String key : keys) {
 				int i;
@@ -635,7 +634,7 @@ public class Table implements Serializable {
 	}
 
 	public ArrayList<String> indicesIHave(Hashtable<String, Object> htblColNameValue,
-			Hashtable<String, TreeIndex> colNameBTreeIndex) {
+			Hashtable<String, TreeIndex> colNameTreeIndex) {
 		ArrayList<String> columns = new ArrayList<String>();
 
 		Set<String> keys = htblColNameValue.keySet();
@@ -645,19 +644,21 @@ public class Table implements Serializable {
 
 		ArrayList<String> indices = new ArrayList<String>();
 
-		Set<String> keys1 = colNameBTreeIndex.keySet();
+		Set<String> keys1 = colNameTreeIndex.keySet();
 		for (String key1 : keys1) {
 			indices.add(key1);
 		}
 		ArrayList<String> indicesGiven = new ArrayList<String>();
 		for (int i = 0; i < indices.size(); i++) {
 			for (int j = 0; j < columns.size(); j++) {
-				if (indices.get(i).equals(columns.get(j))) {//TODO:.equals
+				if (indices.get(i).equals(columns.get(j))) {
 					indicesGiven.add(columns.get(j));
 
 				}
 			}
 		}
+																								/*		for (String s : htblColNameValue.keySet()) {if (colNameTreeIndex.contains(s))indicesGiven.add(s);		}*/
+		
 		return indicesGiven;
 	}
 
@@ -675,7 +676,7 @@ public class Table implements Serializable {
 	public boolean clusteringKeyHasIndex(ArrayList<String> indices, String clusteringKey) {
 		if (clusteringKey != null) {
 			for (int i = 0; i < indices.size(); i++) {
-				if (indices.get(i).equals( clusteringKey)) {//TODO:.equals
+				if (indices.get(i).equals( clusteringKey)) {
 					return true;
 				}
 			}
@@ -780,7 +781,7 @@ public class Table implements Serializable {
 					else if (curr[2].equals("java.lang.Boolean"))
 						key = Boolean.parseBoolean(strKey);
 					else if (curr[2].equals("java.awt.Polygon"))
-						key = (Polygons) Polygons.parsePolygon(strKey);
+						key = (Polygons) Polygons.parsePolygons(strKey);
 					else {
 						throw new DBAppException("Searching for a key of unknown type !");
 					}
@@ -824,8 +825,8 @@ public class Table implements Serializable {
 					int m = l + (r - l) / 2;
 
 					// Check if x is present at mid
-					if (key.equals((p.getTuples().get(m)).getAttributes().get(t.getPrimaryPos()))) {
-						while (m > 0 && key.equals((p.getTuples().get(m - 1)).getAttributes().get(t.getPrimaryPos()))) {
+					if (key.compareTo((p.getTuples().get(m)).getAttributes().get(t.getPrimaryPos()))==0) {
+						while (m > 0 && key.compareTo((p.getTuples().get(m - 1)).getAttributes().get(t.getPrimaryPos()))==0) {
 							m--;
 						}
 						return p.getPageName() + "#" + m;

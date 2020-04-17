@@ -108,7 +108,6 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 			++index;
 		
 		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
-//		if (index< numberOfKeys && getKey(index).equals(key)) {
 			GeneralReference ref = records[index];
 			if (ref.isOverflow()) {
 				//done:
@@ -230,7 +229,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	public GeneralReference search(Polygons key) 
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
-			if(this.getKey(i).equals(key))
+			if(this.getKey(i).compareTo(key)==0)
 				return this.getRecord(i);
 		return null;
 	}
@@ -254,7 +253,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 				String pageName=o.getFirstPageName();
 					OverflowPage p=o.deserializeOverflowPage(pageName);
 					Ref r=p.getMaxRefPage(tableLength);
-					p.serialize();
+					p.serialize();	//TODO
 					return r;
 //					while(pageName!=null){
 //						p.serialize();
@@ -276,7 +275,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
 //			if(keys[i].compareTo(key) == 0)
-			if(keys[i].equals(key))
+			if(keys[i].compareTo(key)==0)
 			{
 				this.deleteAt(i);
 				if(i == 0 && ptr > 0)
@@ -305,7 +304,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
 //			if(keys[i].compareTo(key) == 0)
-			if(keys[i].equals(key))
+			if(keys[i].compareTo(key)==0)
 			{
 				// handle deleting only one ref not the entire key
 				if(records[i] instanceof Ref)
@@ -540,7 +539,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	public void updateRef(String oldpage,String newpage,Polygons key,int tableNameLength) throws DBAppException{
 		GeneralReference gf;
 		for(int i = 0; i < numberOfKeys; ++i)
-			if(this.getKey(i).equals(key)) {
+			if(this.getKey(i).compareTo(key)==0) {
 				gf = getRecord(i);
 				gf.updateRef(oldpage, newpage, tableNameLength);
 				if (gf instanceof Ref) {

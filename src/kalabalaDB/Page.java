@@ -162,8 +162,10 @@ public class Page implements Serializable {
 		int lastOcc = tuples.size();
 		if (isCluster) {
 			lastOcc = bsLastOcc((Comparable) htblColNameValue.get(clusteringKey), primarypos) + 1;
-			for (index = lastOcc - 1; index >= 0 && tuples.get(index).getAttributes().get(primarypos)
-					.equals(htblColNameValue.get(clusteringKey)); index--)
+			for (index = lastOcc - 1; index >= 0 && ((Comparable)tuples.get(index).getAttributes().get(primarypos))
+//					.equals(htblColNameValue.get(clusteringKey)); index--)
+					.compareTo(htblColNameValue.get(clusteringKey))==0; index--)
+				//TODO: did that for the Polygons thing; return to the first tuple with same area; not same coordinates
 				;
 			index++;
 		}
@@ -180,7 +182,7 @@ public class Page implements Serializable {
 						if (allIndices.get(j).equals(x.get(i))) {
 							TreeIndex tree = colNameTreeIndex.get(allIndices.get(j));
 							GeneralReference gr = tree.search((Comparable) t.getAttributes().get(i));
-							
+
 							if (gr instanceof Ref) {
 								//System.out.println("asd");
 								tree.delete((Comparable) tuples.get(k).getAttributes().get(i));

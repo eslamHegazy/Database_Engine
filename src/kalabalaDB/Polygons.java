@@ -13,15 +13,22 @@ public class Polygons extends Polygon implements Comparable<Polygons>{
 			addPoint(p.xpoints[i], p.ypoints[i]);
 		}
 	}
-	
+	public static String clstrString(Polygon p) {
+		StringBuilder sb = new StringBuilder();
+		for (int i=0;i<p.npoints;i++) {
+			if (i>0) {sb.append((","));}
+			sb.append(String.format("(%d,%d)",p.xpoints[i],p.ypoints[i]));
+		}
+		return sb.toString();
+	}
 	public String toString() {
-		return ""+area();
-//		StringBuilder sb = new StringBuilder();
-//		for (int i=0;i<npoints;i++) {
-//			if (i>0) {sb.append((","));}
-//			sb.append(String.format("(%d,%d)",xpoints[i],ypoints[i]));
-//		}
-//		return sb.toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append(area()+"~");
+		for (int i=0;i<npoints;i++) {
+			if (i>0) {sb.append((","));}
+			sb.append(String.format("(%d,%d)",xpoints[i],ypoints[i]));
+		}
+		return sb.toString();
 	}
 	public static Polygons parsePolygons(String inp) {
 		char[] arr = inp.toCharArray();

@@ -229,7 +229,7 @@ public class DBApp {
 				if (curr[0].equals(strTableName) && curr[3].equals("True")) // search in metadata for the table name and the													// key
 				{
 					key_column_name = curr[1];
-					if(curr[3].equals("True"))
+					if(curr[4].equals("True"))
 						key_index = true;
 					
 					if (curr[2].equals("java.lang.Integer"))
@@ -318,17 +318,20 @@ public class DBApp {
 					while (i < p.getTuples().size()) 
 					{
 						Tuple current = p.getTuples().get(i);
-		
-						if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
+						Comparable c = (Comparable)current.getAttributes().get(y.getPrimaryPos());
+						if (c.compareTo(key)!=0) 
 							{
 							i++;
-							Comparable c = (Comparable)current.getAttributes().get(y.getPrimaryPos());
+
 							if(c.compareTo(key) < 0)
 								continue;
 							
 							break;
 							}
-						
+						else if (!c.equals(key)) {//FOR Polygons
+							i++;
+							continue;
+						}
 						
 						// loop over the current tuple 
 						//System.out.println(current.getAttributes().size());
@@ -390,13 +393,18 @@ public class DBApp {
 				{
 					Tuple current = p.getTuples().get(i);
 	
-					if (!current.getAttributes().get(y.getPrimaryPos()).equals(key)) 
+//					if (!current.getAttributes().get(y.getPrimaryPos()).equals(key))
+					if ( ((Comparable)current.getAttributes().get(y.getPrimaryPos())).compareTo(key)!=0) 
 					{
 						i++;
 						flag = false;
 						break;
 					}
-	
+					else if (!((Comparable)current.getAttributes().get(y.getPrimaryPos())).equals(key)){
+						i++;
+						continue;
+					}
+					
 					for (int k = 0; k < current.getAttributes().size()-2; k++) 
 					{
 						System.out.printf("k=%d, %s\n",k,colnames.get(k));
