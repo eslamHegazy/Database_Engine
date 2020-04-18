@@ -39,7 +39,6 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		//root.treeName=this.treeName;
 	}
 	
-	//TODO: COPY TO R-TREE
 	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException, IOException {
 //		GeneralReference gf=search(key);
 //		gf.updateRef(oldpage, newpage, tableNameLength);
@@ -54,7 +53,6 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 	}
 	
 	
-	//TODO:END COPY TO R-TREE
 	/**
 	 * Inserts the specified key associated with the given record in the B+ tree
 	 * @param key the key to be inserted
@@ -67,6 +65,7 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		PushUp<T> pushUp = root.insert(key, recordReference, null, -1);
 		if(pushUp != null)
 		{
+			//TODO: unnecessary serialization/deserialization
 			BPTreeInnerNode<T> newRoot = new BPTreeInnerNode<T>(order);
 			root.serializeNode();
 			newRoot.insertLeftAt(0, pushUp.key, root);

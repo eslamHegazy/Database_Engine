@@ -29,6 +29,7 @@ public class OverflowReference extends GeneralReference implements Serializable
 	public OverflowPage deserializeOverflowPage(String firstPageName2) throws DBAppException {
 
 		try {
+			System.out.println("IO||||	 deserialize:overflow Page:"+firstPageName2);
 			FileInputStream fileIn = new FileInputStream("data/"+ firstPageName2 + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			OverflowPage OFP =   (OverflowPage) in.readObject();
@@ -66,6 +67,7 @@ public class OverflowReference extends GeneralReference implements Serializable
 			{
 			// TODO delete overflow page with name (firstPageName) 
 			File f = new File("data/"+firstPageName+".class");
+			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+firstPageName);
 			f.delete();
 			firstPageName = firstPage.getNext();
 			firstPage=deserializeOverflowPage(firstPageName);

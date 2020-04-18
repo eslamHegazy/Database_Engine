@@ -36,6 +36,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 	 */
 	public RTree(int order) throws DBAppException, IOException  
 	{	
+		
 		this.order = order;
 		//this.treeName=treeName;
 		root = new RTreeLeafNode<Polygons>(this.order);
@@ -69,6 +70,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		PushUp<Polygons> pushUp = root.insert(key, recordReference, null, -1);
 		if(pushUp != null)
 		{
+			//TODO: unnecessary serialization/deserialization
 			RTreeInnerNode<Polygons> newRoot = new RTreeInnerNode<Polygons>(order);
 			root.serializeNode();
 			newRoot.insertLeftAt(0, pushUp.key, root);
@@ -123,7 +125,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		//	<For Testing>
 		// node :  (id)[k1|k2|k3|k4]{P1,P2,P3,}
 		StringBuilder sb = new StringBuilder();
-		BPTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
+		RTreeLeafNode.pagesToPrint = new ArrayList<OverflowReference>();
 		
 		Queue<RTreeNode> cur = new LinkedList<RTreeNode>(), next;
 		cur.add(root);
@@ -166,7 +168,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 			cur = next;
 		}
 		
-		ArrayList<OverflowReference> tobePrinted  = BPTreeLeafNode.pagesToPrint;
+		ArrayList<OverflowReference> tobePrinted  = RTreeLeafNode.pagesToPrint;
 //		System.out.println("\n The Overflow refrences are : \n");
 		sb.append("\n The Overflow refrences are : \n");
 		

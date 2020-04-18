@@ -20,13 +20,16 @@ public class DBApp {
 	int nodeSize;
 	public static void clear() {
 		File metadata = new File("data/metadata.csv");
-		if (metadata!=null) 
+		if (metadata!=null) {
+			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting metadata");
 			metadata.delete();
+		}
 		File data = new File("data/");
 		String[] pages = data.list();
 		if (pages==null) return;
 		for (String p: pages) {
 			File pageToDelete = new File("data/"+p);
+			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+p);
 			pageToDelete.delete();
 		}
 	}
@@ -155,6 +158,7 @@ public class DBApp {
 	}
 	
 	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
+		System.out.println("||||\t\tStart Inserting\t\t||||");
 		Table y = deserialize(strTableName);
 		Object keyValue = null;
 		Tuple newEntry = new Tuple();
@@ -211,11 +215,13 @@ public class DBApp {
 		y.insertSorted(newEntry, keyValue,keyType,keyColName,nodeSize,colNames); // TODO
 		serialize(y);
 
+		System.out.println("||||\t\tEnd Inserting\t\t||||");
 	}
 
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
 			throws DBAppException, IOException
 	{
+		System.out.println("||||\t\tStart Updating\t\t||||");
 		Table y = deserialize(strTableName);
 		try {
 			Vector meta = readFile("data/metadata.csv");
@@ -443,10 +449,11 @@ public class DBApp {
 		}
 		
 		serialize(y);
+		System.out.println("||||\t\tEnd Updating\t\t||||");
 	}
 	
 	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
-		
+		System.out.println("||||\t\tStart Deleting\t\t||||");
 		Table y = deserialize(strTableName);
 		Vector meta = readFile("data/metadata.csv");
 		Vector<String[]> metaOfTable = new Vector();
@@ -459,7 +466,7 @@ public class DBApp {
 		String clusteringKey = isThereACluster(htblColNameValue, strTableName);
 		y.deleteInTable(htblColNameValue, metaOfTable ,clusteringKey);
 		serialize(y);
-		
+		System.out.println("||||\t\tEnd Deleting\t\t||||");
 	}
 	public String isThereACluster(Hashtable<String, Object> htblColNameValue , String strTableName) throws DBAppException
 	{
@@ -645,6 +652,7 @@ public class DBApp {
 	public Iterator selectFromTable(SQLTerm[] arrSQLTerms,
 			 String[] strarrOperators)
 			throws DBAppException {
+		System.out.println("||||\t\tStart Selecting\t\t||||");
 		String strTableName=arrSQLTerms[0]._strTableName;
 		Table t=deserialize(strTableName);
 		Vector meta = readFile("data/metadata.csv");
@@ -656,6 +664,7 @@ public class DBApp {
 			}
 		}
 		Iterator<Tuple> out=t.selectFromTable(arrSQLTerms,strarrOperators,metaOfTable);
+		System.out.println("||||\t\tEnd Selecting\t\t||||");
 		return out;
 	}
 	public void dropTable(String strTableName) throws DBAppException{
@@ -663,6 +672,7 @@ public class DBApp {
 			Table tableToBeDeleted = deserialize(strTableName);
 			tableToBeDeleted.drop();
 			File tableFile = new File("data/"+strTableName+".class");
+			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+strTableName);
 			tableFile.delete();
 			deleteFromMetadata(strTableName);
 		}

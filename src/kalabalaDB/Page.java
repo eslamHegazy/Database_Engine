@@ -249,6 +249,7 @@ public class Page implements Serializable {
 							
 						File f = new File("data/" + ofp.getPageName() + ".class");
 						//System.out.println("deleted");
+						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+ofp.getPageName());
 						f.delete();
 					} 
 					else {
@@ -269,6 +270,7 @@ public class Page implements Serializable {
 								before.setNext(currOFP.getNext());
 								before.serialize();
 								File f = new File("data/" + currOFP.getPageName() + ".class");
+								System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+currOFP.getPageName());
 								f.delete();
 								//notNull = false;
 							} 
@@ -277,6 +279,7 @@ public class Page implements Serializable {
 								before.setNext(null);
 								before.serialize();
 								File f = new File("data/" + currOFP.getPageName() + ".class");
+								System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+currOFP.getPageName());
 								f.delete();
 								//notNull = false;
 							}

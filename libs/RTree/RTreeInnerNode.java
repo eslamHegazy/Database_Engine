@@ -403,14 +403,14 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	{
 		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
 		GeneralReference x= b.search(key);
-		b.serializeNode();		//TODO: Can I remove this ?
+//		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}
 	public Ref searchForInsertion(Polygons key,int tableLength)throws DBAppException
 	{
 		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
 		Ref x= b.searchForInsertion(key,tableLength);
-		b.serializeNode();		//TODO: Can I remove this ?
+//		b.serializeNode();		//TODO: Can I remove this ?
 		return x;
 	}
 	/**

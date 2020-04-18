@@ -1,2 +1,4 @@
-t,p,java.awt.Polygon,True,True,
-t,d,java.lang.Integer,False,False,
+Student,gpa,java.lang.Double,False,True,
+Student,shape,java.awt.Polygon,False,True,
+Student,name,java.lang.String,False,True,
+Student,id,java.lang.Integer,True,True,

@@ -121,7 +121,7 @@ public class Table implements Serializable {
 
 	public static Page deserialize(String name) throws DBAppException {
 		try {
-			System.out.println("IO||||\t serialize:page:"+name);
+			System.out.println("IO||||\t deserialize:page:"+name);
 			FileInputStream fileIn = new FileInputStream("data/" + name + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			Page xx = (Page) in.readObject();
@@ -372,6 +372,7 @@ public class Table implements Serializable {
 			
 			TreeIndex tree = colNameTreeIndex.get(selectedCol);
 			GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
+			//TODO: Eslam: if tried to delete nonexisting value ; null pointer exception ? should we handle ?
 			if (pageReference instanceof Ref) {
 				Ref x = (Ref) pageReference;
 				Page p = deserialize(x.getPage() + "");
@@ -419,6 +420,7 @@ public class Table implements Serializable {
 					page.deleteInPageWithBS(htblColNameValue, metaOfTable, clusteringKey, primaryPos , strClusteringKey);
 					if (page.getTuples().size() == 0) {
 						File f = new File("data/" + page.getPageName() + ".class");
+						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+page.getPageName());
 						f.delete();
 						pages.remove(i);
 						min.remove(i);
@@ -452,6 +454,7 @@ public class Table implements Serializable {
 			for (int i = 0; i < pages.size(); i++) {
 				String pageName = pages.get(i);
 				Page p = deserialize(pageName);
+				//TODO: page xx is not used
 				try {
 					FileInputStream fileIn = new FileInputStream("data/" + pageName + ".class");
 					ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -466,6 +469,7 @@ public class Table implements Serializable {
 				p.deleteInPage(htblColNameValue, attributeIndex);
 				if (p.getTuples().size() == 0) {
 					File f = new File("data/" + pageName + ".class");
+					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+pageName);
 					f.delete();
 					pages.remove(i);
 					min.remove(i);
@@ -617,6 +621,7 @@ public class Table implements Serializable {
 			if (pages.get(i).equals(pageName)) {
 				if (p.getTuples().size() == 0) {
 					File f = new File("data/" + pageName + ".class");
+					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+pageName);
 					f.delete();
 					pages.remove(i);
 					min.remove(i);
@@ -1548,6 +1553,7 @@ public class Table implements Serializable {
 	public void drop() throws DBAppException{
 		for (String k: pages) {
 			File fileIn = new File("data/" + k + ".class");
+			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+k);
 			fileIn.delete();
 		}		
 		//TODO: delete indices

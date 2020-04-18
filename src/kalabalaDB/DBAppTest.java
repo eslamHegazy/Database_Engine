@@ -26,22 +26,39 @@ import General.Ref;
 
 public class DBAppTest {
 	 
-	
+	static void tryDel() throws DBAppException{
+		DBApp d = new DBApp(); d.init();
+		Hashtable h = new Hashtable<>();
+//		Polygon del = Polygons.parsePolygon("(13,14),(1,7),(11,1),(14,4)");
+//		Polygon del = Polygons.parsePolygon("(13,0),(13,12),(0,13)");
+//		h.put("shape", del);
+//		h.put("name", "Zaky Noor");
+//		h.put("gpa", 1.5);
+		h.put ("id",1111111111);
+		d.deleteFromTable("Student", h);
+	}
 	
 	public static void main(String[] args)throws Exception {
-		clear();
-		tst10_h0();
+//		clear();
+		
+		
+		long st = System.nanoTime();
+//		faUpTs();
+//		
 //		showAt0s();
-//		tst10_h1();
-//		showAt0s();
-//		tst10_h2();
-//		showAt0s();
-//		tst10_h3();
-//		showAt0s();
-//		tst10_h4();
-//		showAt0s();
+		
+//		deleteTest();
+		tryDel();
+		long end = System.nanoTime(); 
+		showAt0s();
+		
+		
+		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
 	}
-
+	static void deleteTest() throws DBAppException{
+		DBApp d = new DBApp(); d.init(); deleteTest(d);
+	}
+	@SuppressWarnings("unused")
 	private static void selectWRabenaYstorha(DBApp dbApp) throws DBAppException {
 		SQLTerm[] arrSQLTerms = new SQLTerm[2];
 		String[] strarrOperators = new String[1];
@@ -102,8 +119,8 @@ public class DBAppTest {
 		
 		dbApp.createTable( strTableName, "id", htblColNameType );
 		
-	//	dbApp.createBTreeIndex( strTableName, "gpa" );
-//		dbApp.createBTreeIndex( strTableName, "id" );		
+		dbApp.createBTreeIndex( strTableName, "gpa" );
+		dbApp.createBTreeIndex( strTableName, "id" );		
 		dbApp.createRTreeIndex( strTableName, "shape" );
 		dbApp.createBTreeIndex( strTableName, "name" );
 
@@ -229,14 +246,15 @@ public class DBAppTest {
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		//for (int i=0;i<1500;i++) {
 		/*for (int i=0;i<10;i++) {*/
-		for (int i=0;i<10;i++) {
+		for (int i=0;i<100;i++) {
 			//System.out.println(i);
 			htblColNameValue.clear( );
-			htblColNameValue.put("id", new Integer( i ));
+//			htblColNameValue.put("id", new Integer( i ));
+			htblColNameValue.put("id", 1+(int)(Math.random()*200));
 			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+"Noor" ) );
-			double gpa = 1.0*((int)(1+Math.random()*100))/100;
+			double gpa = 1.0*((int)(1+Math.random()*1000))/1000;
 			htblColNameValue.put("gpa", new Double( gpa ) );
-			htblColNameValue.put("shape", new Polygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
+			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
 			dbApp.insertIntoTable( strTableName , htblColNameValue );
 		}
 		
@@ -249,6 +267,8 @@ public class DBAppTest {
 			dbApp.insertIntoTable( strTableName , htblColNameValue );
 		}
 		
+		
+	
 	}
 	static void tsSel1() throws DBAppException{
 		DBApp d = new DBApp();
@@ -783,11 +803,11 @@ public class DBAppTest {
 
 	
 	static Polygon randomPolygon(){
-		int npoints = 2+(int)(Math.random()*3);
+		int npoints = 3+(int)(Math.random()*6);
 		Polygon p = new Polygon();
 		for (int i=0;i<npoints;i++) {
-			int x = (int)(Math.random()*15);
-			int y = (int)(Math.random()*15);
+			int x = (int)(Math.random()*45);
+			int y = (int)(Math.random()*45);
 			p.addPoint(x, y);
 		}
 		return p;
@@ -799,7 +819,7 @@ public class DBAppTest {
 		File fasa= new File("data/0s/");
 		fasa.mkdir();
 		for (String f : list) {
-//			System.out.println(f);
+//			System.ot.println(f);
 			if (f.equals("0s")) continue;
 			if (f.substring(f.length()-5).equals("class")) {
 				FileInputStream fi = new FileInputStream("data/"+f); 
