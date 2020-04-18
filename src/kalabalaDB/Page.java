@@ -158,7 +158,7 @@ public class Page implements Serializable {
 
 	public void deleteInPageforRef(Vector<String[]> metaOfTable, int primarypos, String clusteringKey,
 			Hashtable<String, TreeIndex> colNameTreeIndex, Hashtable<String, Object> htblColNameValue,
-			ArrayList<String> allIndices, boolean isCluster) throws DBAppException {
+			ArrayList<String> allIndices, boolean isCluster) throws DBAppException,IOException {
 		int index = 0;
 		int lastOcc = tuples.size();
 		if (isCluster) {
@@ -183,7 +183,6 @@ public class Page implements Serializable {
 						if (allIndices.get(j).equals(x.get(i))) {
 							TreeIndex tree = colNameTreeIndex.get(allIndices.get(j));
 							GeneralReference gr = tree.search((Comparable) t.getAttributes().get(i));
-
 							if (gr instanceof Ref) {
 								//System.out.println("asd");
 								tree.delete((Comparable) tuples.get(k).getAttributes().get(i));
@@ -194,7 +193,11 @@ public class Page implements Serializable {
 									{
 									
 											//System.out.println(ofr.getFirstPageName() + "  " + this.pageName + "  " + tree.toString()+ "  " +tuples.get(k).getAttributes().get(i));
-											deleteFromOverFlow(ofr, this.pageName, tree, tuples.get(k).getAttributes().get(i));
+											
+//											deleteFromOverFlow(ofr, this.pageName, tree, t.getAttributes().get(i));
+										
+											tree.delete((Comparable)t.getAttributes().get(i),this.pageName );
+											
 											//System.out.println("hi");
 											//System.out.println(ofr.getFirstPageName() + "  " + this.pageName + "  " + tree.toString()+ "  " +tuples.get(k).getAttributes().get(i));
 										
@@ -244,7 +247,7 @@ public class Page implements Serializable {
 						else {
 							//System.out.println("ayhaga");
 							ofr.setFirstPageName(ofp.getNext());
-
+							//TODO: reserialize the leaf
 						}
 							
 						File f = new File("data/" + ofp.getPageName() + ".class");

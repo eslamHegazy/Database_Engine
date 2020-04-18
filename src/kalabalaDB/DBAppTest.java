@@ -26,7 +26,7 @@ import General.Ref;
 
 public class DBAppTest {
 	 
-	static void tryDel() throws DBAppException{
+	static void tryDel() throws Exception{
 		DBApp d = new DBApp(); d.init();
 		Hashtable h = new Hashtable<>();
 //		Polygon del = Polygons.parsePolygon("(13,14),(1,7),(11,1),(14,4)");
@@ -34,17 +34,38 @@ public class DBAppTest {
 //		h.put("shape", del);
 //		h.put("name", "Zaky Noor");
 //		h.put("gpa", 1.5);
-		h.put ("id",1111111111);
+		h.put ("id",1118361111);
+		h.put("shape", new Polygon());
+//		h.put ("name","Arousiiii");
 		d.deleteFromTable("Student", h);
 	}
 	
+	static void tstovf()throws Exception{
+		DBApp d = new DBApp(); d.init();
+		Hashtable h = new Hashtable<>();
+//		h.put("id", "java.lang.Integer");
+//		h.put("t", "java.lang.Integer");
+//		d.createTable("tb", "id", h);
+//		d.createBTreeIndex("tb", "id");
+//		
+//		for(int i=0;i<7;i++) {
+//			h.clear();
+//			h.put("id", 1);
+//			h.put("t",i);
+//			d.insertIntoTable("tb", h);
+//		}
+		h.put("id", 1);
+		h.put("t", 6);
+		d.deleteFromTable("tb", h);
+	}
 	public static void main(String[] args)throws Exception {
 //		clear();
 		
 		
 		long st = System.nanoTime();
-//		faUpTs();
-//		
+//		faUpTs();		
+//		ad();
+		
 //		showAt0s();
 		
 //		deleteTest();
@@ -54,8 +75,9 @@ public class DBAppTest {
 		
 		
 		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
+		
 	}
-	static void deleteTest() throws DBAppException{
+	static void deleteTest() throws DBAppException, IOException{
 		DBApp d = new DBApp(); d.init(); deleteTest(d);
 	}
 	@SuppressWarnings("unused")
@@ -91,7 +113,7 @@ public class DBAppTest {
 		}
 	}
 
-	static void deleteTest(DBApp dbApp) throws DBAppException
+	static void deleteTest(DBApp dbApp) throws DBAppException,IOException
 	{
 		Hashtable htblColNameValue = new Hashtable();
 		//htblColNameValue.put("id" , 1111111111);
@@ -102,6 +124,18 @@ public class DBAppTest {
 		p1.addPoint(8, 0);
 		//htblColNameValue.put("shape", p1);
 		dbApp.deleteFromTable("Student", htblColNameValue);
+	}
+	static void ad ()throws Exception{
+		DBApp d = new DBApp(); d.init();
+//		2343432
+		String strTableName="Student";
+		Hashtable htblColNameValue = new Hashtable<>();
+		for (int i=0;i<2;i++) {
+		htblColNameValue.put("id", 2343432+(int)(Math.random()*1000+1));
+		htblColNameValue.put("gpa", 1.0*((int)(Math.random()*100))/100);
+		htblColNameValue.put("shape", randomPolygon());
+		htblColNameValue.put("name", randomAlphaNumeric(6));
+		d.insertIntoTable(strTableName, htblColNameValue);}
 	}
 	static void faUpTs() throws Exception{ DBApp d = new DBApp(); d.init(); faUpTs(d);}
 	static void faUpTs(DBApp dbApp) throws Exception{
@@ -246,22 +280,22 @@ public class DBAppTest {
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
 		//for (int i=0;i<1500;i++) {
 		/*for (int i=0;i<10;i++) {*/
-		for (int i=0;i<100;i++) {
-			//System.out.println(i);
-			htblColNameValue.clear( );
-//			htblColNameValue.put("id", new Integer( i ));
-			htblColNameValue.put("id", 1+(int)(Math.random()*200));
-			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+"Noor" ) );
-			double gpa = 1.0*((int)(1+Math.random()*1000))/1000;
-			htblColNameValue.put("gpa", new Double( gpa ) );
-			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
-			dbApp.insertIntoTable( strTableName , htblColNameValue );
-		}
+//		for (int i=0;i<100;i++) {
+//			//System.out.println(i);
+//			htblColNameValue.clear( );
+////			htblColNameValue.put("id", new Integer( i ));
+//			htblColNameValue.put("id", 1+(int)(Math.random()*200));
+//			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+"Noor" ) );
+//			double gpa = 1.0*((int)(1+Math.random()*1000))/1000;
+//			htblColNameValue.put("gpa", new Double( gpa ) );
+//			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
+//			dbApp.insertIntoTable( strTableName , htblColNameValue );
+//		}
 		
 		for(int i = 0 ; i < 5 ; i++) {
 			htblColNameValue.clear( );
 			htblColNameValue.put("id", new Integer( i ));
-			htblColNameValue.put("name", new String("Arousiiii" ) );
+			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+" RAND" ) );
 			htblColNameValue.put("gpa", new Double( 1.5 ) );
 			htblColNameValue.put("shape", randomPolygon() );
 			dbApp.insertIntoTable( strTableName , htblColNameValue );
@@ -558,7 +592,7 @@ public class DBAppTest {
 		}
 		d.printAllPagesInAllTables("tst6-"+(n+1));
 	}
-	static void tst5() throws DBAppException{
+	static void tst5() throws Exception{
 		showCurrentState("tst5-st");
 		DBApp d = new DBApp();
 		d.init();

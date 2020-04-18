@@ -1,5 +1,6 @@
 package BPTree;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -310,8 +311,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			if(keys[i].compareTo(key) == 0)
 			{
 				// handle deleting only one ref not the entire key
-				if(records[i] instanceof Ref)
-					this.deleteAt(i);
+				if(records[i] instanceof Ref) {
+					this.deleteAt(i);	//didn't serialize yet
+				}
 				else
 				{
 					OverflowReference ov = (OverflowReference) records[i];
@@ -321,7 +323,11 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 						OverflowPage firstpage = ov.deserializeOverflowPage(ov.getFirstPageName());
 						Ref r = firstpage.getRefs().firstElement();
 						records[i] = r;
-						// TODO delete the overflow page from DISK  
+						// TODO delete the overflow page from DISK
+						File f = new File("data/"+ov.getFirstPageName()+".class");
+						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+ov.getFirstPageName());
+						f.delete();
+						//This NODE with updated ref hasn't been reserialized yet
 					}
 					
 				}
@@ -331,18 +337,25 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 				{
 					//update key at parent
 					parent.setKey(ptr - 1, this.getFirstKey());
+					//TODO:parent isn't serialized yet
 				}
 				//check that node has enough keys
 				if(!this.isRoot() && numberOfKeys < this.minKeys())
 				{
 					//1.try to borrow
-					if(borrow(parent, ptr))
+					if(borrow(parent, ptr)) {
+						//this node isn't serialized yet; just left/right sibiling
+						parent.serializeNode();
 						return true;
+					}
 					//2.merge
+					parent.serializeNode();
 					merge(parent, ptr);
 				}
+				//else: parent isn't serialized if entered the previous if
 				return true;
 			}
+		
 		return false;
 	}
 	
@@ -379,6 +392,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 				this.insertAt(0, leftSibling.getLastKey(), leftSibling.getLastRecord());		
 				leftSibling.deleteAt(leftSibling.numberOfKeys - 1);
 				parent.setKey(ptr - 1, keys[0]);
+				leftSibling.serializeNode();
 				return true;
 			}
 		}
@@ -392,6 +406,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 				this.insertAt(numberOfKeys, rightSibling.getFirstKey(), rightSibling.getFirstRecord());
 				rightSibling.deleteAt(0);
 				parent.setKey(ptr, rightSibling.getFirstKey());
+				rightSibling.serializeNode();
 				return true;
 			}
 		}
@@ -420,6 +435,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			this.merge(rightSibling);
 			parent.deleteAt(ptr);
 		}
+		
 	}
 	
 	/**
@@ -433,6 +449,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			this.insertAt(numberOfKeys, foreignNode.getKey(i), foreignNode.getRecord(i));
 		
 		this.setNext(foreignNode.getNext());
+		//TODO: Have the removed node been deleted from disk
 	}
 	
 	public static ArrayList<OverflowReference> pagesToPrint;

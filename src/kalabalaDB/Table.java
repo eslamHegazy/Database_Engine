@@ -354,7 +354,7 @@ public class Table implements Serializable {
 	}
 	@SuppressWarnings("unchecked")
 	public void deleteInTable(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable,
-			String clusteringKey) throws DBAppException {
+			String clusteringKey) throws DBAppException,IOException {
 
 		if (invalidDelete(htblColNameValue, metaOfTable)) {
 			throw new DBAppException("false operation");
@@ -372,6 +372,10 @@ public class Table implements Serializable {
 			
 			TreeIndex tree = colNameTreeIndex.get(selectedCol);
 			GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
+			if (pageReference == null) {
+				System.err.println("Value not found to be deleted");
+				return ;
+			}
 			//TODO: Eslam: if tried to delete nonexisting value ; null pointer exception ? should we handle ?
 			if (pageReference instanceof Ref) {
 				Ref x = (Ref) pageReference;

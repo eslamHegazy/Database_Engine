@@ -70,9 +70,9 @@ public class OverflowReference extends GeneralReference implements Serializable
 			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+firstPageName);
 			f.delete();
 			firstPageName = firstPage.getNext();
-			firstPage=deserializeOverflowPage(firstPageName);
+			firstPage=deserializeOverflowPage(firstPageName); //TODO:why? shouldn't return here; this next page hasn't been edited or anything 
 			}
-		
+		//shouldn't this be in an else part ?
 		firstPage.serialize();
 	}
 	

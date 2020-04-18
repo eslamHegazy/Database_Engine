@@ -376,6 +376,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 				this.insertAt(0, leftSibling.getLastKey(), leftSibling.getLastRecord());		
 				leftSibling.deleteAt(leftSibling.numberOfKeys - 1);
 				parent.setKey(ptr - 1, keys[0]);
+				leftSibling.serializeNode();
 				return true;
 			}
 		}
@@ -389,6 +390,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 				this.insertAt(numberOfKeys, rightSibling.getFirstKey(), rightSibling.getFirstRecord());
 				rightSibling.deleteAt(0);
 				parent.setKey(ptr, rightSibling.getFirstKey());
+				rightSibling.serializeNode();
 				return true;
 			}
 		}

@@ -452,7 +452,7 @@ public class DBApp {
 		System.out.println("||||\t\tEnd Updating\t\t||||");
 	}
 	
-	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException {
+	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
 		System.out.println("||||\t\tStart Deleting\t\t||||");
 		Table y = deserialize(strTableName);
 		Vector meta = readFile("data/metadata.csv");
