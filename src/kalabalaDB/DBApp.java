@@ -310,6 +310,9 @@ public class DBApp {
 				System.out.println("INDEX USED");
 				TreeIndex key_tree = y.getColNameBTreeIndex().get(key_column_name);
 				GeneralReference GR = key_tree.search(key);  // the result of the search in the B+ tree
+				if (GR == null) {
+					throw new DBAppException("Tried to update a tuple that does not exist in the table");
+				}
 				ArrayList<Ref> references = GR.getALLRef();  // the entire references where the key exists
 				HashSet<String> hs = new HashSet<String>();	 // the names of pages where there is a key	
 				

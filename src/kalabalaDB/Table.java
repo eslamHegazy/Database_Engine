@@ -375,107 +375,71 @@ public class Table implements Serializable {
 		 */
 //		try {
 
-			ArrayList<String> indicesGiven = indicesIHave(htblColNameValue, colNameTreeIndex);
-			ArrayList<String> allIndices = allTableIndices(colNameTreeIndex);
+		ArrayList<String> indicesGiven = indicesIHave(htblColNameValue, colNameTreeIndex);
+		ArrayList<String> allIndices = allTableIndices(colNameTreeIndex);
 
-			if (!(indicesGiven.size() == 0)) {
-				String selectedCol = (clusteringKey != null && clusteringKeyHasIndex(indicesGiven, clusteringKey))
-						? clusteringKey
-						: indicesGiven.get(0);
-				boolean isCluster = clusteringKey != null && selectedCol.equals(strClusteringKey);
+		if (!(indicesGiven.size() == 0)) {
+			String selectedCol = (clusteringKey != null && clusteringKeyHasIndex(indicesGiven, clusteringKey))
+					? clusteringKey
+					: indicesGiven.get(0);
+			boolean isCluster = clusteringKey != null && selectedCol.equals(strClusteringKey);
 
-				TreeIndex tree = colNameTreeIndex.get(selectedCol);
-				GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
-				if (pageReference == null) {
-					throw new DBAppException("Value to be deleted is not found");
-				}
-				// TODO: Eslam: if tried to delete nonexisting value ; null pointer exception ?
-				// should we handle ?
-				if (pageReference instanceof Ref) {
-					Ref x = (Ref) pageReference;
-					Page p = deserialize(x.getPage() + "");
-					p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex, htblColNameValue,
-							allIndices, isCluster);
-					setMinMax(p);
+			TreeIndex tree = colNameTreeIndex.get(selectedCol);
+			GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
+			if (pageReference == null) {
+				throw new DBAppException("Value to be deleted is not found");
+			}
+			// TODO: Eslam: if tried to delete nonexisting value ; null pointer exception ?
+			// should we handle ?
+			if (pageReference instanceof Ref) {
+				Ref x = (Ref) pageReference;
+				Page p = deserialize(x.getPage() + "");
+				p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex, htblColNameValue,
+						allIndices, isCluster);
+				setMinMax(p);
 
-				} else {
-					OverflowReference x = (OverflowReference) pageReference;
-					OverflowPage OFP = x.getFirstPage();
-					Set<Ref> allReferences = getRefFromBPTree(OFP);
-					System.out.println(allReferences);
-					// OFP.serialize();
-					for (Ref ref : allReferences) {
-						if (ref != null) {
-							System.out.println(ref.getPage());
-							Page p = deserialize(ref.getPage() + "");
-							// System.out.println(ref.getPage());
-							p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex,
-									htblColNameValue, allIndices, isCluster);
-							setMinMax(p);
-						}
-
-					}
-
-				}
-
-			} else if (clusteringKey != null) {
-
-				for (int i = 0; i < pages.size(); i++) {
-					// System.out.println(htblColNameValue.get(strClusteringKey));
-					// System.out.println(clusteringKey);
-					if (((Comparable) htblColNameValue.get(strClusteringKey))
-							.compareTo(((Comparable) getMin(i))) < 0) {
-						// System.out.println(pages.size());
-						break;
-
-					}
-					// System.out.println(pages.size());
-					if (((Comparable) htblColNameValue.get(strClusteringKey)).compareTo(((Comparable) getMin(i))) >= 0
-							&& ((Comparable) htblColNameValue.get(strClusteringKey))
-									.compareTo(((Comparable) getMax(i))) <= 0) {
-						// System.out.println(getMin(i));
-						Page page = deserialize(pages.get(i));
-						page.deleteInPageWithBS(htblColNameValue, metaOfTable, clusteringKey, primaryPos,
-								strClusteringKey);
-						if (page.getTuples().size() == 0) {
-							File f = new File("data/" + page.getPageName() + ".class");
-							System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + page.getPageName());
-							f.delete();
-							pages.remove(i);
-							//min.remove(i);
-							//max.remove(i);
-							i--;
-
-						} else {
-							Object minn = page.getTuples().get(0).getAttributes().get(primaryPos);
-							Object maxx = page.getTuples().get(page.size() - 1).getAttributes().get(primaryPos);
-							//min.setElementAt(minn, i);
-							//max.setElementAt(maxx, i);
-							page.serialize();
-						}
-
-					}
-				}
 			} else {
-				Vector<Integer> attributeIndex = new Vector<>();
-				Set<String> keys = htblColNameValue.keySet();
-				for (String key : keys) {
-					int i;
-					for (i = 0; i < metaOfTable.size(); i++) {
-						if (metaOfTable.get(i)[1].equals(key)) {
-							break;
-						}
+				OverflowReference x = (OverflowReference) pageReference;
+				OverflowPage OFP = x.getFirstPage();
+				Set<Ref> allReferences = getRefFromBPTree(OFP);
+				System.out.println(allReferences);
+				// OFP.serialize();
+				for (Ref ref : allReferences) {
+					if (ref != null) {
+						System.out.println(ref.getPage());
+						Page p = deserialize(ref.getPage() + "");
+						// System.out.println(ref.getPage());
+						p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex,
+								htblColNameValue, allIndices, isCluster);
+						setMinMax(p);
 					}
-					// System.out.println(i);
-					attributeIndex.add(i);
+
 				}
-				for (int i = 0; i < pages.size(); i++) {
-					String pageName = pages.get(i);
-					Page p = deserialize(pageName);
-					p.deleteInPage(htblColNameValue, attributeIndex);
-					if (p.getTuples().size() == 0) {
-						File f = new File("data/" + pageName + ".class");
-						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
+
+			}
+
+		} else if (clusteringKey != null) {
+
+			for (int i = 0; i < pages.size(); i++) {
+				// System.out.println(htblColNameValue.get(strClusteringKey));
+				// System.out.println(clusteringKey);
+				if (((Comparable) htblColNameValue.get(strClusteringKey))
+						.compareTo(((Comparable) getMin(i))) < 0) {
+					// System.out.println(pages.size());
+					break;
+
+				}
+				// System.out.println(pages.size());
+				if (((Comparable) htblColNameValue.get(strClusteringKey)).compareTo(((Comparable) getMin(i))) >= 0
+						&& ((Comparable) htblColNameValue.get(strClusteringKey))
+								.compareTo(((Comparable) getMax(i))) <= 0) {
+					// System.out.println(getMin(i));
+					Page page = deserialize(pages.get(i));
+					page.deleteInPageWithBS(htblColNameValue, metaOfTable, clusteringKey, primaryPos,
+							strClusteringKey);
+					if (page.getTuples().size() == 0) {
+						File f = new File("data/" + page.getPageName() + ".class");
+						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + page.getPageName());
 						f.delete();
 						pages.remove(i);
 						//min.remove(i);
@@ -483,14 +447,50 @@ public class Table implements Serializable {
 						i--;
 
 					} else {
-						Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
-						Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
+						Object minn = page.getTuples().get(0).getAttributes().get(primaryPos);
+						Object maxx = page.getTuples().get(page.size() - 1).getAttributes().get(primaryPos);
 						//min.setElementAt(minn, i);
 						//max.setElementAt(maxx, i);
-						p.serialize();
+						page.serialize();
 					}
+
 				}
 			}
+		} else {
+			Vector<Integer> attributeIndex = new Vector<>();
+			Set<String> keys = htblColNameValue.keySet();
+			for (String key : keys) {
+				int i;
+				for (i = 0; i < metaOfTable.size(); i++) {
+					if (metaOfTable.get(i)[1].equals(key)) {
+						break;
+					}
+				}
+				// System.out.println(i);
+				attributeIndex.add(i);
+			}
+			for (int i = 0; i < pages.size(); i++) {
+				String pageName = pages.get(i);
+				Page p = deserialize(pageName);
+				p.deleteInPage(htblColNameValue, attributeIndex);
+				if (p.getTuples().size() == 0) {
+					File f = new File("data/" + pageName + ".class");
+					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
+					f.delete();
+					pages.remove(i);
+					//min.remove(i);
+					//max.remove(i);
+					i--;
+
+				} else {
+					Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
+					Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
+					//min.setElementAt(minn, i);
+					//max.setElementAt(maxx, i);
+					p.serialize();
+				}
+			}
+		}
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //			throw new DBAppException("IO Exception | No such record found to delete!");
