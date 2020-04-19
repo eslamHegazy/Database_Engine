@@ -69,14 +69,15 @@ public class DBAppTest {
 		
 	}
 	static void tryDel() throws Exception{
-		DBApp d = new DBApp(); d.init();
+		DBApp d = new DBApp(); 
+		d.init();
 		Hashtable h = new Hashtable<>();
 //		Polygon del = Polygons.parsePolygon("(13,14),(1,7),(11,1),(14,4)");
 //		Polygon del = Polygons.parsePolygon("(13,0),(13,12),(0,13)");
 //		h.put("shape", del);
 //		h.put("name", "Zaky Noor");
 //		h.put("gpa", 1.5);
-		h.put ("id",1118361111);
+		h.put ("id",56565656);
 		h.put("shape", new Polygon());
 //		h.put ("name","Arousiiii");
 		d.deleteFromTable("Student", h);
@@ -327,8 +328,8 @@ public class DBAppTest {
 //		d.insertIntoTable("Schema", h); 
 
 //		select();
-//		tryDel();
-		tryUpdate();
+      	tryDel();
+		//tryUpdate();
 		
 		
 		long end = System.nanoTime(); 
