@@ -18,8 +18,8 @@ public class Table implements Serializable {
 
 	private Vector<String> pages = new Vector<>();
 	private int MaximumRowsCountinPage;
-	private Vector<Object> min = new Vector<>();
-	private Vector<Object> max = new Vector<>();
+	//private Vector<Object> min = new Vector<>();
+	//private Vector<Object> max = new Vector<>();
 	private String tableName;
 	private String strClusteringKey;
 	private int primaryPos;
@@ -79,20 +79,22 @@ public class Table implements Serializable {
 		return strClusteringKey;
 	}
 
-	public Vector<Object> getMin() {
-		return min;
+	
+
+	public Comparable getMax(int index) throws DBAppException
+	{
+		String pageName = pages.get(index);
+		Page p = deserialize(pageName);
+		Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
+		return (Comparable)maxx;
 	}
 
-	public void setMin(Vector<Object> min) {
-		this.min = min;
-	}
-
-	public Vector<Object> getMax() {
-		return max;
-	}
-
-	public void setMax(Vector<Object> max) {
-		this.max = max;
+	public Comparable getMin(int index) throws DBAppException
+	{
+		String pageName = pages.get(index);
+		Page p = deserialize(pageName);
+		Comparable minn = (Comparable)p.getTuples().get(0).getAttributes().get(primaryPos);
+		return minn;
 	}
 
 	public void setStrClusteringKey(String strClusteringKey) {
@@ -155,13 +157,12 @@ public class Table implements Serializable {
 				p.insertIntoPage(x, primaryPos);
 				// System.out.println("blboz3");
 
-				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
-				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
-				min.remove(curr);
-				addInVector(min, minn, curr);
-				max.remove(curr);
-				addInVector(max, maxx, curr);
-
+				/*
+				 * Object minn = p.getTuples().get(0).getAttributes().get(primaryPos); Object
+				 * maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
+				 * min.remove(curr); addInVector(min, minn, curr); max.remove(curr);
+				 * addInVector(max, maxx, curr);
+				 */
 				if (colNameTreeIndex.containsKey(keyColName) && doInsert) {
 					TreeIndex tree = colNameTreeIndex.get(keyColName);
 					Ref recordReference = new Ref(p.getPageName());
@@ -191,8 +192,8 @@ public class Table implements Serializable {
 						pages.addElement(n.getPageName());
 						newp = n.getPageName();
 						Object keyValue = t.getAttributes().get(primaryPos);
-						min.addElement(keyValue);
-						max.addElement(keyValue);
+						//min.addElement(keyValue);
+						//max.addElement(keyValue);
 						n.serialize();
 					}
 					// System.out.println("change ref "+p.getPageName()+" "+newp+" "+t);
@@ -205,10 +206,10 @@ public class Table implements Serializable {
 				list.put(t, p.getPageName());
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 				Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
-				min.remove(curr);
-				addInVector(min, minn, curr);
-				max.remove(curr);
-				addInVector(max, maxx, curr);
+				//min.remove(curr);
+				//addInVector(min, minn, curr);
+				//max.remove(curr);
+				//addInVector(max, maxx, curr);
 
 				p.serialize();
 				// System.out.println(Arrays.asList(list.keySet()));
@@ -224,8 +225,8 @@ public class Table implements Serializable {
 			}
 			Object keyValue = p.getTuples().get(0).getAttributes().get(primaryPos);
 			pages.addElement(p.getPageName());
-			min.addElement(keyValue);
-			max.addElement(keyValue);
+			//min.addElement(keyValue);
+			//max.addElement(keyValue);
 			p.serialize();
 			return list;
 		}
@@ -257,8 +258,8 @@ public class Table implements Serializable {
 				tree.insert((Comparable) x.getAttributes().get(primaryPos), recordReference);
 			}
 			pages.addElement(p.getPageName());
-			min.addElement(keyV);
-			max.addElement(keyV);
+			//min.addElement(keyV);
+			//max.addElement(keyV);
 			p.serialize();
 
 		} else {
@@ -277,8 +278,8 @@ public class Table implements Serializable {
 			} else {
 				int curr = 0;
 				for (curr = 0; curr < pages.size(); curr++) {
-					Object minn = (min.get(curr));
-					Object maxx = max.get(curr);
+					Object minn = (getMin(curr));
+					Object maxx = getMax(curr);
 					if ((keyValue.compareTo(minn) >= 0 && keyValue.compareTo(maxx) <= 0)
 							|| (keyValue.compareTo(minn) < 0) || curr == pages.size() - 1) {
 						list = addInPage(curr, x, keyType, keyColName, nodeSize, true, list);
@@ -355,7 +356,7 @@ public class Table implements Serializable {
 			}
 		} else {
 			for (int i = pages.size() - 1; i >= 0; i--) {
-				if (keyValue.compareTo(min.get(i)) >= 0 && keyValue.compareTo(max.get(i)) <= 0) {
+				if (keyValue.compareTo(getMin(i)) >= 0 && keyValue.compareTo(getMax(i)) <= 0) {
 					ref = new Ref(pages.get(i));
 					break;
 				}
@@ -424,16 +425,16 @@ public class Table implements Serializable {
 					// System.out.println(htblColNameValue.get(strClusteringKey));
 					// System.out.println(clusteringKey);
 					if (((Comparable) htblColNameValue.get(strClusteringKey))
-							.compareTo(((Comparable) min.get(i))) < 0) {
+							.compareTo(((Comparable) getMin(i))) < 0) {
 						// System.out.println(pages.size());
 						break;
 
 					}
 					// System.out.println(pages.size());
-					if (((Comparable) htblColNameValue.get(strClusteringKey)).compareTo(((Comparable) min.get(i))) >= 0
+					if (((Comparable) htblColNameValue.get(strClusteringKey)).compareTo(((Comparable) getMin(i))) >= 0
 							&& ((Comparable) htblColNameValue.get(strClusteringKey))
-									.compareTo(((Comparable) max.get(i))) <= 0) {
-						// System.out.println(min.get(i));
+									.compareTo(((Comparable) getMax(i))) <= 0) {
+						// System.out.println(getMin(i));
 						Page page = deserialize(pages.get(i));
 						page.deleteInPageWithBS(htblColNameValue, metaOfTable, clusteringKey, primaryPos,
 								strClusteringKey);
@@ -442,15 +443,15 @@ public class Table implements Serializable {
 							System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + page.getPageName());
 							f.delete();
 							pages.remove(i);
-							min.remove(i);
-							max.remove(i);
+							//min.remove(i);
+							//max.remove(i);
 							i--;
 
 						} else {
 							Object minn = page.getTuples().get(0).getAttributes().get(primaryPos);
 							Object maxx = page.getTuples().get(page.size() - 1).getAttributes().get(primaryPos);
-							min.setElementAt(minn, i);
-							max.setElementAt(maxx, i);
+							//min.setElementAt(minn, i);
+							//max.setElementAt(maxx, i);
 							page.serialize();
 						}
 
@@ -490,15 +491,15 @@ public class Table implements Serializable {
 						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
 						f.delete();
 						pages.remove(i);
-						min.remove(i);
-						max.remove(i);
+						//min.remove(i);
+						//max.remove(i);
 						i--;
 
 					} else {
 						Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 						Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
-						min.setElementAt(minn, i);
-						max.setElementAt(maxx, i);
+						//min.setElementAt(minn, i);
+						//max.setElementAt(maxx, i);
 						p.serialize();
 					}
 				}
@@ -628,15 +629,15 @@ public class Table implements Serializable {
 					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
 					f.delete();
 					pages.remove(i);
-					min.remove(i);
-					max.remove(i);
+					//min.remove(i);
+					//max.remove(i);
 					i--;
 
 				} else {
 					Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
 					Object maxx = p.getTuples().get(p.size() - 1).getAttributes().get(primaryPos);
-					min.setElementAt(minn, i);
-					max.setElementAt(maxx, i);
+					//min.setElementAt(minn, i);
+					//max.setElementAt(maxx, i);
 					p.serialize();
 				}
 			}
@@ -1335,9 +1336,9 @@ public class Table implements Serializable {
 
 		ArrayList<Tuple> res = new ArrayList();
 		for (int i = 0; i < pages.size(); i++) {
-			if (((Comparable) min.get(i)).compareTo((Comparable) _objValue) > 0)
+			if (((Comparable) getMin(i)).compareTo((Comparable) _objValue) > 0)
 				break;
-			if (((Comparable) min.get(i)).compareTo((Comparable) _objValue) == 0 && _strOperator.length() == 1)
+			if (((Comparable) getMin(i)).compareTo((Comparable) _objValue) == 0 && _strOperator.length() == 1)
 				break;
 			// TOTO:Polygons; line before; NO NEED as <=/>= is based on area; no points
 			// ==>CompareTo is fine here
@@ -1366,9 +1367,9 @@ public class Table implements Serializable {
 		// System.out.println("m"+max.size());
 		for (int i = pages.size() - 1; i >= 0; i--) {
 			System.out.println(i);
-			if (((Comparable) max.get(i)).compareTo((Comparable) _objValue) < 0)
+			if (((Comparable) getMax(i)).compareTo((Comparable) _objValue) < 0)
 				break;
-			if (((Comparable) max.get(i)).compareTo((Comparable) _objValue) == 0 && _strOperator.length() == 1)
+			if (((Comparable) getMax(i)).compareTo((Comparable) _objValue) == 0 && _strOperator.length() == 1)
 				break;
 			Page x = deserialize(pages.get(i));
 			int j = x.getTuples().size() - 1;
@@ -1422,7 +1423,7 @@ public class Table implements Serializable {
 		for (int pageIdx = startPageIndex, tupleIdx = startTupleIndex; pageIdx < pages
 				.size(); pageIdx++, tupleIdx = 0) {
 			// TODO: We are looping LINEARLY OVER PAGES ? Should we make it binary ??
-			if (((Comparable) min.get(pageIdx)).compareTo((Comparable) _objValue) > 0)
+			if (((Comparable) getMin(pageIdx)).compareTo((Comparable) _objValue) > 0)
 				break;
 			Page currentPage = deserialize(pages.get(pageIdx));
 			Comparable cmp;
@@ -1772,20 +1773,15 @@ public class Table implements Serializable {
 		if (pages.size() > 0)
 			sb.append(pages.get(pages.size() - 1) + "}\n");
 
-		sb.append("Min:\n{");
-		for (int i = 0; i < min.size() - 1; i++) {
-			sb.append(min.get(i) + ", ");
-		}
-		if (min.size() > 0)
-			sb.append(min.get(min.size() - 1) + "}\n");
-
-		sb.append("Max:\n{");
-		for (int i = 0; i < max.size() - 1; i++) {
-			sb.append(max.get(i) + ", ");
-		}
-		if (max.size() > 0)
-			sb.append(max.get(max.size() - 1) + "}\n");
-
+		/*
+		 * sb.append("Min:\n{"); for (int i = 0; i < pages.size() - 1; i++) {
+		 * sb.append(getMin(i) + ", "); } if (pages.size() > 0)
+		 * sb.append(getMin(pages.size() - 1) + "}\n");
+		 * 
+		 * sb.append("Max:\n{"); for (int i = 0; i < pages.size() - 1; i++) {
+		 * sb.append(getMax(i) + ", "); } if (pages.size() > 0)
+		 * sb.append(getMax(pages.size() - 1) + "}\n");
+		 */
 		sb.append("Indexed Columns: \n");
 		for (String col : colNameTreeIndex.keySet()) {
 			sb.append(col + "\t");
