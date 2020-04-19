@@ -263,7 +263,7 @@ public class OverflowPage implements Serializable{
 		{
 			try
 			{
-			result.addAll(deserialize(next).refs);
+			result.addAll(deserialize(next).ALLgetRefs());
 			}
 			catch(DBAppException e)
 			{

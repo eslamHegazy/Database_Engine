@@ -25,7 +25,49 @@ import General.Ref;
 
 
 public class DBAppTest {
-	 
+	static void schema() throws Exception{
+		String strTableName = "Schema";
+		String strClusteringKey = "id";
+		Hashtable h = new Hashtable<>();
+		h.put("id", "java.lang.Integer");
+		h.put("name", "java.lang.String");
+		h.put("gpa", "java.lang.Double");
+		h.put("birth", "java.util.Date");
+		h.put("male", "java.lang.Boolean");
+		h.put("shape", "java.awt.Polygon");
+		DBApp d = new DBApp(); d.init(); 
+		d.createTable(strTableName, strClusteringKey, h); 
+	}
+	static void indices()throws Exception{
+		DBApp d = new DBApp(); d.init(); 
+		String strTableName = "Schema";
+		String strClusteringKey = "id";
+		Hashtable h = new Hashtable<>();
+//		d.createBTreeIndex(strTableName, "id");
+		d.createBTreeIndex(strTableName, "name");
+//		d.createBTreeIndex(strTableName, "gpa");
+		d.createBTreeIndex(strTableName, "birth");
+		d.createBTreeIndex(strTableName, "male");
+		
+//		d.createRTreeIndex(strTableName, "shape");
+		
+	}
+	static void fill() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		int n = 45;
+		Hashtable h = new Hashtable<>();
+		for (int i=0;i<n;i++) {
+			h.put("id", new Integer( (int)(Math.random()*40) ));
+			h.put("name", new String(randomAlphaNumeric(3)));
+			h.put("gpa", new Double( 1.0*(int)(Math.random()*100)/100 ));
+			h.put("birth", randomDate());
+			h.put("male", (int)(Math.random()*2)==0 );
+			h.put("shape", randomPolygon());
+			d.insertIntoTable(strTableName, h);
+		}
+		
+	}
 	static void tryDel() throws Exception{
 		DBApp d = new DBApp(); d.init();
 		Hashtable h = new Hashtable<>();
@@ -58,25 +100,222 @@ public class DBAppTest {
 		h.put("t", 6);
 		d.deleteFromTable("tb", h);
 	}
+	static Iterator<Tuple> s1() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[1];
+		String[] strarrOperators = new String[0];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="birth";
+		s._strOperator = "<";
+		s._objValue = DBApp.parseDate("2000-02-24");
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+	}
+	static Iterator<Tuple> s2() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[1];
+		String[] strarrOperators = new String[0];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="name";
+		s._strOperator = "<";
+		s._objValue = "Esso";
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+	}
+	
+	static Iterator<Tuple> s3() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[2];
+		String[] strarrOperators = new String[1];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="male";
+		s._strOperator = "=";
+		s._objValue = true;
+		
+		arrSQLTerms[1] = new SQLTerm();
+		s = arrSQLTerms[1];
+		s._strTableName=strTableName;
+		s._strColumnName="male";
+		s._strOperator = "=";
+		s._objValue = false;
+		strarrOperators[0]="AND";
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+	}
+	
+	static Iterator<Tuple> s4() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[1];
+		String[] strarrOperators = new String[0];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="male";
+		s._strOperator = "=";
+		s._objValue = true;
+		
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+	}
+	static Iterator<Tuple> s5() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[1];
+		String[] strarrOperators = new String[0];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="male";
+		s._strOperator = "<";
+		s._objValue = true;
+		
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+	}
+	
+	static Iterator<Tuple> s6() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[1];
+		String[] strarrOperators = new String[0];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="male";
+		s._strOperator = "=";
+		s._objValue = false;
+		
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+	}
+	
+	
+	static Iterator<Tuple> s7() throws Exception{
+		
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[3];
+		String[] strarrOperators = new String[2];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="id";
+		s._strOperator = ">=";
+		s._objValue = 5;
+		
+		arrSQLTerms[1] = new SQLTerm();
+		s = arrSQLTerms[1];
+		s._strTableName=strTableName;
+		s._strColumnName="birth";
+		s._strOperator = ">";
+		s._objValue = DBApp.parseDate("2015-01-01");
+		strarrOperators[0]="OR";
+
+		arrSQLTerms[2] = new SQLTerm();
+		s = arrSQLTerms[2];
+		s._strTableName=strTableName;
+		s._strColumnName="id";
+		s._strOperator = "<";
+		s._objValue = 20;
+		strarrOperators[1]="XOR";
+		
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+		
+	}
+	
+
+	
+	static void select() throws Exception{
+//		showit(s1());
+//		showit(s2());
+//		showit(s3());
+//		showit(s4());
+//		showit(s5());
+//		showit(s6());
+		showit(s7());
+//		Table k = new Table();
+//		System.out.println(k.differenceSets((ArrayList<Tuple>)s4(), (ArrayList<Tuple>)s5()));
+	}
+	
+	
+	static void showit(Iterator<Tuple> i) {
+		boolean fnd = false;
+		int cnt = 0;
+		while (i.hasNext()) {
+			fnd = true;
+			Tuple t = i.next(); int last = t.getAttributes().size()-1;
+			System.out.println(t);//.getAttributes().get(last)+"\t");// .getAttributes().get(2));
+			cnt++;
+		}
+		if(!fnd) System.out.println("<<<>>>><<<>>> SELECT RETRUNED EMPTY <<<<>>>><<<<>>>><<<>>>");
+		else {System.out.printf("<<<<<<<<<< FOUND %d Matching Tuples\n",cnt);}
+	}
+	
 	public static void main(String[] args)throws Exception {
 //		clear();
 		
+//		schema();
+//		indices();
 		
 		long st = System.nanoTime();
+//		fill();
+
+//		DBApp  d= new DBApp(); d.init(); 
+//		Hashtable h = new Hashtable<>();
+//		h.put("id", new Integer( (int)(Math.random()*40) ));
+//		h.put("name","21L");
+//		h.put("gpa", new Double( 1.0*(int)(Math.random()*100)/100 ));
+//		h.put("birth", randomDate());
+//		h.put("male", (int)(Math.random()*2)==0 );
+//		h.put("shape", randomPolygon());
+//		d.insertIntoTable("Schema", h); 
+//		
+		select();
+//		tryDel();
+		long end = System.nanoTime(); 
+//		showAt0s();
+		
+		
+		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
+
+//		Boolean b1 = true;
+//		Boolean b2 = false;
+//		Boolean b3 = new Boolean(true);
+//		Boolean b4 = new Boolean(false);
+//		Boolean b5 = null;
+//		System.out.println(b5.compareTo(b1));
+//		Date d0 = DBApp.parseDate("2000-02-01");
+//		Date d1 = DBApp.parseDate("2000-02-24");
+//		Date d2 = DBApp.parseDate("2000-02-28");
+//		Date d3 = DBApp.parseDate("2000-05-10");
+//		Date d4 = DBApp.parseDate("2010-05-10");
+//		System.out.println(d4.compareTo(d0));
+		
 //		faUpTs();		
 //		ad();
 		
 //		showAt0s();
 		
 //		deleteTest();
-		tryDel();
-		long end = System.nanoTime(); 
-		showAt0s();
-		
-		
-		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
-		
 	}
+
 	static void deleteTest() throws DBAppException, IOException{
 		DBApp d = new DBApp(); d.init(); deleteTest(d);
 	}
@@ -538,9 +777,11 @@ public class DBAppTest {
 	static Date randomDate() throws DBAppException{
 		
 		String res = "";
-		int year = 1940+(int)(Math.random()*150);
-		int month = 1+(int)(Math.random()*12);
-		int day = (int)(Math.random()*31);
+		int year = 1995+(int)(Math.random()*25);
+//		int month = 1+(int)(Math.random()*12);
+		int month = 1+(int)(Math.random()*4);
+//		int day = (int)(Math.random()*31);
+		int day = 5+(int)(Math.random()*10);
 		if (month==2) {
 			day = Math.max(day, 28);
 		}
@@ -837,7 +1078,7 @@ public class DBAppTest {
 
 	
 	static Polygon randomPolygon(){
-		int npoints = 3+(int)(Math.random()*6);
+		int npoints = 3+(int)(Math.random()*4);
 		Polygon p = new Polygon();
 		for (int i=0;i<npoints;i++) {
 			int x = (int)(Math.random()*45);

@@ -308,7 +308,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 			{
 				// handle deleting only one ref not the entire key
 				if(records[i] instanceof Ref)
-					this.deleteAt(i);
+					this.deleteAt(i);//didn't serialize yet
 				else
 				{
 					OverflowReference ov = (OverflowReference) records[i];
@@ -328,15 +328,20 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 				{
 					//update key at parent
 					parent.setKey(ptr - 1, this.getFirstKey());
+					//TODO:parent isn't serialized yet
 				}
 				//check that node has enough keys
 				if(!this.isRoot() && numberOfKeys < this.minKeys())
 				{
 					//1.try to borrow
-					if(borrow(parent, ptr))
+					if(borrow(parent, ptr)) {
+						//this node isn't serialized yet; just left/right sibiling
+						parent.serializeNode();
 						return true;
+					}
 					//2.merge
 					merge(parent, ptr);
+					parent.serializeNode();
 				}
 				return true;
 			}
@@ -432,6 +437,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 			this.insertAt(numberOfKeys, foreignNode.getKey(i), foreignNode.getRecord(i));
 		
 		this.setNext(foreignNode.getNext());
+		//TODO: Have the removed node been deleted from disk ?
 	}
 	
 	public static ArrayList<OverflowReference> pagesToPrint;

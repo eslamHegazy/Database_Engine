@@ -1120,7 +1120,7 @@ public class Table implements Serializable {
 //		}
 //		return res;
 //	}
-	private ArrayList<Tuple> differenceSets(ArrayList<Tuple> A, ArrayList<Tuple> B) {
+	public ArrayList<Tuple> differenceSets(ArrayList<Tuple> A, ArrayList<Tuple> B) {
 		ArrayList<Tuple> res = new ArrayList<>();
 
 		HashSet<Tuple> first= new HashSet<>();
@@ -1148,7 +1148,7 @@ public class Table implements Serializable {
 //		}
 //		return res;
 //	}
-	private ArrayList<Tuple> andSets(ArrayList<Tuple> current, ArrayList<Tuple> next) {
+	public ArrayList<Tuple> andSets(ArrayList<Tuple> current, ArrayList<Tuple> next) {
 		ArrayList<Tuple> res = new ArrayList<>();
 
 		HashSet<Tuple> first= new HashSet<>();
@@ -1214,9 +1214,18 @@ public class Table implements Serializable {
 			Page x=deserialize(pages.get(i));
 			for(int j=0;j<x.getTuples().size();j++) {
 				//TODO POLYGON RECHECK
-				if(((Comparable)x.getTuples().get(j).getAttributes().get(pos)).compareTo((Comparable)_objValue)!=0)
+				
+				Comparable esoKey = (Comparable)x.getTuples().get(j).getAttributes().get(pos);
+				Comparable objValue = (Comparable)_objValue;
+				if(esoKey.compareTo(objValue)!=0) {
 					res.add(x.getTuples().get(j));
+				}
+				else if ((esoKey instanceof Polygons) && !esoKey.equals(objValue)){
+					res.add(x.getTuples().get(j));
+				}
+					
 			}
+			
 		}
 		return res;
 	}
@@ -1332,6 +1341,7 @@ public class Table implements Serializable {
 		case "<":
 		case "<=":res=ltOrLtlIndex(_strColumnName,  _objValue, _strOperator,pos);break;
 		case "=":res=equalsIndex(_strColumnName,  _objValue, _strOperator,pos);break;
+//		case "=":res=equalsLinear(_strColumnName,  _objValue, _strOperator,pos);break;
 		}
 		return res;
 	}
@@ -1344,12 +1354,12 @@ public class Table implements Serializable {
 		GeneralReference resultReference = b.search((Comparable)_objValue);
 		if(resultReference==null)return res;
 		ArrayList<Ref> referenceList = resultReference.getALLRef();
-		//System.out.println(Arrays.asList(referenceList));
+		System.out.println(Arrays.asList(referenceList));
 		for (int i=0;i<referenceList.size();i++) {
 			Ref currentReference = referenceList.get(i);
 			String pagename = currentReference.getPage();
 			int curPageNum=Integer.parseInt(pagename.substring(tableName.length()));
-		//	System.out.println(curPageNum);
+			System.out.println(curPageNum);
 			if (visited[curPageNum]) continue;
 			addToResultSet(res, pagename, pos, _objValue, _strOperator);
 			visited[curPageNum] = true;
@@ -1362,7 +1372,7 @@ public class Table implements Serializable {
 		ArrayList<Tuple> res=new ArrayList();
 		String lastPage=pages.get(pages.size()-1);
 		int lastPageMaxNum=Integer.parseInt(lastPage.substring(tableName.length()));
-		boolean []visited=new boolean[lastPageMaxNum];
+		boolean []visited=new boolean[lastPageMaxNum+1];
 		TreeIndex b=colNameTreeIndex.get(_strColumnName);
 		LeafNode leaf=b.getLeftmostLeaf();
 		while(leaf!=null) {
@@ -1372,10 +1382,12 @@ public class Table implements Serializable {
 			   if(leaf.getKey(i).compareTo((Comparable)_objValue)>0)break;
 			   if(leaf.getKey(i).compareTo((Comparable)_objValue)==0&&_strOperator.length()==1)break;
 			   Set<Ref> ref=fillInRef(gr);
+//			   System.out.println(Arrays.asList(ref));
 			   for(Ref r:ref) {
 				   String pagename=r.getPage();
 				   int curPageNum=Integer.parseInt(pagename.substring(tableName.length()));
 				   if(visited[curPageNum])continue;
+				   System.out.println("DDDDDDDDDDDEBUG"+curPageNum);
 				   addToResultSet(res,pagename,pos,_objValue,_strOperator);
 				   visited[curPageNum]=true;
 			   }
@@ -1389,19 +1401,22 @@ public class Table implements Serializable {
 	private void addToResultSet(ArrayList<Tuple> res, String pagename, int pos, Object _objValue,
 			String _strOperator) throws DBAppException {
 		switch (_strOperator) {
-		case ("<"):	addToResultSetLESSorEQUAL(res, pagename, pos, _objValue);
-		case ("<="): addToResultSetLESS(res, pagename, pos, _objValue);
-		case ("="): addToResultSetEQUAL(res, pagename, pos, _objValue);
-		//TODO:
+		case ("<"):	addToResultSetLESS(res, pagename, pos, _objValue);break;
+		case ("<="): addToResultSetLESSorEQUAL(res, pagename, pos, _objValue);break;
+		case ("="): addToResultSetEQUAL(res, pagename, pos, _objValue);break;
+		case (">"): addToResultSetMORE(res, pagename, pos, _objValue);break;
+		case (">="): addToResultSetMOREorEQUAL(res, pagename, pos, _objValue);break;
+		default: throw new DBAppException("55555555555555");
 		}
 	}
  	private void addToResultSetLESS(ArrayList<Tuple> res, String pagename, int pos, Object _objValue
  			) throws DBAppException {
 		Page x=deserialize(pagename);
+		System.out.println(">>>><<<<< "+pagename);
 		for(int i=0;i<x.getTuples().size();i++) {
 			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))>0)
 				res.add(x.getTuples().get(i));
-			else break;
+//			else break;
 		}
 		return ;
 	}
@@ -1411,7 +1426,7 @@ public class Table implements Serializable {
 		for(int i=0;i<x.getTuples().size();i++) {
 			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))>=0)
 				res.add(x.getTuples().get(i));
-			else break;
+//			else break;
 		}
 		return ;
 	}
@@ -1421,10 +1436,28 @@ public class Table implements Serializable {
 		for(int i=0;i<x.getTuples().size();i++) {
 			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))==0)
 				res.add(x.getTuples().get(i));
-			else if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))<0) {
-				//TODO:make sure it is that I finished the records (EQUAL) and now in the records > my key; not the opposite
-			//	break;
-			}
+//			else if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))<0) {
+//				//TODO:make sure it is that I finished the records (EQUAL) and now in the records > my key; not the opposite
+//			//	break;
+//			}
+		}
+		return ;
+	}
+	private void addToResultSetMORE(ArrayList<Tuple> res, String pagename, int pos, Object _objValue
+ 			) throws DBAppException {
+		Page x=deserialize(pagename);
+		for(int i=0;i<x.getTuples().size();i++) {
+			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))<0)
+				res.add(x.getTuples().get(i));
+		}
+		return ;
+	}
+	private void addToResultSetMOREorEQUAL(ArrayList<Tuple> res, String pagename, int pos, Object _objValue
+ 			) throws DBAppException {
+		Page x=deserialize(pagename);
+		for(int i=0;i<x.getTuples().size();i++) {
+			if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))<=0)
+				res.add(x.getTuples().get(i));
 		}
 		return ;
 	}
@@ -1451,7 +1484,7 @@ public class Table implements Serializable {
  			ArrayList<Tuple> res = new ArrayList<>();
  			String lastPage=pages.get(pages.size()-1);
  			int lastPageMaxNum=Integer.parseInt(lastPage.substring(tableName.length()));
- 			boolean []visited=new boolean[lastPageMaxNum];
+ 			boolean []visited=new boolean[lastPageMaxNum+1];
  			TreeIndex b=colNameTreeIndex.get(_strColumnName);
  			ArrayList<GeneralReference> referenceList = _strOperator.equals(">")?
  					b.searchMT((Comparable)_objValue) :

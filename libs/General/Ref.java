@@ -9,6 +9,18 @@ public class Ref extends GeneralReference implements Serializable
 		Ref y=(Ref)this;
 		return (x.pageNo).equals(y.pageNo);
 	}
+	public int hashCode() {
+		char[] ch = pageNo.toCharArray();
+		//TODO: Assumption
+		String cum = "";
+		for (int k=ch.length-1;k>=0;k--) {
+			char c = ch[k];
+			int v = c-'0';
+			if (v<0 || v>9) break;
+			cum = v+cum;
+		}
+		return Integer.parseInt(cum);
+	}
 	/**
 	 * This class represents a pointer to the record. It is used at the leaves of the B+ tree 
 	 */
