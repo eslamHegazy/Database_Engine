@@ -22,7 +22,7 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	private String[]childrenName;
 	/**
 	 * create RTreeNode given order.
-	 * @param n
+	 * @param n the maximum number of keys in the nodes of the tree
 	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
@@ -137,6 +137,7 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	@SuppressWarnings("unchecked")
 	public RTreeInnerNode<Polygons> split(PushUp<Polygons> pushup) throws DBAppException, IOException 
 	{
+		//Serialization Comment: only called by insert; insert takes care of serializing the caller and the returned nodes
 		int keyIndex = this.findIndex((Polygons)pushup.key);
 		int midIndex = numberOfKeys / 2 - 1;
 		if(keyIndex > midIndex)				//split nodes evenly
@@ -222,6 +223,7 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	 */
 	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException //TODO parent
 	{
+		//Serialization comment: if the root; no need. otherwise; the parent serilizes this
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) > 0) {
@@ -260,6 +262,7 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr, String page_name) throws DBAppException //TODO parent
 , IOException
 	{
+//		Serialization comment: if the root; no need. otherwise; the parent serilizes this
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) > 0) {
@@ -277,10 +280,14 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 		{
 			if(this.isRoot())
 			{
-				this.getFirstChild().setRoot(true);
-				getFirstChild().serializeNode();
+				RTreeNode<Polygons> nd = this.getFirstChild();
+				nd.setRoot(true);//this.getFirstChild().setRoot(true);
+				nd.serializeNode();//getFirstChild().serializeNode();
 				this.setRoot(false);
 				return done;
+				
+				
+				
 			}
 			//1.try to borrow
 			if(borrow(parent, ptr)) {
@@ -424,26 +431,22 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	public ArrayList<GeneralReference> searchMTE(Polygons key) throws DBAppException{ 
 		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
 		ArrayList<GeneralReference> res =  b.searchMTE(key);
-//		b.serializeNode();		//TODO: Can I remove this ?
 		return res;
 	}
 	public ArrayList<GeneralReference> searchMT(Polygons key) throws DBAppException{ 
 		RTreeNode <Polygons> b=deserializeNode(childrenName[findIndex(key)]);
 		ArrayList<GeneralReference> res =  b.searchMT(key);
-//		b.serializeNode();		//TODO: Can I remove this ?
 		return res;
 	}
 	
 //	public ArrayList<GeneralReference> searchLTE(Polygons key) throws DBAppException{ 
 //		RTreeNode <Polygons> b=deserializeNode(childrenName[0]);
 //		ArrayList<GeneralReference> res =  b.searchLTE(key);
-////		b.serializeNode();		//TODO: Can I remove this ?
 //		return res;
 //	}
 //	public ArrayList<GeneralReference> searchLT(Polygons key) throws DBAppException{ 
 //		RTreeNode <Polygons> b=deserializeNode(childrenName[0]);
 //		ArrayList<GeneralReference> res =  b.searchLT(key);
-////		b.serializeNode();		//TODO: Can I remove this ?
 //		return res;
 //	}
 	

@@ -110,8 +110,6 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
 			GeneralReference ref = records[index];
 			if (ref.isOverflow()) {
-				//done:
-				
 				//deserialize the actual page of this reference
 				OverflowReference ofRef=(OverflowReference)ref;
 				ofRef.insert(recordReference);
