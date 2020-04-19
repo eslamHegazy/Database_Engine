@@ -1,0 +1,6 @@
+Name: Schema
+Clustering key: id @ pos=5
+Pages:
+{Schema0, Schema1, Schema2, Schema3, Schema4}
+Indexed Columns: 
+Indexes: 
