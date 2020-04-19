@@ -41,12 +41,13 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		root.setRoot(true);
 		//root.treeName=this.treeName;
 	}
-	public void updateRef(String oldpage,String newpage,Polygons key,int tableNameLength) throws DBAppException {
+
+	public void updateRef(String oldpage,String newpage,Polygons key) throws DBAppException{
 //		GeneralReference gf=search(key);
 //		gf.updateRef(oldpage, newpage, tableNameLength);
 
 		RTreeLeafNode leaf = searchForUpdateRef(key);
-		leaf.updateRef(oldpage,newpage,key,tableNameLength);
+		leaf.updateRef(oldpage,newpage,key);
 		
 		leaf.serializeNode();
 	}
@@ -67,11 +68,8 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		PushUp<Polygons> pushUp = root.insert(key, recordReference, null, -1);
 		if(pushUp != null)
 		{
-			//TODO: unnecessary serialization/deserialization
 			RTreeInnerNode<Polygons> newRoot = new RTreeInnerNode<Polygons>(order);
-			root.serializeNode();
 			newRoot.insertLeftAt(0, pushUp.key, root);
-			root.deserializeNode(root.nodeName);
 			newRoot.setChild(1, pushUp.newNode);
 			root.setRoot(false);
 			root.serializeNode();
@@ -104,8 +102,16 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 			root = ((RTreeInnerNode<Polygons>) root).getFirstChild();
 		return done;
 	}
-	// to delete Ref only not the key
-	public boolean delete(Polygons key, String Page_name) throws DBAppException {
+
+	/**
+	 * Delete 1 Ref(either Ref/or single Ref inside an overflow page)
+	 *  only not the key with its pointer
+	 * @param key the key to be deleted
+	 * @return a boolean to indicate whether the key is successfully deleted or it
+	 *         was not in the tree
+	 * @throws DBAppException
+	 */
+	public boolean delete(Polygons key, String Page_name) throws DBAppException{
 		boolean done = root.delete(key, null, -1,Page_name);
 		//go down and find the new root in case the old root is deleted
 		while(root instanceof RTreeInnerNode && !root.isRoot())
@@ -113,9 +119,7 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		return done;
 	}
 	
-	/**
-	 * Returns a string representation of the R tree.
-	 */
+
 	public String toString()
 	{	
 		
@@ -184,11 +188,11 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 	public Ref searchForInsertion(Polygons key,int tableLength) throws DBAppException { //comparable and T???
 		return root.searchForInsertion(key, tableLength);
 	}
-	public Ref searchRequiredReference(Polygons key)throws DBAppException{
-		search(key);
-		return null;
-		
-	}
+//	public Ref searchRequiredReference(Polygons key)throws DBAppException{
+//		search(key);
+//		return null;
+//		
+//	}
 	public RTreeLeafNode getLeftmostLeaf() throws DBAppException {
 		RTreeNode<Polygons> curNode=root;
 		while(!(curNode instanceof RTreeLeafNode)) {

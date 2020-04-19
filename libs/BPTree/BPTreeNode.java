@@ -22,7 +22,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	/**
 	 * Abstract class that collects the common functionalities of the inner and leaf nodes
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1930987111638572869L;
 	protected Comparable<T>[] keys;
 	protected int numberOfKeys;
 	protected int order;

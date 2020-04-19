@@ -361,7 +361,58 @@ public class DBAppTest {
 		h.put("name", s);
 		d.updateTable(strTableName, strClusteringKey, h);
 	}
-	
+
+	public static void main(String[] args)throws Exception {
+//		clear();
+		
+//		schema();
+//		indices();
+		
+		long st = System.nanoTime();
+//		fill();
+
+//		DBApp  d= new DBApp(); d.init(); 
+//		Hashtable h = new Hashtable<>();
+//		h.put("id", new Integer(7));
+//		h.put("name",randomAlphaNumeric(3));
+//		h.put("gpa", new Double( 1.0*(int)(Math.random()*100)/100 ));
+//		h.put("birth", randomDate());
+//		h.put("male", (int)(Math.random()*2)==0 );
+//		h.put("shape", randomPolygon());
+//		d.insertIntoTable("Schema", h); 
+
+//		select();
+//		tryDel();
+//		tryUpdate();
+		
+		
+		long end = System.nanoTime(); 
+		showAt0s();
+		
+		
+		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
+
+//		Boolean b1 = true;
+//		Boolean b2 = false;
+//		Boolean b3 = new Boolean(true);
+//		Boolean b4 = new Boolean(false);
+//		Boolean b5 = null;
+//		System.out.println(b5.compareTo(b1));
+//		Date d0 = DBApp.parseDate("2000-02-01");
+//		Date d1 = DBApp.parseDate("2000-02-24");
+//		Date d2 = DBApp.parseDate("2000-02-28");
+//		Date d3 = DBApp.parseDate("2000-05-10");
+//		Date d4 = DBApp.parseDate("2010-05-10");
+//		System.out.println(d4.compareTo(d0));
+		
+//		faUpTs();		
+//		ad();
+		
+//		showAt0s();
+		
+//		deleteTest();
+	}
+
 	static void deleteTest() throws DBAppException, IOException{
 		DBApp d = new DBApp(); d.init(); deleteTest(d);
 	}

@@ -4,6 +4,10 @@ import java.util.*;
 
 
 public class Tuple implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1512597374643196276L;
 	private Vector attributes = new Vector(); // Transient?
     
 	public boolean equals(Object o) {

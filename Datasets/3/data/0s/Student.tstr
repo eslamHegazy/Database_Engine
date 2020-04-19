@@ -1,0 +1,83 @@
+Name: Student
+Clustering key: id @ pos=3
+Pages:
+{Student0, Student1, Student2, Student3}
+Min:
+{0, 4, 116, 2343432}
+Max:
+{4, 86, 78452, 1111111111}
+Indexed Columns: 
+gpa	id	name	shape	Indexes: 
+gpa
+(9)[0.263|0.596|0.956| | ]{0,15,12,8,}
+(0)[0.033,Student1|0.236,Student1|0.26,Student2| | ]->(15)[0.263,Student2|0.282,Student1|0.43,Student2| | ]->(12)[0.596,Student1|0.88,Student2|0.919,Student1|0.938,Student0|0.95,Node7]->(8)[0.956,Student3|0.991,Student2|1.25,Student3|1.5,Node9| ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node7: 
+Student3 , Student0 , 
+refrence number : 2 is :
+The overflow page:Node9: 
+Student3 , Student3 , Student1 , Student1 , Student0 , 
+The overflow page:Node16: 
+Student0 , Student0 , Student2 , Student0 , Student0 , 
+The overflow page:Node40: 
+Student0 , Student0 , Student0 , Student1 , 
+
+id
+(4)[12|66|164|2343432| ]{1,7,10,13,3,}
+(1)[0,Student0|1,Node35|2,Student0|3,Node42|4,Node44]->(7)[12,Student1|23,Student1|48,Student1|64,Student1| ]->(10)[66,Student1|80,Student1|86,Student1|116,Student2|143,Student2]->(13)[164,Student2|196,Student2|23498,Node12|78452,Student2| ]->(3)[2343432,Node4|5674567,Student3|1111111111,Node20| | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node35: 
+Student0 , Student0 , Student0 , 
+refrence number : 2 is :
+The overflow page:Node42: 
+Student0 , Student0 , 
+refrence number : 3 is :
+The overflow page:Node44: 
+Student1 , Student0 , 
+refrence number : 4 is :
+The overflow page:Node12: 
+Student2 , Student2 , Student2 , 
+refrence number : 5 is :
+The overflow page:Node4: 
+Student3 , Student3 , 
+refrence number : 6 is :
+The overflow page:Node20: 
+Student3 , Student3 , 
+
+name
+(6)[B5Q3Noor|John Noor|L7SWNoor|T8INNoor| ]{2,14,5,11,16,}
+(2)[0CIRNoor,Student1|AO9TNoor,Student2|Ahmed Noor,Node5|Arousiiii,Node21| ]->(14)[B5Q3Noor,Student1|Dalia Noor,Student3|GPD1Noor,Student2|IO82Noor,Student0| ]->(5)[John Noor,Node13|Johnasd Noor,Student1|Johnnnn Noor,Student0| | ]->(11)[L7SWNoor,Student1|P7D1Noor,Student2|QK6KNoor,Student1| | ]->(16)[T8INNoor,Student2|V3FTNoor,Student1|Zaky Noor,Student2| | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node5: 
+Student3 , Student3 , Student0 , 
+refrence number : 2 is :
+The overflow page:Node21: 
+Student3 , Student3 , Student1 , Student0 , Student0 , 
+The overflow page:Node41: 
+Student0 , Student0 , Student1 , 
+refrence number : 3 is :
+The overflow page:Node13: 
+Student2 , Student0 , Student0 , Student0 , 
+
+shape
+(9)[986~(40,16),(10,1),(36,26),(6,25),(24,30),(33,11)| | | | ]{2,8,}
+(2)[476~(28,16),(7,33),(0,27)|770~(41,16),(43,22),(8,38)|850~(29,26),(32,12),(44,6),(10,1)| | ]{0,7,1,10,}(8)[1107~(36,42),(35,24),(9,40),(35,27),(24,1),(34,20),(30,38)|1258~(10,10),(35,25),(42,29),(5,10),(41,37),(36,3),(21,14)|1353~(22,44),(28,25),(11,37),(17,30),(44,44),(35,14),(30,44),(44,3)| | ]{5,4,3,6,}
+(0)[0~,Node6|63~(1,9),(8,0),Student3|135~(34,12),(25,15),(30,0),Student0| | ]->(7)[476~(28,16),(7,33),(0,27),Student0|570~(30,10),(35,25),(24,40),(16,10),Student0|575~(31,38),(30,16),(20,40),(40,30),(17,34),(29,41),Student2| | ]->(1)[770~(41,16),(43,22),(8,38),Student2|825~(15,3),(16,28),(23,14),(36,14),(3,5),Student1|832~(32,18),(18,3),(0,26),(23,0),(0,20),Student0| | ]->(10)[850~(29,26),(32,12),(44,6),(10,1),Student0|950~(1,38),(28,23),(39,25),(33,29),(4,13),Node39|972~(23,42),(10,7),(29,24),(36,16),(24,43),(9,21),(24,31),(22,21),Student0| | ]->(5)[986~(40,16),(10,1),(36,26),(6,25),(24,30),(33,11),Student2|1014~(35,26),(38,10),(41,7),(8,20),(14,30),(2,33),(11,28),Student1|1036~(16,17),(36,13),(32,1),(8,11),(17,38),(25,25),Student1| | ]->(4)[1107~(36,42),(35,24),(9,40),(35,27),(24,1),(34,20),(30,38),Student2|1120~(12,0),(40,23),(19,40),(32,14),(30,30),(18,28),Student1|1156~(41,30),(37,4),(22,38),(30,21),(23,11),(7,35),(23,28),Student3|1189~(39,21),(22,42),(10,30),(34,27),(36,1),Student1| ]->(3)[1258~(10,10),(35,25),(42,29),(5,10),(41,37),(36,3),(21,14),Student2|1276~(0,7),(44,11),(2,24),(7,36),(21,7),(9,23),(16,19),(43,8),Student2|1287~(12,18),(0,19),(33,2),(1,25),(5,41),(19,25),Student1| | ]->(6)[1353~(22,44),(28,25),(11,37),(17,30),(44,44),(35,14),(30,44),(44,3),Student1|1419~(44,32),(17,37),(16,5),(1,13),(8,38),Student2|1443~(11,39),(12,1),(42,19),(31,28),(5,7),(5,0),(26,29),(22,26),Student1|1482~(32,4),(43,34),(4,8),(40,42),(34,39),Node8| ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node6: 
+Student3 , Student3 , 
+refrence number : 2 is :
+The overflow page:Node39: 
+Student2 , Student0 , 
+refrence number : 3 is :
+The overflow page:Node8: 
+Student3 , Student0 , 
+

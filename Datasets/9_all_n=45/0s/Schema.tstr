@@ -1,0 +1,62 @@
+Name: Schema
+Clustering key: id @ pos=5
+Pages:
+{Schema0, Schema1, Schema2, Schema3, Schema4}
+Min:
+{1, 10, 20, 27, 35}
+Max:
+{9, 18, 27, 35, 39}
+Indexed Columns: 
+male	name	birth	Indexes: 
+male
+(2)[false,Node4|true,Node3| | | | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node4: 
+Schema4 , Schema4 , Schema3 , Schema3 , Schema3 , Schema3 , 
+The overflow page:Node14: 
+Schema3 , Schema3 , Schema2 , Schema2 , Schema2 , Schema1 , 
+The overflow page:Node21: 
+Schema1 , Schema0 , Schema2 , Schema3 , Schema0 , Schema3 , 
+refrence number : 2 is :
+The overflow page:Node3: 
+Schema4 , Schema4 , Schema4 , Schema3 , Schema2 , Schema2 , 
+The overflow page:Node9: 
+Schema1 , Schema1 , Schema1 , Schema0 , Schema0 , Schema0 , 
+The overflow page:Node17: 
+Schema0 , Schema1 , Schema0 , Schema2 , Schema1 , Schema3 , 
+The overflow page:Node30: 
+Schema0 , Schema0 , Schema1 , Schema2 , Schema2 , Schema0 , 
+The overflow page:Node35: 
+Schema1 , Schema1 , Schema2 , 
+
+name
+(19)[HDV| | | | | ]{4,18,}
+(4)[26O|7F2|8SM|CJO| | ]{0,7,13,3,24,}(18)[MT2|PPD|RWW|V3T| | ]{17,10,25,11,16,}
+(0)[009,Schema2|0MI,Schema0|20A,Schema2|25H,Schema2| | ]->(7)[26O,Schema0|2KV,Schema3|2MA,Schema2|2Q8,Schema2|49C,Schema1|6GO,Schema1]->(13)[7F2,Schema2|7OO,Schema0|81G,Schema4|8FQ,Schema3|8HL,Schema3| ]->(3)[8SM,Schema2|90O,Schema3|AG6,Schema4|BZI,Schema1| | ]->(24)[CJO,Schema3|CKV,Schema4|DK6,Schema1|E2N,Schema1| | ]->(17)[HDV,Schema3|I2I,Schema0|KZN,Schema3|LUE,Schema4| | ]->(10)[MT2,Schema0|O6E,Node25|OTS,Schema1| | | ]->(25)[PPD,Schema1|Q6S,Schema0|QGP,Schema2|QVG,Schema3| | ]->(11)[RWW,Schema3|TB1,Schema2|U3U,Schema2|U9D,Schema0|UOL,Schema1|UZ1,Schema0]->(16)[V3T,Schema4|WSJ,Schema1|ZFB,Schema1|ZNW,Schema0| | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node25: 
+Schema0 , Schema3 , 
+
+birth
+(22)[Thu Jan 08 00:00:00 EET 2009| | | | | ]{6,21,}
+(6)[Tue Apr 30 00:00:00 EEST 1996|Tue Jan 08 00:00:00 EET 2002|Sat Apr 30 00:00:00 EEST 2005| | | ]{1,15,8,12,}(21)[Wed Jan 06 00:00:00 EET 2010|Thu Mar 11 00:00:00 EET 2010|Mon Apr 30 00:00:00 EET 2012|Thu Mar 12 00:00:00 EET 2015|Wed Jan 10 00:00:00 EET 2018| ]{20,5,23,9,26,14,}
+(1)[Tue Feb 28 00:00:00 EET 1995,Schema4|Sat Jan 06 00:00:00 EET 1996,Schema3|Mon Jan 08 00:00:00 EET 1996,Schema2|Wed Feb 28 00:00:00 EET 1996,Schema0| | ]->(15)[Tue Apr 30 00:00:00 EEST 1996,Schema0|Mon Jan 05 00:00:00 EET 1998,Schema1|Tue Jan 06 00:00:00 EET 1998,Schema1|Sat Feb 28 00:00:00 EET 1998,Schema2|Sun Feb 28 00:00:00 EET 1999,Schema3|Thu Mar 11 00:00:00 EET 1999,Schema2]->(8)[Tue Jan 08 00:00:00 EET 2002,Schema3|Thu Mar 07 00:00:00 EET 2002,Schema3|Sat Jan 11 00:00:00 EET 2003,Schema2|Wed Mar 10 00:00:00 EET 2004,Schema2|Fri Apr 30 01:00:00 EEST 2004,Schema1|Mon Feb 28 00:00:00 EET 2005,Node37]->(12)[Sat Apr 30 00:00:00 EEST 2005,Node26|Sat Jan 05 00:00:00 EET 2008,Schema0|Tue Jan 08 00:00:00 EET 2008,Schema1| | | ]->(20)[Thu Jan 08 00:00:00 EET 2009,Schema0|Sat Feb 28 00:00:00 EET 2009,Schema4|Fri Mar 06 00:00:00 EET 2009,Schema4|Wed Mar 11 00:00:00 EET 2009,Schema2| | ]->(5)[Wed Jan 06 00:00:00 EET 2010,Schema0|Sun Feb 28 00:00:00 EET 2010,Node23|Tue Mar 09 00:00:00 EET 2010,Schema4| | | ]->(23)[Thu Mar 11 00:00:00 EET 2010,Schema0|Mon Feb 28 00:00:00 EET 2011,Schema3|Tue Jan 10 00:00:00 EET 2012,Schema2|Tue Feb 28 00:00:00 EET 2012,Schema3| | ]->(9)[Mon Apr 30 00:00:00 EET 2012,Schema0|Sun Jan 06 00:00:00 EET 2013,Schema2|Thu Feb 28 00:00:00 EET 2013,Node16|Sat Feb 28 00:00:00 EET 2015,Schema1| | ]->(26)[Thu Mar 12 00:00:00 EET 2015,Schema2|Mon Mar 14 00:00:00 EET 2016,Schema3|Tue Feb 28 00:00:00 EET 2017,Schema2| | | ]->(14)[Wed Jan 10 00:00:00 EET 2018,Schema3|Sat Mar 10 00:00:00 EET 2018,Schema1|Mon Jan 07 00:00:00 EET 2019,Schema3|Tue Apr 30 00:00:00 EET 2019,Schema0| | ]->
+
+ The Overflow refrences are : 
+refrence number : 1 is :
+The overflow page:Node37: 
+Schema1 , Schema1 , 
+refrence number : 2 is :
+The overflow page:Node26: 
+Schema1 , Schema3 , 
+refrence number : 3 is :
+The overflow page:Node23: 
+Schema0 , Schema0 , 
+refrence number : 4 is :
+The overflow page:Node16: 
+Schema4 , Schema1 , 
+

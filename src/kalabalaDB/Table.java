@@ -16,6 +16,11 @@ import RTree.RTree;
 
 public class Table implements Serializable {
 
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4848085817298614510L;
 	private Vector<String> pages = new Vector<>();
 	private int MaximumRowsCountinPage;
 	//private Vector<Object> min = new Vector<>();
@@ -36,13 +41,14 @@ public class Table implements Serializable {
 		return colNameTreeIndex;
 	}
 
-	public Ref searchWithCluster(Comparable key, BPTree b) throws DBAppException {
-		Ref ref = b.searchRequiredReference(key); // NOT IMPLEMENTED
-		if (ref == null) { // returns null if key is the least value in tree
-			return new Ref(pages.get(0));
-		}
-		return ref;
-	}
+//	public Ref searchWithCluster(Comparable key, BPTree b) throws DBAppException {
+//		Ref ref = b.searchRequiredReference(key); // NOT IMPLEMENTED
+//		if (ref == null) { // returns null if key is the least value in tree
+//			return new Ref(pages.get(0));
+//		}
+//		return ref;
+//	}
+
 
 	public void printIndices() {
 		for (String x : colNameTreeIndex.keySet()) {
@@ -196,12 +202,12 @@ public class Table implements Serializable {
 						//max.addElement(keyValue);
 						n.serialize();
 					}
-					// System.out.println("change ref "+p.getPageName()+" "+newp+" "+t);
-					tree.updateRef(p.getPageName(), newp, (Comparable) t.getAttributes().get(primaryPos),
-							tableName.length());
-					// System.out.println(t+" "+newp);
-					// System.out.println("changed ref
-					// "+getClusterReference(t.getAttributes().get(primaryPos), keyColName));
+
+					//System.out.println("change ref "+p.getPageName()+" "+newp+" "+t);
+					tree.updateRef(p.getPageName(),newp,(Comparable) t.getAttributes().get(primaryPos));
+					//System.out.println(t+" "+newp);
+					//System.out.println("changed ref "+getClusterReference(t.getAttributes().get(primaryPos), keyColName));
+
 				}
 				list.put(t, p.getPageName());
 				Object minn = p.getTuples().get(0).getAttributes().get(primaryPos);
@@ -308,13 +314,13 @@ public class Table implements Serializable {
 				for (Tuple t : st) {
 					if (!t.equals(x)) {
 						Object keyValueOfNonClusterT = t.getAttributes().get(index);
-						// tree.delete((Comparable)keyValueOfNonClusterT,list.get(t));
-						// Ref pageReferenceT =
-						// getClusterReference(t.getAttributes().get(primaryPos),keyColName);
-						// tree.insert((Comparable) keyValueOfNonClusterT, pageReferenceT);
-						// System.out.println(t+" "+pageReference+"\n");
-						tree.updateRef(list.get(t), pages.get(pages.indexOf(list.get(t)) + 1),
-								(Comparable) keyValueOfNonClusterT, tableName.length());
+
+						//tree.delete((Comparable)keyValueOfNonClusterT,list.get(t));
+						//Ref pageReferenceT = getClusterReference(t.getAttributes().get(primaryPos),keyColName);
+						//tree.insert((Comparable) keyValueOfNonClusterT, pageReferenceT);
+					//	System.out.println(t+" "+pageReference+"\n");
+						tree.updateRef(list.get(t), pages.get(pages.indexOf(list.get(t))+1), (Comparable) keyValueOfNonClusterT);
+
 					}
 				}
 			}

@@ -108,8 +108,6 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		if (index< numberOfKeys && getKey(index).compareTo(key)==0) {
 			GeneralReference ref = records[index];
 			if (ref.isOverflow()) {
-				//done:
-				
 				//deserialize the actual page of this reference
 				OverflowReference ofRef=(OverflowReference)ref;
 				ofRef.insert(recordReference);
@@ -548,13 +546,12 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	public BPTreeLeafNode searchForUpdateRef(T key) {
 		return this;
 	}
-	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException{
+	public void updateRef(String oldpage,String newpage,T key) throws DBAppException{
 		GeneralReference gf;
 		for(int i = 0; i < numberOfKeys; ++i)
 			if(this.getKey(i).compareTo(key) == 0) {
-				//TODO: In RTREE . MAKE IT .equals
 				gf = getRecord(i);
-				gf.updateRef(oldpage, newpage, tableNameLength);
+				gf.updateRef(oldpage, newpage);
 				if (gf instanceof Ref) {
 					this.serializeNode();
 				}

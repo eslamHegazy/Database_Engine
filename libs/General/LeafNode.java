@@ -13,5 +13,5 @@ public interface LeafNode<T extends Comparable<T>> {
 	public GeneralReference getRecord(int i);
 	
 	public LeafNode<T> searchForUpdateRef(T key);
-	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException;
+	public void updateRef(String oldpage,String newpage,T key) throws DBAppException;
 }

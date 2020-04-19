@@ -18,5 +18,5 @@ public interface TreeIndex<T extends Comparable<T>> {
 	public ArrayList<GeneralReference> searchMT(T key) throws DBAppException;
 //	public ArrayList<GeneralReference> searchlTE(T key) throws DBAppException;
 //	public ArrayList<GeneralReference> searchlT(T key) throws DBAppException;
-	public void updateRef(String oldpage,String newpage,T key, int tableNameLength) throws DBAppException;
+	public void updateRef(String oldpage,String newpage,T key) throws DBAppException;
 }

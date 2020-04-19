@@ -387,7 +387,7 @@ public class DBApp {
 			{
 			System.out.println("BINARY SEARCH USED");
 			String[] searchResult = y.SearchInTable(strTableName, strClusteringKey).split("#");
-			Page p = Table.deserialize(searchResult[0]);
+			Page p ;//= Table.deserialize(searchResult[0]);
 			int i = Integer.parseInt(searchResult[1]);
 			
 			int j = y.getPages().indexOf(searchResult[0]);
