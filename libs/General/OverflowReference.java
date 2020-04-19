@@ -103,9 +103,9 @@ public class OverflowReference extends GeneralReference implements Serializable
 		return false;
 	}
 	@Override
-	public void updateRef(String oldpage, String newpage, int tableNameLength) throws DBAppException {
+	public void updateRef(String oldpage, String newpage) throws DBAppException {
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
-		firstPage.updateRef(oldpage, newpage, tableNameLength);
+		firstPage.updateRef(oldpage, newpage);
 		firstPage.serialize();	
 	}
 	

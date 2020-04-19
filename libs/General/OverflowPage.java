@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package General;
 
 import java.io.BufferedReader;
@@ -168,7 +167,7 @@ public class OverflowPage implements Serializable{
 			return OFP;
 		}
 		catch(IOException e) {
-			throw new DBAppException("IO Exception while reading from disk : Overflow page+ "name);
+			throw new DBAppException("IO Exception while reading from disk : Overflow page+ "+name);
 		}
 		catch(ClassNotFoundException e) {
 			throw new DBAppException("Class Not Found Exception");
