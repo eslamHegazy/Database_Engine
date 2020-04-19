@@ -1,10 +1,8 @@
 package RTree;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import BPTree.BPTreeLeafNode;
 import General.GeneralReference;
 import General.LeafNode;
 import General.OverflowPage;
@@ -21,7 +19,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	private GeneralReference[] records;
 	private String next;
 	@SuppressWarnings("unchecked")
-	public RTreeLeafNode(int n) throws DBAppException, IOException 
+	public RTreeLeafNode(int n) throws DBAppException 
 	{
 		super(n);
 		keys = new Comparable[n];
@@ -94,13 +92,12 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	
 	/**
 	 * insert the specified key associated with a given record refernce in the R tree
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
 	public PushUp<Polygons> insert(Polygons key, 
 			Ref recordReference, 
 			RTreeInnerNode<Polygons> parent, 
-			int ptr) throws DBAppException, IOException
+			int ptr) throws DBAppException
 	{
 			
 		int index = 0;
@@ -171,10 +168,9 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	 * @param key the new key that caused the split
 	 * @param recordReference the reference of the new key
 	 * @return the new node that results from the split
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public RTreeNode<Polygons> split(Polygons key, GeneralReference recordReference) throws DBAppException, IOException 
+	public RTreeNode<Polygons> split(Polygons key, GeneralReference recordReference) throws DBAppException 
 	{
 		int keyIndex = this.findIndex(key);
 		int midIndex = numberOfKeys / 2;
@@ -300,7 +296,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	
 	// to delete a ref not a page
 	
-	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr,String page_name) throws DBAppException, IOException 
+	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr,String page_name) throws DBAppException 
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
 //			if(keys[i].compareTo(key) == 0)

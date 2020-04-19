@@ -1,11 +1,6 @@
 package BPTree;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -25,7 +20,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	private GeneralReference[] records;
 	private String next;
 	@SuppressWarnings("unchecked")
-	public BPTreeLeafNode(int n) throws DBAppException, IOException 
+	public BPTreeLeafNode(int n) throws DBAppException 
 	{
 		super(n);
 		keys = new Comparable[n];
@@ -98,13 +93,12 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	
 	/**
 	 * insert the specified key associated with a given record refernce in the B+ tree
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
 	public PushUp<T> insert(T key, 
 			Ref recordReference, 
 			BPTreeInnerNode<T> parent, 
-			int ptr) throws DBAppException, IOException
+			int ptr) throws DBAppException
 	{
 			
 		int index = 0;
@@ -175,10 +169,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	 * @param key the new key that caused the split
 	 * @param recordReference the reference of the new key
 	 * @return the new node that results from the split
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public BPTreeNode<T> split(T key, GeneralReference recordReference) throws DBAppException, IOException 
+	public BPTreeNode<T> split(T key, GeneralReference recordReference) throws DBAppException 
 	{
 		int keyIndex = this.findIndex(key);
 		int midIndex = numberOfKeys / 2;
@@ -305,7 +298,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	
 	// to delete a ref not a page
 	
-	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException, IOException 
+	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException 
 	{
 		for(int i = 0; i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) == 0)

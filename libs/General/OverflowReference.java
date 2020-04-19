@@ -38,14 +38,14 @@ public class OverflowReference extends GeneralReference implements Serializable
 			return OFP;
 		}
 		catch(IOException e) {
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while loading an overflow page from the disk"+"\tdata/"+firstPageName2+".class");
 		}
 		catch(ClassNotFoundException e) {
 			throw new DBAppException("Class Not Found Exception");
 		}
 	}
 	
-	public void setFirstPage(OverflowPage firstPage) throws DBAppException, IOException {
+	public void setFirstPage(OverflowPage firstPage) throws DBAppException {
 		OverflowPage Page=firstPage;
 		firstPageName=Page.getPageName();
 		if(Page != null)
@@ -53,13 +53,13 @@ public class OverflowReference extends GeneralReference implements Serializable
 	}
 	
 	
-	public void insert(Ref recordRef) throws DBAppException, IOException {
+	public void insert(Ref recordRef) throws DBAppException{
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
 		firstPage.addRecord(recordRef);
 		firstPage.serialize();
 	}
 	
-	public void deleteRef(String page_name) throws DBAppException, IOException 
+	public void deleteRef(String page_name) throws DBAppException 
 	{
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
 		firstPage.deleteRecord(page_name);

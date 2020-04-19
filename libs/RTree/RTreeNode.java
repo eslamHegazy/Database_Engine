@@ -40,7 +40,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	//protected int lastin;
 	//protected String treeName;
 
-	public RTreeNode(int order) throws DBAppException, IOException 
+	public RTreeNode(int order) throws DBAppException 
 	{
 		index = nextIdx++;
 		numberOfKeys = 0;
@@ -64,32 +64,39 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 		}
 		catch(IOException e) {
 			e.printStackTrace();
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while reading file: "+path);
 		}
 	}
 
-	protected String getFromMetaDataTree() throws DBAppException , IOException
+	protected String getFromMetaDataTree() throws DBAppException 
 	{
-		String lastin = "";
-		Vector meta = readFile("data/metaBPtree.csv");
-		int overrideLastin = 0;
-		for (Object O : meta) {
-			String[] curr = (String[]) O;
-			lastin = curr[0];
-			overrideLastin = Integer.parseInt(curr[0])+1;
-			curr[0] = overrideLastin + "";
-			break;
+		try {
+
+			String lastin = "";
+			Vector meta = readFile("data/metaBPtree.csv");
+			int overrideLastin = 0;
+			for (Object O : meta) {
+				String[] curr = (String[]) O;
+				lastin = curr[0];
+				overrideLastin = Integer.parseInt(curr[0])+1;
+				curr[0] = overrideLastin + "";
+				break;
+			}
+			FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
+			for (Object O : meta) 
+			{
+				String[] curr = (String[]) O;
+				csvWriter.append(curr[0]);
+				break;
+			}
+			csvWriter.flush();
+			csvWriter.close();
+			return lastin;
 		}
-		FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
-		for (Object O : meta) 
-		{
-			String[] curr = (String[]) O;
-			csvWriter.append(curr[0]);
-			break;
+		catch (IOException e) {
+			e.printStackTrace();
+			throw new DBAppException("IOException while reading metaBPtree.csv in order to write a node/overflowpage to disk");
 		}
-		csvWriter.flush();
-		csvWriter.close();
-		return lastin;
 	}
 	
 	
@@ -167,15 +174,10 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	 * @param recordReference a pointer to the record on the hard disk
 	 * @param parent the parent of the current node
 	 * @param ptr the index of the parent pointer that points to this node
-	 * @return a key and a new node in case of a node splitting and null otherwise
-	 * @throws IOException 
+	 * @return a key and a new node in case of a node splitting and null otherwise 
 	 * @throws DBAppException 
 	 */
-	public abstract PushUp<Polygons> insert(Polygons key, 
-			Ref recordReference, 
-			RTreeInnerNode<Polygons> parent, 
-			int ptr) throws DBAppException, IOException;
-	
+	public abstract PushUp<Polygons> insert(Polygons key, Ref recordReference, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException;
 	public abstract GeneralReference search(Polygons key) throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMT(Polygons key)throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMTE(Polygons key)throws DBAppException;
@@ -190,7 +192,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	 * @throws DBAppException 
 	 */
 	public abstract boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException;
-	public abstract boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr,String page_name) throws DBAppException, IOException;
+	public abstract boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr,String page_name) throws DBAppException;
 	
 	/**
 	 * A string represetation for the node
@@ -228,7 +230,8 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 			fileOut.close();
 		}
 		catch(IOException e) {
-			throw new DBAppException("IO Exception");
+			e.printStackTrace();
+			throw new DBAppException("IO Exception while writing a node to the disk\"+\"\\tdata/\"+name+\".class\");");
 		}
 		
 	}
@@ -245,7 +248,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 			return RTN;
 		}
 		catch(IOException e) {
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while loading a node from the disk"+"\tdata/"+name+".class");
 		}
 		catch(ClassNotFoundException e) {
 			throw new DBAppException("Class Not Found Exception");

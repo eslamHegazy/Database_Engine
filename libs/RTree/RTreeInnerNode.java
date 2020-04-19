@@ -1,13 +1,10 @@
 package RTree;
 
 
-import java.io.IOException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import BPTree.BPTreeLeafNode;
-import BPTree.BPTreeNode;
 import General.GeneralReference;
 import General.Ref;
 import kalabalaDB.DBAppException;
@@ -23,11 +20,10 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	/**
 	 * create RTreeNode given order.
 	 * @param n
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
 	@SuppressWarnings("unchecked")
-	public RTreeInnerNode(int n) throws DBAppException, IOException 
+	public RTreeInnerNode(int n) throws DBAppException 
 	{
 		super(n);
 		keys = new Comparable[n];
@@ -93,10 +89,9 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	 * @param parent parent of that inserted node
 	 * @param ptr index of pointer in the parent node pointing to the current node
 	 * @return value to be pushed up to the parent.
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public PushUp<Polygons> insert(Polygons key, Ref recordReference, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException, IOException
+	public PushUp<Polygons> insert(Polygons key, Ref recordReference, RTreeInnerNode<Polygons> parent, int ptr) throws DBAppException
 	{
 		int index = findIndex(key);
 		RTreeNode<Polygons> b=deserializeNode(childrenName[index]);
@@ -131,11 +126,10 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	 * split the inner node and adjust values and pointers.
 	 * @param pushup key to be pushed up to the parent in case of splitting.
 	 * @return Inner node after splitting
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
 	@SuppressWarnings("unchecked")
-	public RTreeInnerNode<Polygons> split(PushUp<Polygons> pushup) throws DBAppException, IOException 
+	public RTreeInnerNode<Polygons> split(PushUp<Polygons> pushup) throws DBAppException 
 	{
 		int keyIndex = this.findIndex((Polygons)pushup.key);
 		int midIndex = numberOfKeys / 2 - 1;
@@ -258,7 +252,6 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 	
 	// delete Ref not entire key
 	public boolean delete(Polygons key, RTreeInnerNode<Polygons> parent, int ptr, String page_name) throws DBAppException //TODO parent
-, IOException
 	{
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)

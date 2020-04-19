@@ -1,10 +1,5 @@
 package BPTree;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -23,11 +18,10 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	/**
 	 * create BPTreeNode given order.
 	 * @param n
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
 	@SuppressWarnings("unchecked")
-	public BPTreeInnerNode(int n) throws DBAppException, IOException 
+	public BPTreeInnerNode(int n) throws DBAppException 
 	{
 		super(n);
 		keys = new Comparable[n];
@@ -93,10 +87,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * @param parent parent of that inserted node
 	 * @param ptr index of pointer in the parent node pointing to the current node
 	 * @return value to be pushed up to the parent.
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public PushUp<T> insert(T key, Ref recordReference, BPTreeInnerNode<T> parent, int ptr) throws DBAppException, IOException
+	public PushUp<T> insert(T key, Ref recordReference, BPTreeInnerNode<T> parent, int ptr) throws DBAppException
 	{
 		int index = findIndex(key);
 		BPTreeNode<T> b=deserializeNode(childrenName[index]);
@@ -131,11 +124,10 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 * split the inner node and adjust values and pointers.
 	 * @param pushup key to be pushed up to the parent in case of splitting.
 	 * @return Inner node after splitting
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
 	@SuppressWarnings("unchecked")
-	public BPTreeInnerNode<T> split(PushUp<T> pushup) throws DBAppException, IOException 
+	public BPTreeInnerNode<T> split(PushUp<T> pushup) throws DBAppException 
 	{
 		int keyIndex = this.findIndex((T)pushup.key);
 		int midIndex = numberOfKeys / 2 - 1;
@@ -258,7 +250,6 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	
 	// delete Ref not entire key
 	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr, String page_name) throws DBAppException //TODO parent
-, IOException
 	{
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)

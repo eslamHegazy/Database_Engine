@@ -130,7 +130,7 @@ public class Page implements Serializable {
 			out.close();
 			fileOut.close();
 		} catch (IOException e) {
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while writing to disk; Page: "+pageName);
 		}
 	}
 
@@ -158,7 +158,7 @@ public class Page implements Serializable {
 
 	public void deleteInPageforRef(Vector<String[]> metaOfTable, int primarypos, String clusteringKey,
 			Hashtable<String, TreeIndex> colNameTreeIndex, Hashtable<String, Object> htblColNameValue,
-			ArrayList<String> allIndices, boolean isCluster) throws DBAppException,IOException {
+			ArrayList<String> allIndices, boolean isCluster) throws DBAppException{
 		int index = 0;
 		int lastOcc = tuples.size();
 		if (isCluster) {

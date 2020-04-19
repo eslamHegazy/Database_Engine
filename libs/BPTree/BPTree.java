@@ -1,6 +1,5 @@
 package BPTree;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -27,10 +26,9 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 	/**
 	 * Creates an empty B+ tree
 	 * @param order the maximum number of keys in the nodes of the tree
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public BPTree(int order) throws DBAppException, IOException  
+	public BPTree(int order) throws DBAppException  
 	{	
 		this.order = order;
 		//this.treeName=treeName;
@@ -39,7 +37,7 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		//root.treeName=this.treeName;
 	}
 	
-	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException, IOException {
+	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException {
 //		GeneralReference gf=search(key);
 //		gf.updateRef(oldpage, newpage, tableNameLength);
 
@@ -57,10 +55,9 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 	 * Inserts the specified key associated with the given record in the B+ tree
 	 * @param key the key to be inserted
 	 * @param recordReference the reference of the record associated with the key
-	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
-	public void insert(T key, Ref recordReference) throws DBAppException, IOException
+	public void insert(T key, Ref recordReference) throws DBAppException
 	{
 		PushUp<T> pushUp = root.insert(key, recordReference, null, -1);
 		if(pushUp != null)
@@ -103,7 +100,7 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		return done;
 	}
 	// to delete Ref only not the key
-	public boolean delete(T key, String Page_name) throws DBAppException, IOException {
+	public boolean delete(T key, String Page_name) throws DBAppException{
 		boolean done = root.delete(key, null, -1,Page_name);
 		//go down and find the new root in case the old root is deleted
 		while(root instanceof BPTreeInnerNode && !root.isRoot())

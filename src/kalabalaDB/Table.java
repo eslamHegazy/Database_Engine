@@ -132,7 +132,7 @@ public class Table implements Serializable {
 			fileIn.close();
 			return xx;
 		} catch (IOException e) {
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while reading from disk: Page: "+name);
 		} catch (ClassNotFoundException e) {
 			throw new DBAppException("Class Not Found Exception");
 		}
@@ -143,7 +143,7 @@ public class Table implements Serializable {
 	}
 
 	public Hashtable<Tuple, String> addInPage(int curr, Tuple x, String keyType, String keyColName, int nodeSize,
-			boolean doInsert, Hashtable<Tuple, String> list) throws DBAppException, IOException {
+			boolean doInsert, Hashtable<Tuple, String> list) throws DBAppException{
 		// System.out.println(x+" "+curr);\
 
 		if (curr < pages.size()) {
@@ -246,7 +246,7 @@ public class Table implements Serializable {
 	// }
 
 	public void insertSorted(Tuple x, Object keyV, String keyType, String keyColName, int nodeSize, ArrayList colNames)
-			throws DBAppException, IOException {
+			throws DBAppException{
 		Hashtable<Tuple, String> list = new Hashtable<Tuple, String>();
 		if (pages.size() == 0) {
 			Page p = new Page(getNewPageName());
@@ -366,13 +366,13 @@ public class Table implements Serializable {
 
 	@SuppressWarnings("unchecked")
 	public void deleteInTable(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable,
-			String clusteringKey) throws DBAppException, IOException {
+			String clusteringKey) throws DBAppException {
 
 		/*
 		 * if (invalidDelete(htblColNameValue, metaOfTable)) { throw new
 		 * DBAppException("false operation"); // TODO: Is this message appropriate? }
 		 */
-		try {
+//		try {
 
 			ArrayList<String> indicesGiven = indicesIHave(htblColNameValue, colNameTreeIndex);
 			ArrayList<String> allIndices = allTableIndices(colNameTreeIndex);
@@ -386,8 +386,7 @@ public class Table implements Serializable {
 				TreeIndex tree = colNameTreeIndex.get(selectedCol);
 				GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
 				if (pageReference == null) {
-					System.err.println("Value not found to be deleted");
-					return;
+					throw new DBAppException("Value to be deleted is not found");
 				}
 				// TODO: Eslam: if tried to delete nonexisting value ; null pointer exception ?
 				// should we handle ?
@@ -472,18 +471,6 @@ public class Table implements Serializable {
 				for (int i = 0; i < pages.size(); i++) {
 					String pageName = pages.get(i);
 					Page p = deserialize(pageName);
-					// TODO: page xx is not used
-					try {
-						FileInputStream fileIn = new FileInputStream("data/" + pageName + ".class");
-						ObjectInputStream in = new ObjectInputStream(fileIn);
-						Page xx = (Page) in.readObject();
-						in.close();
-						fileIn.close();
-					} catch (ClassNotFoundException e) {
-						throw new DBAppException("Class Not Found Exception");
-					} catch (IOException e) {
-						throw new DBAppException("IO Exception");
-					}
 					p.deleteInPage(htblColNameValue, attributeIndex);
 					if (p.getTuples().size() == 0) {
 						File f = new File("data/" + pageName + ".class");
@@ -503,10 +490,10 @@ public class Table implements Serializable {
 					}
 				}
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new DBAppException("IO Exception | No such record found to delete!");
-		}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			throw new DBAppException("IO Exception | No such record found to delete!");
+//		}
 	}
 
 	public Set<Ref> getRefFromBPTree(OverflowPage OFP) throws DBAppException {
@@ -698,7 +685,7 @@ public class Table implements Serializable {
 
 	}
 
-	public void createBTreeIndex(String strColName, BPTree bTree, int colPosition) throws DBAppException, IOException {
+	public void createBTreeIndex(String strColName, BPTree bTree, int colPosition) throws DBAppException {
 		if (colNameTreeIndex.containsKey(strColName)) {
 			throw new DBAppException("BTree index already exists on this column");
 		} else {
@@ -717,7 +704,7 @@ public class Table implements Serializable {
 		}
 	}
 
-	public void createRTreeIndex(String strColName, RTree rTree, int colPosition) throws DBAppException, IOException {
+	public void createRTreeIndex(String strColName, RTree rTree, int colPosition) throws DBAppException{
 		if (colNameTreeIndex.containsKey(strColName)) {
 			// TODO: does this "STATEMENT" saying RTREE index here work correctly?
 			throw new DBAppException("RTree index already exists on this column");

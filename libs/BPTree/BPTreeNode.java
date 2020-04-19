@@ -1,7 +1,6 @@
 package BPTree;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -11,10 +10,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Vector;
 
-import javax.swing.tree.TreeNode;
 
 import General.GeneralReference;
 import General.Ref;
@@ -43,7 +40,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	//protected int lastin;
 	//protected String treeName;
 
-	public BPTreeNode(int order) throws DBAppException, IOException 
+	public BPTreeNode(int order) throws DBAppException 
 	{
 		index = nextIdx++;
 		numberOfKeys = 0;
@@ -67,32 +64,39 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		}
 		catch(IOException e) {
 			e.printStackTrace();
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while reading file: "+path);
 		}
 	}
 
-	protected String getFromMetaDataTree() throws DBAppException , IOException
+	protected String getFromMetaDataTree() throws DBAppException 
 	{
-		String lastin = "";
-		Vector meta = readFile("data/metaBPtree.csv");
-		int overrideLastin = 0;
-		for (Object O : meta) {
-			String[] curr = (String[]) O;
-			lastin = curr[0];
-			overrideLastin = Integer.parseInt(curr[0])+1;
-			curr[0] = overrideLastin + "";
-			break;
+		try {
+
+			String lastin = "";
+			Vector meta = readFile("data/metaBPtree.csv");
+			int overrideLastin = 0;
+			for (Object O : meta) {
+				String[] curr = (String[]) O;
+				lastin = curr[0];
+				overrideLastin = Integer.parseInt(curr[0])+1;
+				curr[0] = overrideLastin + "";
+				break;
+			}
+			FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
+			for (Object O : meta) 
+			{
+				String[] curr = (String[]) O;
+				csvWriter.append(curr[0]);
+				break;
+			}
+			csvWriter.flush();
+			csvWriter.close();
+			return lastin;
 		}
-		FileWriter csvWriter = new FileWriter("data/metaBPtree.csv");
-		for (Object O : meta) 
-		{
-			String[] curr = (String[]) O;
-			csvWriter.append(curr[0]);
-			break;
+		catch (IOException e) {
+			e.printStackTrace();
+			throw new DBAppException("IOException while reading metaBPtree.csv in order to write a node/overflowpage to disk");
 		}
-		csvWriter.flush();
-		csvWriter.close();
-		return lastin;
 	}
 	
 	
@@ -170,15 +174,10 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	 * @param recordReference a pointer to the record on the hard disk
 	 * @param parent the parent of the current node
 	 * @param ptr the index of the parent pointer that points to this node
-	 * @return a key and a new node in case of a node splitting and null otherwise
-	 * @throws IOException 
+	 * @return a key and a new node in case of a node splitting and null otherwise 
 	 * @throws DBAppException 
 	 */
-	public abstract PushUp<T> insert(T key, 
-			Ref recordReference, 
-			BPTreeInnerNode<T> parent, 
-			int ptr) throws DBAppException, IOException;
-	
+	public abstract PushUp<T> insert(T key, Ref recordReference, BPTreeInnerNode<T> parent, int ptr) throws DBAppException;	
 	public abstract GeneralReference search(T key) throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMT(T key)throws DBAppException;
 	public abstract ArrayList<GeneralReference> searchMTE(T key)throws DBAppException;
@@ -193,7 +192,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	 * @throws DBAppException 
 	 */
 	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) throws DBAppException;
-	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException, IOException;
+	public abstract boolean delete(T key, BPTreeInnerNode<T> parent, int ptr,String page_name) throws DBAppException;
 	
 	/**
 	 * A string represetation for the node
@@ -232,7 +231,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 			fileOut.close();
 		}
 		catch(IOException e) {
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while writing a node to the disk\"+\"\\tdata/\"+name+\".class\");");
 		}
 		
 	}
@@ -249,7 +248,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 			return BPTN;
 		}
 		catch(IOException e) {
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while loading a node from the disk"+"\tdata/"+name+".class");
 		}
 		catch(ClassNotFoundException e) {
 			throw new DBAppException("Class Not Found Exception");

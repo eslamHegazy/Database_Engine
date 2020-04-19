@@ -58,7 +58,7 @@ public class DBApp {
 		}
 		catch(IOException e) {
 			System.out.println(e.getStackTrace());
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while initializing the files");
 		}
 		
 
@@ -106,7 +106,8 @@ public class DBApp {
 		writeFile.close();
 		}
 		catch (IOException e) {
-			throw new DBAppException("IO Exception");
+//			throw new DBAppException("IO Exception");
+			System.out.println("IO Exception while printing for debugging");
 		}
 	}
 	public boolean exists(String strTableName) throws DBAppException{
@@ -151,13 +152,13 @@ public class DBApp {
 
 		}
 		catch (IOException e) {
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while writing to metadata.csv");
 		}
 		serialize(table);
 //		tables.add(strTableName);
 	}
 	
-	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
+	public void insertIntoTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException{
 		System.out.println("||||\t\tStart Inserting\t\t||||");
 		Table y = deserialize(strTableName);
 		Object keyValue = null;
@@ -219,7 +220,7 @@ public class DBApp {
 	}
 
 	public void updateTable(String strTableName, String strClusteringKey, Hashtable<String, Object> htblColNameValue)
-			throws DBAppException, IOException
+			throws DBAppException
 	{
 		System.out.println("||||\t\tStart Updating\t\t||||");
 		Table y = deserialize(strTableName);
@@ -452,7 +453,7 @@ public class DBApp {
 		System.out.println("||||\t\tEnd Updating\t\t||||");
 	}
 	
-	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException, IOException {
+	public void deleteFromTable(String strTableName, Hashtable<String, Object> htblColNameValue) throws DBAppException{
 		System.out.println("||||\t\tStart Deleting\t\t||||");
 		Table y = deserialize(strTableName);
 		Vector meta = readFile("data/metadata.csv");
@@ -507,7 +508,7 @@ public class DBApp {
 		}
 		catch(IOException e) {
 			e.printStackTrace();
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while writing to disk\t Table"+table.getNewPageName());
 		}
 	}
 
@@ -525,7 +526,6 @@ public class DBApp {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			
 			throw new DBAppException("IO Exception | Probably wrong table name (tried to operate on a table that does not exist !");
 		}
 		catch (ClassNotFoundException e) {
@@ -547,7 +547,7 @@ public class DBApp {
 		}
 		catch(IOException e) {
 			e.printStackTrace();
-			throw new DBAppException("IO Exception");
+			throw new DBAppException("IO Exception while reading file\t"+path);
 		}
 	}
 
@@ -564,87 +564,99 @@ public class DBApp {
 	}
 	
 	
-	public void createBTreeIndex(String strTableName,String strColName) throws DBAppException, IOException{
-		BPTree bTree=null;
-		Vector meta = readFile("data/metadata.csv");
-		String colType="";
-		int colPosition = -1;
-		for (Object O : meta) {
-			String[] curr = (String[]) O;
-			if (curr[0].equals(strTableName)) {
-				colPosition++;
-				if (curr[1].equals(strColName)) {
-					colType = curr[2];
-					curr[4] = "True";
-					break;
+	public void createBTreeIndex(String strTableName,String strColName) throws DBAppException{
+		try {	
+			BPTree bTree=null;
+			Vector meta = readFile("data/metadata.csv");
+			String colType="";
+			int colPosition = -1;
+			for (Object O : meta) {
+				String[] curr = (String[]) O;
+				if (curr[0].equals(strTableName)) {
+					colPosition++;
+					if (curr[1].equals(strColName)) {
+						colType = curr[2];
+						curr[4] = "True";
+						break;
+					}
 				}
 			}
-		}
-
-		FileWriter csvWriter = new FileWriter("data/metadata.csv");
-		for (Object O : meta) {
-			String[] curr = (String[]) O;
-			for (int j = 0; j < curr.length; j++) {
-				csvWriter.append(curr[j]);
-				csvWriter.append(",");
+	
+			FileWriter csvWriter = new FileWriter("data/metadata.csv");
+			for (Object O : meta) {
+				String[] curr = (String[]) O;
+				for (int j = 0; j < curr.length; j++) {
+					csvWriter.append(curr[j]);
+					csvWriter.append(",");
+				}
+				csvWriter.append("\n");
 			}
-			csvWriter.append("\n");
+			csvWriter.flush();
+			csvWriter.close();
+	
+			switch(colType){
+				case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
+				case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
+				case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
+				case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
+				case "java.lang.String":bTree=new BPTree<String>(nodeSize);break;
+				case "java.awt.Polygon":throw new DBAppException("A B+ Tree Index cannot be created on a column of type Polygon ! You can create an R-Tree index instead!");
+				default :throw new DBAppException("I've never seen this colType in my life");
+			}
+			Table table =deserialize(strTableName);
+			table.createBTreeIndex(strColName,bTree,colPosition);
+			serialize(table);
 		}
-		csvWriter.flush();
-		csvWriter.close();
-
-		switch(colType){
-			case "java.lang.Integer":bTree=new BPTree<Integer>(nodeSize);break;
-			case "java.lang.Double":bTree=new BPTree<Double>(nodeSize);break;
-			case "java.util.Date":bTree=new BPTree<Date>(nodeSize);break;
-			case "java.lang.Boolean":bTree=new BPTree<Boolean>(nodeSize);break;
-			case "java.lang.String":bTree=new BPTree<String>(nodeSize);break;
-			case "java.awt.Polygon":throw new DBAppException("A B+ Tree Index cannot be created on a column of type Polygon ! You can create an R-Tree index instead!");
-			default :throw new DBAppException("I've never seen this colType in my life");
+		catch(IOException e) {
+			e.printStackTrace();
+			throw new DBAppException("IO Exception while creating a BP Tree index");
 		}
-		Table table =deserialize(strTableName);
-		table.createBTreeIndex(strColName,bTree,colPosition);
-		serialize(table);
 	}
 
 	
 
-	public void createRTreeIndex(String strTableName,String strColName) throws DBAppException, IOException{
-		RTree rTree=null;
-		Vector meta = readFile("data/metadata.csv");
-		String colType="";
-		int colPosition = -1;
-		for (Object O : meta) {
-			String[] curr = (String[]) O;
-			if (curr[0].equals(strTableName)) {
-				colPosition++;
-				if (curr[1].equals(strColName)) {
-					colType = curr[2];
-					curr[4] = "True";
-					break;
+	public void createRTreeIndex(String strTableName,String strColName) throws DBAppException{
+		try {
+			RTree rTree=null;
+			Vector meta = readFile("data/metadata.csv");
+			String colType="";
+			int colPosition = -1;
+			for (Object O : meta) {
+				String[] curr = (String[]) O;
+				if (curr[0].equals(strTableName)) {
+					colPosition++;
+					if (curr[1].equals(strColName)) {
+						colType = curr[2];
+						curr[4] = "True";
+						break;
+					}
 				}
 			}
-		}
 
-		FileWriter csvWriter = new FileWriter("data/metadata.csv");
-		for (Object O : meta) {
-			String[] curr = (String[]) O;
-			for (int j = 0; j < curr.length; j++) {
-				csvWriter.append(curr[j]);
-				csvWriter.append(",");
+			FileWriter csvWriter = new FileWriter("data/metadata.csv");
+			for (Object O : meta) {
+				String[] curr = (String[]) O;
+				for (int j = 0; j < curr.length; j++) {
+					csvWriter.append(curr[j]);
+					csvWriter.append(",");
+				}
+				csvWriter.append("\n");
 			}
-			csvWriter.append("\n");
-		}
-		csvWriter.flush();
-		csvWriter.close();
+			csvWriter.flush();
+			csvWriter.close();
 
-		switch(colType){
-			case "java.awt.Polygon":rTree=new RTree<Polygons>(nodeSize);break;
-			default :throw new DBAppException("R-Tree index can be created only on columns of type Polygon !");
+			switch(colType){
+				case "java.awt.Polygon":rTree=new RTree<Polygons>(nodeSize);break;
+				default :throw new DBAppException("R-Tree index can be created only on columns of type Polygon !");
+			}
+			Table table =deserialize(strTableName);
+			table.createRTreeIndex(strColName,rTree,colPosition);
+			serialize(table);
 		}
-		Table table =deserialize(strTableName);
-		table.createRTreeIndex(strColName,rTree,colPosition);
-		serialize(table);
+		catch(IOException e) {
+			e.printStackTrace();
+			throw new DBAppException("IO Exception while creating an R Tree index");
+		}
 	}
 
 
