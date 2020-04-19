@@ -39,13 +39,12 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		//root.treeName=this.treeName;
 	}
 	
-	public void updateRef(String oldpage,String newpage,T key,int tableNameLength) throws DBAppException, IOException {
+	public void updateRef(String oldpage,String newpage,T key) throws DBAppException, IOException {
 //		GeneralReference gf=search(key);
 //		gf.updateRef(oldpage, newpage, tableNameLength);
 
 		BPTreeLeafNode leaf = searchForUpdateRef(key);
-		leaf.updateRef(oldpage,newpage,key,tableNameLength);
-		
+		leaf.updateRef(oldpage,newpage,key);
 		leaf.serializeNode();
 	}
 	public BPTreeLeafNode searchForUpdateRef(T key) throws DBAppException{
@@ -67,9 +66,7 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 		{
 			//TODO: unnecessary serialization/deserialization
 			BPTreeInnerNode<T> newRoot = new BPTreeInnerNode<T>(order);
-			root.serializeNode();
 			newRoot.insertLeftAt(0, pushUp.key, root);
-			root.deserializeNode(root.nodeName);
 			newRoot.setChild(1, pushUp.newNode);
 			root.setRoot(false);
 			root.serializeNode();
@@ -102,7 +99,15 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 			root = ((BPTreeInnerNode<T>) root).getFirstChild();
 		return done;
 	}
-	// to delete Ref only not the key
+	// 
+	/**
+	 * Delete 1 Ref(either Ref/or single Ref inside an overflow page)
+	 *  only not the key with its pointer
+	 * @param key the key to be deleted
+	 * @return a boolean to indicate whether the key is successfully deleted or it
+	 *         was not in the tree
+	 * @throws DBAppException
+	 */
 	public boolean delete(T key, String Page_name) throws DBAppException, IOException {
 		boolean done = root.delete(key, null, -1,Page_name);
 		//go down and find the new root in case the old root is deleted
@@ -182,11 +187,10 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 	public Ref searchForInsertion(T key,int tableLength) throws DBAppException { //comparable and T???
 		return root.searchForInsertion(key,tableLength);
 	}
-	public Ref searchRequiredReference(T key)throws DBAppException{
-		search(key);
-		return null;
-		
-	}
+//	public Ref searchRequiredReference(T key)throws DBAppException{
+//		search(key);
+//		return null;
+//	}
 	public BPTreeLeafNode getLeftmostLeaf() throws DBAppException {
 		BPTreeNode<T> curNode=root;
 		while(!(curNode instanceof BPTreeLeafNode)) {

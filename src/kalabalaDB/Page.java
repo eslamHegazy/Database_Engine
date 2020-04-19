@@ -11,6 +11,10 @@ import General.Ref;
 import General.TreeIndex;
 
 public class Page implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6080083008142779648L;
 	private Vector<Tuple> tuples;
 	private String pageName;
 	private static int lastIn = 0;

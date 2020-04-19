@@ -328,7 +328,7 @@ public class DBAppTest {
 
 //		select();
 //		tryDel();
-		tryUpdate();
+//		tryUpdate();
 		
 		
 		long end = System.nanoTime(); 

@@ -1,7 +1,6 @@
 package BPTree;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -11,10 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Vector;
-
-import javax.swing.tree.TreeNode;
 
 import General.GeneralReference;
 import General.Ref;
@@ -25,7 +21,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	/**
 	 * Abstract class that collects the common functionalities of the inner and leaf nodes
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1930987111638572869L;
 	protected Comparable<T>[] keys;
 	protected int numberOfKeys;
 	protected int order;

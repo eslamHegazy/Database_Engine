@@ -20,6 +20,10 @@ import kalabalaDB.Page;
 //TODO serializing overflowpages
 public class OverflowPage implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4500277740022601604L;
 	private String next; //the name of the overFlowPage
 	private Vector<Ref> refs;
 
@@ -122,30 +126,7 @@ public class OverflowPage implements Serializable{
 	public String getPageName() {
 		return pageName;
 	}
-	public void updateRef(String oldpage, String newpage, int tableNameLength) throws DBAppException  {
-//		int i=0;
-//		int old = Integer.parseInt(oldpage.substring(tableNameLength));
-//		for (;i<refs.size()&&Integer.parseInt(refs.get(i).getPage().substring(tableNameLength))<=old;i++);
-//		//i--;
-//		if (i==0) {
-//			return false;
-//		}
-//		if (i<refs.size()) {
-//			refs.get(i-1).setPage(newpage);
-//			return true;
-//		}
-//		if (i==refs.size()) {
-//	//		System.out.println(next);
-//			OverflowPage nextPage;
-//			if (next!=null&& (nextPage=deserialize(next)).updateRef(oldpage, newpage, tableNameLength)) {
-//				nextPage.serialize();
-//				return true;
-//			}
-//			else {
-//				refs.get(i-1).setPage(newpage);
-//			}
-//		}
-//		return false;
+	public void updateRef(String oldpage, String newpage) throws DBAppException  {
 		int i=0;
 		for(;i<refs.size();i++){
 			if(oldpage.equals(refs.get(i).getPage())){
@@ -156,7 +137,7 @@ public class OverflowPage implements Serializable{
 		if(i==refs.size()){
 			OverflowPage nextPage;
 			if (next!=null ) {
-				(nextPage=deserialize(next)).updateRef(oldpage, newpage, tableNameLength);
+				(nextPage=deserialize(next)).updateRef(oldpage, newpage);
 				nextPage.serialize();
 			}	
 		}

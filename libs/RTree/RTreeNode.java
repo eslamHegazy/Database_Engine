@@ -22,7 +22,7 @@ public abstract class RTreeNode<Polygons extends Comparable<Polygons>> implement
 	/**
 	 * Abstract class that collects the common functionalities of the inner and leaf nodes
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3759185916830490956L;
 	protected Comparable<Polygons>[] keys;
 	protected int numberOfKeys;
 	protected int order;

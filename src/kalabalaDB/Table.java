@@ -17,6 +17,10 @@ import RTree.RTree;
 public class Table implements Serializable {
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4848085817298614510L;
 	private Vector<String> pages = new Vector<>();
 	private int MaximumRowsCountinPage;
 	private Vector<Object> min = new Vector<>();
@@ -33,13 +37,13 @@ public class Table implements Serializable {
 	public Hashtable<String, TreeIndex> getColNameBTreeIndex() {
 		return colNameTreeIndex;
 	}
-	public Ref searchWithCluster(Comparable key, BPTree b) throws DBAppException {
-		Ref ref = b.searchRequiredReference(key); // NOT IMPLEMENTED
-		if (ref == null) { // returns null if key is the least value in tree
-			return new Ref(pages.get(0));
-		}
-		return ref;
-	}
+//	public Ref searchWithCluster(Comparable key, BPTree b) throws DBAppException {
+//		Ref ref = b.searchRequiredReference(key); // NOT IMPLEMENTED
+//		if (ref == null) { // returns null if key is the least value in tree
+//			return new Ref(pages.get(0));
+//		}
+//		return ref;
+//	}
 
 	public void printIndices() {
 		for (String x : colNameTreeIndex.keySet()) {
@@ -193,7 +197,7 @@ public class Table implements Serializable {
 						n.serialize();
 					}
 					//System.out.println("change ref "+p.getPageName()+" "+newp+" "+t);
-					tree.updateRef(p.getPageName(),newp,(Comparable) t.getAttributes().get(primaryPos),tableName.length());
+					tree.updateRef(p.getPageName(),newp,(Comparable) t.getAttributes().get(primaryPos));
 				//	System.out.println(t+" "+newp);
 					//System.out.println("changed ref "+getClusterReference(t.getAttributes().get(primaryPos), keyColName));
 				}
@@ -304,7 +308,7 @@ public class Table implements Serializable {
 						//Ref pageReferenceT = getClusterReference(t.getAttributes().get(primaryPos),keyColName);
 						//tree.insert((Comparable) keyValueOfNonClusterT, pageReferenceT);
 					//	System.out.println(t+" "+pageReference+"\n");
-						tree.updateRef(list.get(t), pages.get(pages.indexOf(list.get(t))+1), (Comparable) keyValueOfNonClusterT, tableName.length());
+						tree.updateRef(list.get(t), pages.get(pages.indexOf(list.get(t))+1), (Comparable) keyValueOfNonClusterT);
 					}
 				}
 			}
@@ -373,8 +377,7 @@ public class Table implements Serializable {
 			TreeIndex tree = colNameTreeIndex.get(selectedCol);
 			GeneralReference pageReference = tree.search((Comparable) htblColNameValue.get(selectedCol));
 			if (pageReference == null) {
-				System.err.println("Value not found to be deleted");
-				return ;
+				throw new DBAppException("Value not found to be deleted");
 			}
 			//TODO: Eslam: if tried to delete nonexisting value ; null pointer exception ? should we handle ?
 			if (pageReference instanceof Ref) {
@@ -458,18 +461,6 @@ public class Table implements Serializable {
 			for (int i = 0; i < pages.size(); i++) {
 				String pageName = pages.get(i);
 				Page p = deserialize(pageName);
-				//TODO: page xx is not used
-				try {
-					FileInputStream fileIn = new FileInputStream("data/" + pageName + ".class");
-					ObjectInputStream in = new ObjectInputStream(fileIn);
-					Page xx = (Page) in.readObject();
-					in.close();
-					fileIn.close();
-				} catch (ClassNotFoundException e) {
-					throw new DBAppException("Class Not Found Exception");
-				} catch (IOException e) {
-					throw new DBAppException("IO Exception");
-				}
 				p.deleteInPage(htblColNameValue, attributeIndex);
 				if (p.getTuples().size() == 0) {
 					File f = new File("data/" + pageName + ".class");

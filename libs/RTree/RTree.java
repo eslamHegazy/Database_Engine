@@ -43,12 +43,12 @@ public class RTree<Polygons extends Comparable<Polygons>> implements Serializabl
 		root.setRoot(true);
 		//root.treeName=this.treeName;
 	}
-	public void updateRef(String oldpage,String newpage,Polygons key,int tableNameLength) throws DBAppException, IOException {
+	public void updateRef(String oldpage,String newpage,Polygons key) throws DBAppException, IOException {
 //		GeneralReference gf=search(key);
 //		gf.updateRef(oldpage, newpage, tableNameLength);
 
 		RTreeLeafNode leaf = searchForUpdateRef(key);
-		leaf.updateRef(oldpage,newpage,key,tableNameLength);
+		leaf.updateRef(oldpage,newpage,key);
 		
 		leaf.serializeNode();
 	}

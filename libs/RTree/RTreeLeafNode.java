@@ -544,12 +544,12 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	public RTreeLeafNode searchForUpdateRef(Polygons key) {
 		return this;
 	}
-	public void updateRef(String oldpage,String newpage,Polygons key,int tableNameLength) throws DBAppException{
+	public void updateRef(String oldpage,String newpage,Polygons key) throws DBAppException{
 		GeneralReference gf;
 		for(int i = 0; i < numberOfKeys; ++i)
 			if(this.getKey(i).compareTo(key)==0) {
 				gf = getRecord(i);
-				gf.updateRef(oldpage, newpage, tableNameLength);
+				gf.updateRef(oldpage, newpage);
 				if (gf instanceof Ref) {
 					this.serializeNode();
 				}

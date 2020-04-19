@@ -22,7 +22,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	private String[]childrenName;
 	/**
 	 * create BPTreeNode given order.
-	 * @param n
+	 * @param n the maximum number of keys in the nodes of the tree
 	 * @throws IOException 
 	 * @throws DBAppException 
 	 */
@@ -137,6 +137,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	@SuppressWarnings("unchecked")
 	public BPTreeInnerNode<T> split(PushUp<T> pushup) throws DBAppException, IOException 
 	{
+		//Serialization Comment: only called by insert; insert takes care of serializing the caller and the returned nodes
 		int keyIndex = this.findIndex((T)pushup.key);
 		int midIndex = numberOfKeys / 2 - 1;
 		if(keyIndex > midIndex)				//split nodes evenly
@@ -222,6 +223,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	 */
 	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr) throws DBAppException //TODO parent
 	{
+		//Serialization comment: if the root; no need. otherwise; the parent serilizes this
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) > 0) {
@@ -260,6 +262,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	public boolean delete(T key, BPTreeInnerNode<T> parent, int ptr, String page_name) throws DBAppException //TODO parent
 , IOException
 	{
+//		Serialization comment: if the root; no need. otherwise; the parent serilizes this
 		boolean done = false;
 		for(int i = 0; !done && i < numberOfKeys; ++i)
 			if(keys[i].compareTo(key) > 0) {
@@ -277,8 +280,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		{
 			if(this.isRoot())
 			{
-				this.getFirstChild().setRoot(true);
-				getFirstChild().serializeNode();
+				BPTreeNode<T> nd = this.getFirstChild();
+				nd.setRoot(true);//this.getFirstChild().setRoot(true);
+				nd.serializeNode();
 				this.setRoot(false);
 				return done;
 			}
@@ -425,34 +429,27 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	public ArrayList<GeneralReference> searchMTE(T key) throws DBAppException{ 
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
 		ArrayList<GeneralReference> res =  b.searchMTE(key);
-//		b.serializeNode();		//TODO: Can I remove this ?
 		return res;
 	}
 	public ArrayList<GeneralReference> searchMT(T key) throws DBAppException{ 
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
 		ArrayList<GeneralReference> res =  b.searchMT(key);
-//		b.serializeNode();		//TODO: Can I remove this ?
 		return res;
 	}
 //	public ArrayList<GeneralReference> searchlTE(T key) throws DBAppException{ 
 //		BPTreeNode <T> b=deserializeNode(childrenName[0]);
 //		ArrayList<GeneralReference> res =  b.searchlTE(key);
-////		b.serializeNode();		//TODO: Can I remove this ?
 //		return res;
 //	}
 //	public ArrayList<GeneralReference> searchlT(T key) throws DBAppException{ 
 //		BPTreeNode <T> b=deserializeNode(childrenName[0]);
 //		ArrayList<GeneralReference> res =  b.searchlT(key);
-////		b.serializeNode();		//TODO: Can I remove this ?
 //		return res;
 //	}
-	//TODO:Copy to R-TREE
 	public BPTreeLeafNode searchForUpdateRef(T key) throws DBAppException{
 		BPTreeNode <T> b=deserializeNode(childrenName[findIndex(key)]);
 		BPTreeLeafNode x= b.searchForUpdateRef(key);
-//		b.serializeNode();	//TODO: Can I remove this ?
 		return x;
 	}
-	//TODO:ENDED COPY YO R-TEEE
 	
 }

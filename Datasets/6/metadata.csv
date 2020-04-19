@@ -1,0 +1,4 @@
+Student,gpa,java.lang.Double,False,True,
+Student,shape,java.awt.Polygon,False,True,
+Student,name,java.lang.String,False,True,
+Student,id,java.lang.Integer,True,True,
