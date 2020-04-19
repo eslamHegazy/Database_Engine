@@ -295,7 +295,7 @@ public class DBApp {
 					//colType = Class.forName("kalabalaDB.Polygons");
 					htblColNameValue.put(str, new Polygons((Polygon) htblColNameValue.get(str)));
 				}
-				System.out.println(colType+" "+parameterType);
+//				System.out.println(colType+" "+parameterType);
 				
 				if (!colType.equals(parameterType)) {
 					throw new DBAppException("Data types do not match with those of the actual column of the table");	
@@ -340,27 +340,27 @@ public class DBApp {
 						//System.out.println(current.getAttributes().size());
 						for (int k = 0; k < current.getAttributes().size()-2; k++) 
 						{
-							System.out.printf("k=%d, %s\n",k,colnames.get(k));
+//							System.out.printf("k=%d, %s\n",k,colnames.get(k));
 							if (htblColNameValue.containsKey(colnames.get(k))) 
 							{
-								System.out.println(k+", before :"+current);
+//								System.out.println(k+", before :"+current);
 								
 								if(indexed.get(k))
 								{	
-									System.out.println("index changed on "+ colnames.get(k));
+//									System.out.println("index changed on "+ colnames.get(k));
 									TreeIndex t = y.getColNameBTreeIndex().get(colnames.get(k));
-									System.out.println("The tree before "+t.toString());
+//									System.out.println("The tree before "+t.toString());
 									Comparable old_value = (Comparable)current.getAttributes().get(k);
 									Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
 									t.delete(old_value, p_name);
 									t.insert(new_value, new Ref(p_name));
-									System.out.println("The tree after "+t.toString());
+//									System.out.println("The tree after "+t.toString());
 									
 								}
 	
 								current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
 								
-								System.out.println(k+", after :"+current);
+//								System.out.println(k+", after :"+current);
 								// update the trees
 								
 							
@@ -405,27 +405,27 @@ public class DBApp {
 	
 					for (int k = 0; k < current.getAttributes().size()-2; k++) 
 					{
-						System.out.printf("k=%d, %s\n",k,colnames.get(k));
+//						System.out.printf("k=%d, %s\n",k,colnames.get(k));
 						if (htblColNameValue.containsKey(colnames.get(k))) {
 							
-							System.out.println(k+", before :"+current);
+//							System.out.println(k+", before :"+current);
 							
 							// update the trees
 							if(indexed.get(k))
 							{
-								System.out.println("index changed on "+ colnames.get(k));
+//								System.out.println("index changed on "+ colnames.get(k));
 								TreeIndex t = y.getColNameBTreeIndex().get(colnames.get(k));
-								System.out.println("The tree before "+t.toString());
+//								System.out.println("The tree before "+t.toString());
 								Comparable old_value = (Comparable)current.getAttributes().get(k);
 								Comparable new_value = (Comparable)htblColNameValue.get(colnames.get(k));
 								t.delete(old_value, searchResult[0]);
 								t.insert(new_value, new Ref(searchResult[0]));
-								System.out.println("The tree after "+t.toString());
+//								System.out.println("The tree after "+t.toString());
 
 							}
 							
 							current.getAttributes().setElementAt(htblColNameValue.get(colnames.get(k)), k);
-							System.out.println(k+", after :"+current);
+//							System.out.println(k+", after :"+current);
 							
 						
 							
@@ -439,7 +439,7 @@ public class DBApp {
 				}
 				j++;
 				i = 0;
-				System.out.println("page after: "+p);
+//				System.out.println("page after: "+p);
 				p.serialize();
 			}
 			}

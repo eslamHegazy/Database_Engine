@@ -267,7 +267,46 @@ public class DBAppTest {
 		if(!fnd) System.out.println("<<<>>>><<<>>> SELECT RETRUNED EMPTY <<<<>>>><<<<>>>><<<>>>");
 		else {System.out.printf("<<<<<<<<<< FOUND %d Matching Tuples\n",cnt);}
 	}
-	
+	static void tryUpdate() throws Exception{
+//		tryUpdate1();
+//		tryUpdate2();
+		tryUpdate3();
+	}
+	static void tryUpdate1() throws Exception{
+		DBApp d = new DBApp();
+		d.init();
+		String strTableName = "Schema";
+		String strClusteringKey = "7";
+		Hashtable h = new Hashtable<>();
+		Polygon p = randomPolygon();
+		h.put("shape", p);
+		d.updateTable(strTableName, strClusteringKey, h);
+	}
+	static void tryUpdate2() throws Exception{
+		DBApp d = new DBApp();
+		d.init();
+		String strTableName = "Schema";
+		String strClusteringKey = "20";
+		Hashtable h = new Hashtable<>();
+//		Polygon p = randomPolygon();
+		Date da = DBApp.parseDate("2000-04-05");
+//		h.put("shape", p);
+		h.put("birth",da);
+		d.updateTable(strTableName, strClusteringKey, h);
+	}
+	static void tryUpdate3() throws Exception{
+		DBApp d = new DBApp();
+		d.init();
+		String strTableName = "Schema";
+		String strClusteringKey = "27";
+		Hashtable h = new Hashtable<>();
+//		Polygon p = randomPolygon();
+		String s = "Esoooooooooooooo";
+//		h.put("shape", p);
+//		h.put("birth",da);
+		h.put("name", s);
+		d.updateTable(strTableName, strClusteringKey, h);
+	}
 	public static void main(String[] args)throws Exception {
 //		clear();
 		
@@ -279,18 +318,21 @@ public class DBAppTest {
 
 //		DBApp  d= new DBApp(); d.init(); 
 //		Hashtable h = new Hashtable<>();
-//		h.put("id", new Integer( (int)(Math.random()*40) ));
-//		h.put("name","21L");
+//		h.put("id", new Integer(7));
+//		h.put("name",randomAlphaNumeric(3));
 //		h.put("gpa", new Double( 1.0*(int)(Math.random()*100)/100 ));
 //		h.put("birth", randomDate());
 //		h.put("male", (int)(Math.random()*2)==0 );
 //		h.put("shape", randomPolygon());
 //		d.insertIntoTable("Schema", h); 
-//		
-		select();
+
+//		select();
 //		tryDel();
+		tryUpdate();
+		
+		
 		long end = System.nanoTime(); 
-//		showAt0s();
+		showAt0s();
 		
 		
 		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
