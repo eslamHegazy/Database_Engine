@@ -27,14 +27,14 @@ import General.Ref;
 public class DBAppTest {
 	
 	public static void main(String[] args)throws Exception {
-//		clear();
+		clear();
 		
-//		schema();
-//		indices();
+		schema();
+		indices();
 //		faUpTs();
 		long st = System.nanoTime();
-//		fill();
-		DBApp  dbApp= new DBApp(); dbApp.init();
+		fill();
+		DBApp dbApp= new DBApp(); dbApp.init();
 //		Hashtable htblColNameValue = new Hashtable();
 //		
 //		
