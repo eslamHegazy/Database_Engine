@@ -147,7 +147,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		newNode.setChild(0, this.getChild(midIndex));
 		
 		//insert the new key
-		System.out.println(midIndex);
+//		System.out.println(midIndex);
 		if(keyIndex < totalKeys / 2)
 			this.insertRightAt(keyIndex, pushup.key, pushup.newNode);
 		else

@@ -126,8 +126,8 @@ public class Polygons extends Polygon implements Comparable<Polygons>{
 		
 		p3.addPoint(0, 0);
 		
-		System.out.println(p1.equals(p2));
-		System.out.println(p1.equals(p3));
-		System.out.println(p2.equals(p3));
+//		System.out.println(p1.equals(p2));
+//		System.out.println(p1.equals(p3));
+//		System.out.println(p2.equals(p3));
 	}
 }

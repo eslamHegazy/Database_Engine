@@ -53,9 +53,9 @@ public class Table implements Serializable {
 	public void printIndices() {
 		for (String x : colNameTreeIndex.keySet()) {
 			TreeIndex b = colNameTreeIndex.get(x);
-			System.out.println(x);
-			System.out.println(b);
-			System.out.println();
+//			System.out.println(x);
+//			System.out.println(b);
+//			System.out.println();
 		}
 	}
 
@@ -132,7 +132,7 @@ public class Table implements Serializable {
 
 	public static Page deserialize(String name) throws DBAppException {
 		try {
-			System.out.println("IO||||\t deserialize:page:" + name);
+//			System.out.println("IO||||\t deserialize:page:" + name);
 			FileInputStream fileIn = new FileInputStream("data/" + name + ".class");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			Page xx = (Page) in.readObject();
@@ -408,11 +408,11 @@ public class Table implements Serializable {
 				OverflowReference x = (OverflowReference) pageReference;
 				OverflowPage OFP = x.getFirstPage();
 				Set<Ref> allReferences = getRefFromBPTree(OFP);
-				System.out.println(allReferences);
+//				System.out.println(allReferences);
 				// OFP.serialize();
 				for (Ref ref : allReferences) {
 					if (ref != null) {
-						System.out.println(ref.getPage());
+//						System.out.println(ref.getPage());
 						Page p = deserialize(ref.getPage() + "");
 						// System.out.println(ref.getPage());
 						p.deleteInPageforRef(metaOfTable, primaryPos, selectedCol, colNameTreeIndex,
@@ -445,7 +445,7 @@ public class Table implements Serializable {
 							strClusteringKey);
 					if (page.getTuples().size() == 0) {
 						File f = new File("data/" + page.getPageName() + ".class");
-						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + page.getPageName());
+//						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + page.getPageName());
 						f.delete();
 						pages.remove(i);
 						//min.remove(i);
@@ -481,7 +481,7 @@ public class Table implements Serializable {
 				p.deleteInPage(htblColNameValue, attributeIndex);
 				if (p.getTuples().size() == 0) {
 					File f = new File("data/" + pageName + ".class");
-					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
+//					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
 					f.delete();
 					pages.remove(i);
 					//min.remove(i);
@@ -619,7 +619,7 @@ public class Table implements Serializable {
 			if (pages.get(i).equals(pageName)) {
 				if (p.getTuples().size() == 0) {
 					File f = new File("data/" + pageName + ".class");
-					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
+//					System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + pageName);
 					f.delete();
 					pages.remove(i);
 					//min.remove(i);
@@ -886,9 +886,9 @@ public class Table implements Serializable {
 			// boolean[]chosen=new boolean[i];
 			int linearScGu = linearScanGuranteed(arrSQLTerms, strarrOperators);
 			// System.out.println();
-			System.out.println((linearScGu == 1) ? "linear scan"
-					: (linearScGu == 2) ? "binary and indx only" 
-							: "sweet lovely indices");
+//			System.out.println((linearScGu == 1) ? "linear scan"
+//					: (linearScGu == 2) ? "binary and indx only" 
+//							: "sweet lovely indices");
 			
 			if (linearScGu == 1) {
 				// at least non indexed column preceeded by or/xor , question if only the
@@ -1361,7 +1361,7 @@ public class Table implements Serializable {
 		// System.out.println("p"+pages.size());
 		// System.out.println("m"+max.size());
 		for (int i = pages.size() - 1; i >= 0; i--) {
-			System.out.println(i);
+//			System.out.println(i);
 			if (((Comparable) getMax(i)).compareTo((Comparable) _objValue) < 0)
 				break;
 			if (((Comparable) getMax(i)).compareTo((Comparable) _objValue) == 0 && _strOperator.length() == 1)
@@ -1475,12 +1475,12 @@ public class Table implements Serializable {
 		if (resultReference == null)
 			return res;
 		ArrayList<Ref> referenceList = resultReference.getALLRef();
-		System.out.println(Arrays.asList(referenceList));
+//		System.out.println(Arrays.asList(referenceList));
 		for (int i = 0; i < referenceList.size(); i++) {
 			Ref currentReference = referenceList.get(i);
 			String pagename = currentReference.getPage();
 			int curPageNum = Integer.parseInt(pagename.substring(tableName.length()));
-			System.out.println(curPageNum);
+//			System.out.println(curPageNum);
 			if (visited[curPageNum])
 				continue;
 			addToResultSet(res, pagename, pos, _objValue, _strOperator);
@@ -1514,7 +1514,7 @@ public class Table implements Serializable {
 					int curPageNum = Integer.parseInt(pagename.substring(tableName.length()));
 					if (visited[curPageNum])
 						continue;
-					System.out.println("DDDDDDDDDDDEBUG" + curPageNum);
+//					System.out.println("DDDDDDDDDDDEBUG" + curPageNum);
 					addToResultSet(res, pagename, pos, _objValue, _strOperator);
 					visited[curPageNum] = true;
 				}
@@ -1553,7 +1553,7 @@ public class Table implements Serializable {
 	private void addToResultSetLESS(ArrayList<Tuple> res, String pagename, int pos, Object _objValue)
 			throws DBAppException {
 		Page x = deserialize(pagename);
-		System.out.println(">>>><<<<< " + pagename);
+//		System.out.println(">>>><<<<< " + pagename);
 		for (int i = 0; i < x.getTuples().size(); i++) {
 			if (((Comparable) _objValue).compareTo((Comparable) x.getTuples().get(i).getAttributes().get(pos)) > 0)
 				res.add(x.getTuples().get(i));
@@ -1744,7 +1744,7 @@ public class Table implements Serializable {
 	public void drop() throws DBAppException {
 		for (String k : pages) {
 			File fileIn = new File("data/" + k + ".class");
-			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + k);
+//			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file " + k);
 			fileIn.delete();
 		}
 		// TODO: delete indices
@@ -1805,15 +1805,15 @@ public class Table implements Serializable {
 			pg.add("Tab" + i);
 		}
 		for (int i = 0; i < 20; i++) {
-			System.out.printf("indx of Tab%d=%d\n", i, t.getPageIndex("Tab" + i));
+//			System.out.printf("indx of Tab%d=%d\n", i, t.getPageIndex("Tab" + i));
 		}
 		int i = 0;
 		pg.remove(10);
 		pg.remove(10);
 		pg.remove(5);
 		for (i = 0; i < 18; i++) {
-			System.out.printf("indx of Tab%d=%d\n", i, t.getPageIndex("Tab" + i));
-			System.out.println(pg.get(t.getPageIndex("Tab" + i)));
+//			System.out.printf("indx of Tab%d=%d\n", i, t.getPageIndex("Tab" + i));
+//			System.out.println(pg.get(t.getPageIndex("Tab" + i)));
 		}
 	}
 
@@ -1844,15 +1844,15 @@ public class Table implements Serializable {
 			t.addAttribute((int) (Math.random() * 9));
 			arr2.add(t);
 		}
-		System.out.println(show(arr1));
-		System.out.println(show(arr2));
+//		System.out.println(show(arr1));
+//		System.out.println(show(arr2));
 		Table k = new Table();
 		ArrayList<Tuple> and = k.andSets(arr1, arr2);
 		ArrayList<Tuple> or = k.orSets(arr1, arr2);
 		ArrayList<Tuple> xor = k.xorSets(arr1, arr2);
-		System.out.println("And=" + show(and));
-		System.out.println("Or=" + show(or));
-		System.out.println("Xor=" + show(xor));
+//		System.out.println("And=" + show(and));
+//		System.out.println("Or=" + show(or));
+//		System.out.println("Xor=" + show(xor));
 
 	}
 

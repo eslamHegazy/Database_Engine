@@ -324,7 +324,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 						records[i] = r;
 						// TODO delete the overflow page from DISK
 						File f = new File("data/"+ov.getFirstPageName()+".class");
-						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+ov.getFirstPageName());
+//						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+ov.getFirstPageName());
 						f.delete();
 						//This NODE with updated ref hasn't been reserialized yet
 					}

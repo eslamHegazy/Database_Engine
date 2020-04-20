@@ -147,7 +147,7 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 		newNode.setChild(0, this.getChild(midIndex));
 		
 		//insert the new key
-		System.out.println(midIndex);
+//		System.out.println(midIndex);
 		if(keyIndex < totalKeys / 2)
 			this.insertRightAt(keyIndex, pushup.key, pushup.newNode);
 		else

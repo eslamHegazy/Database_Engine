@@ -224,7 +224,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	{
 		try 
 		{
-			System.out.println("IO||||\t serialize:node:"+nodeName);
+//			System.out.println("IO||||\t serialize:node:"+nodeName);
 			FileOutputStream fileOut = new FileOutputStream("data/"+ this.nodeName+ ".class");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			out.writeObject(this);
@@ -238,7 +238,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	}
 	public BPTreeNode<T> deserializeNode(String name) throws DBAppException {
 		try {
-			System.out.println("IO||||\t deserialize:node:"+name);
+//			System.out.println("IO||||\t deserialize:node:"+name);
 		//	if(name == null || name == "")
 		//		return null;
 			FileInputStream fileIn = new FileInputStream("data/"+ name + ".class");
@@ -260,7 +260,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	public abstract BPTreeLeafNode searchForUpdateRef(T key) throws DBAppException;
 	
 	public boolean deleteFile() {
-		System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting node:"+nodeName);
+//		System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting node:"+nodeName);
 		File f = new File("data/"+nodeName+".class");
 		return f.delete();
 	}
