@@ -93,8 +93,11 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 	{
 		boolean done = root.delete(key, null, -1);
 		//go down and find the new root in case the old root is deleted
-		while(root instanceof BPTreeInnerNode && !root.isRoot())
+		while(root instanceof BPTreeInnerNode && !root.isRoot()) {
+			System.out.println("BPTree line 97");
 			root = ((BPTreeInnerNode<T>) root).getFirstChild();
+			
+		}
 		return done;
 	}
 
@@ -110,8 +113,10 @@ public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T
 	public boolean delete(T key, String Page_name) throws DBAppException{
 		boolean done = root.delete(key, null, -1,Page_name);
 		//go down and find the new root in case the old root is deleted
-		while(root instanceof BPTreeInnerNode && !root.isRoot())
+		while(root instanceof BPTreeInnerNode && !root.isRoot()) {
+			System.out.println("BPTree line 117");
 			root = ((BPTreeInnerNode<T>) root).getFirstChild();
+	}
 		return done;
 	}
 	

@@ -235,6 +235,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			{
 				this.getFirstChild().setRoot(true);
 				getFirstChild().serializeNode();
+				System.out.println("BPTreeInnerNode line 238");
 				this.setRoot(false);
 				return done;
 			}
@@ -245,6 +246,7 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			}
 			//2.merge
 			merge(parent, ptr);
+			this.deleteFile();
 		    parent.serializeNode();
 		}
 		return done;
@@ -255,13 +257,13 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	{
 //		Serialization comment: if the root; no need. otherwise; the parent serilizes this
 		boolean done = false;
-		for(int i = 0; !done && i < numberOfKeys; ++i)
+		for(int i = 0; !done && i < numberOfKeys; ++i) {
 			if(keys[i].compareTo(key) > 0) {
 				BPTreeNode<T> b=deserializeNode(childrenName[i]);
 				done = b.delete(key, this, i,page_name);
 				b.serializeNode();
 			}
-			
+		}
 		if(!done) {
 			BPTreeNode<T> b=deserializeNode(childrenName[numberOfKeys]);
 			done = b.delete(key, this, numberOfKeys,page_name);
@@ -273,7 +275,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			{
 				BPTreeNode<T> nd = this.getFirstChild();
 				nd.setRoot(true);//this.getFirstChild().setRoot(true);
-				nd.serializeNode();
+				//TODO: need to delete this new root from disk
+//				nd.serializeNode();
+				nd.deleteFile();
 				this.setRoot(false);
 				return done;
 			}

@@ -25,58 +25,108 @@ import General.Ref;
 
 
 public class DBAppTest {
-	
+
 	public static void main(String[] args)throws Exception {
-		clear();
-		
-		schema();
-		indices();
-		
-		long st = System.nanoTime();
-		fill();
-
-//		DBApp  d= new DBApp(); d.init(); 
-//		Hashtable h = new Hashtable<>();
-//		h.put("id", new Integer(7));
-//		h.put("name",randomAlphaNumeric(3));
-//		h.put("gpa", new Double( 1.0*(int)(Math.random()*100)/100 ));
-//		h.put("birth", randomDate());
-//		h.put("male", (int)(Math.random()*2)==0 );
-//		h.put("shape", randomPolygon());
-//		d.insertIntoTable("Schema", h); 
-
-//		select();
-      	//tryDel();
-		//tryUpdate();
-		
-		
-		long end = System.nanoTime(); 
-		showAt0s();
-		
-		
-		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
-
-//		Boolean b1 = true;
-//		Boolean b2 = false;
-//		Boolean b3 = new Boolean(true);
-//		Boolean b4 = new Boolean(false);
-//		Boolean b5 = null;
-//		System.out.println(b5.compareTo(b1));
-//		Date d0 = DBApp.parseDate("2000-02-01");
-//		Date d1 = DBApp.parseDate("2000-02-24");
-//		Date d2 = DBApp.parseDate("2000-02-28");
-//		Date d3 = DBApp.parseDate("2000-05-10");
-//		Date d4 = DBApp.parseDate("2010-05-10");
-//		System.out.println(d4.compareTo(d0));
-		
-//		faUpTs();		
-//		ad();
-		
+//		clear();
+//		schema2();
+		indices2();
+//		fill2();
+		long start = System.nanoTime();
+		select2();
+		long end = System.nanoTime();
+		System.out.printf("Taken %.3f sec", (end-start)/1e9);
 //		showAt0s();
-		
-//		deleteTest();
 	}
-
+	static void schema2() throws DBAppException{
+		DBApp d = new DBApp(); d.init();
+		Hashtable h = new Hashtable<>();
+		h.put("id", "java.lang.Integer");
+		d.createTable("FN", "id", h);
+	}
+	static void indices2() throws DBAppException{
+		DBApp d = new DBApp(); d.init();
+		d.createBTreeIndex("FN","id");
+	}
+	static void fill2() throws DBAppException{
+		DBApp d = new DBApp(); d.init();
+		Hashtable h = new Hashtable<>();
+		for (int i=0;i<70;i++) {
+			h.put("id", (int)(Math.random()*300));
+			d.insertIntoTable("FN", h);
+		}
+	}
+	static void select2() throws DBAppException{
+		showit (s2_1());
+	}
+	static Iterator<Tuple> s2_1() throws DBAppException{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="FN";
+		SQLTerm[] arrSQLTerms = new SQLTerm[2];
+		String[] strarrOperators = new String[1];//;[1];
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="id";
+		s._strOperator = ">=";
+		s._objValue = 263;
+		
+		arrSQLTerms[1] = new SQLTerm();
+		s = arrSQLTerms[1];
+		s._strTableName=strTableName;
+		s._strColumnName="id";
+		s._strOperator = ">=";
+		s._objValue = 263;
+		strarrOperators[0]="AND";
+		
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
+		
+	}
+	
+	
+	
+	static void testDeleteREF() throws DBAppException{
+//		testDeleteREF_table();
+//		testDeleteREF_fill();
+		
+		for (int i=0;i<7;i++) {
+			testDeleteREF_delete(i);
+		}
+	}
+	static void testDeleteREF_table() throws DBAppException{
+		String strTableName= "dr";
+		DBApp d = new DBApp(); d.init();
+		Hashtable h = new Hashtable<>();
+		h.put("id", "java.lang.Integer");
+		h.put("gpa", "java.lang.Double");
+		d.createTable(strTableName, "id", h);
+		d.createBTreeIndex(strTableName, "gpa");
+	}
+	static void testDeleteREF_fill()throws DBAppException{
+		String strTableName= "dr";
+		DBApp d = new DBApp(); d.init();
+		Hashtable h = new Hashtable<>();
+		for (int i=0;i<10;i++) {
+			h.put("id", i);
+			h.put("gpa", 1.5);
+			d.insertIntoTable(strTableName, h);
+		}
+		for (int i=10;i<40;i++) {
+			h.put("id", i);
+			h.put("gpa",1.0*(int)(Math.random()*100)/100);
+			d.insertIntoTable(strTableName, h);
+		}
+	}
+	static void testDeleteREF_delete(int i) throws DBAppException{
+		DBApp d = new DBApp(); d.init();
+		String strTableName = "dr";
+		Hashtable h = new Hashtable<>();
+		h.put("id", i);
+		h.put("gpa", 1.5);
+		d.deleteFromTable(strTableName, h);
+	}
+	
 	
 	static void schema() throws Exception{
 		String strTableName = "Schema";
@@ -130,8 +180,9 @@ public class DBAppTest {
 //		h.put("shape", del);
 //		h.put("name", "Zaky Noor");
 //		h.put("gpa", 1.5);
-		h.put ("id",56565656);
-		h.put("shape", new Polygon());
+//		h.put ("id",56565656);
+		h.put ("id",1111111111);
+//		h.put("shape", new Polygon());
 //		h.put ("name","Arousiiii");
 		d.deleteFromTable("Student", h);
 	}
@@ -532,7 +583,9 @@ public class DBAppTest {
 		htblColNameValue.put("gpa", new Double( 1.5 ) );
 		htblColNameValue.put("shape", randomPolygon() );
 		dbApp.insertIntoTable( strTableName , htblColNameValue );
-		/*htblColNameValue.clear( );
+//		/*
+	
+		htblColNameValue.clear( );
 		htblColNameValue.put("id", new Integer( 23 ));
 		htblColNameValue.put("name", new String("Arousiiii" ) );
 		htblColNameValue.put("gpa", new Double( 1.5 ) );
@@ -565,16 +618,17 @@ public class DBAppTest {
 		//for (int i=0;i<1500;i++) {
 		/*for (int i=0;i<10;i++) {*/
 //		for (int i=0;i<100;i++) {
-//			//System.out.println(i);
-//			htblColNameValue.clear( );
-////			htblColNameValue.put("id", new Integer( i ));
-//			htblColNameValue.put("id", 1+(int)(Math.random()*200));
-//			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+"Noor" ) );
-//			double gpa = 1.0*((int)(1+Math.random()*1000))/1000;
-//			htblColNameValue.put("gpa", new Double( gpa ) );
-//			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
-//			dbApp.insertIntoTable( strTableName , htblColNameValue );
-//		}
+		for (int i=0;i<50;i++) {
+			//System.out.println(i);
+			htblColNameValue.clear( );
+//			htblColNameValue.put("id", new Integer( i ));
+			htblColNameValue.put("id", 1+(int)(Math.random()*200));
+			htblColNameValue.put("name", new String(randomAlphaNumeric(4)+"Noor" ) );
+			double gpa = 1.0*((int)(1+Math.random()*1000))/1000;
+			htblColNameValue.put("gpa", new Double( gpa ) );
+			htblColNameValue.put("shape", randomPolygon()); //Polygons.parsePolygons("(0,0),(7,6)" ) );
+			dbApp.insertIntoTable( strTableName , htblColNameValue );
+		}
 		
 		for(int i = 0 ; i < 5 ; i++) {
 			htblColNameValue.clear( );

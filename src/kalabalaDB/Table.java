@@ -880,14 +880,15 @@ public class Table implements Serializable {
 			throw new DBAppException("Number of terms does not match number of operators");
 		if (i == 0) { // only one attribute like , where id=5
 			int pos = getColPositionWithinTuple(arrSQLTerms[0]._strColumnName, metaOfTable);
+			System.out.println("/\\\\\\\t Only 1 sql term");
 			current = getArrayOfTuples(arrSQLTerms[0]._strColumnName, arrSQLTerms[0]._objValue,
 					arrSQLTerms[0]._strOperator, pos);
 		} else {
 			// boolean[]chosen=new boolean[i];
 			int linearScGu = linearScanGuranteed(arrSQLTerms, strarrOperators);
 			// System.out.println();
-			System.out.println((linearScGu == 1) ? "linear scan"
-					: (linearScGu == 2) ? "binary and indx only" : "sweet lovely indices");
+			System.out.println((linearScGu == 1) ? "/\\\\\tlinear scan"
+					: (linearScGu == 2) ? "/\\\\\tbinary and indx only" : "/\\\\\tsweet lovely indices");
 			if (linearScGu == 1) {
 				// at least non indexed column preceeded by or/xor , question if only the
 				// cluster is the non indexed
@@ -1692,6 +1693,9 @@ public class Table implements Serializable {
 			throws DBAppException {
 		// boolean clusterHasIndex=false;
 		for (SQLTerm x : arrSQLTerms) {
+			if (x==null) {
+				throw new DBAppException("Null SQLTerm !");
+			}
 			int i;
 			if (!validOp(x._strOperator))
 				throw new DBAppException("Wrong or unsupported operator " + x._strOperator);
