@@ -309,8 +309,9 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 			RTreeInnerNode<Polygons> leftSibling = (RTreeInnerNode<Polygons>) parent.getChild(ptr-1);
 			if(leftSibling.numberOfKeys > leftSibling.minKeys())
 			{
-				this.insertLeftAt(0, parent.getKey(ptr-1), leftSibling.getLastChild());
-				leftSibling.getLastChild().serializeNode(); 
+				RTreeNode leftSiblingLastChild = leftSibling.getLastChild();
+				this.insertLeftAt(0, parent.getKey(ptr-1), leftSiblingLastChild);
+				leftSiblingLastChild.serializeNode(); 
 				parent.deleteAt(ptr-1);
 				parent.insertRightAt(ptr-1, leftSibling.getLastKey(), this);
 				leftSibling.deleteAt(leftSibling.numberOfKeys - 1);
@@ -325,8 +326,9 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 			RTreeInnerNode<Polygons> rightSibling = (RTreeInnerNode<Polygons>) parent.getChild(ptr+1);
 			if(rightSibling.numberOfKeys > rightSibling.minKeys())
 			{
-				this.insertRightAt(this.numberOfKeys, parent.getKey(ptr), rightSibling.getFirstChild());
-				rightSibling.getFirstChild().serializeNode(); 
+				RTreeNode rightSiblingFirstChild = rightSibling.getFirstChild();
+				this.insertRightAt(this.numberOfKeys, parent.getKey(ptr), rightSiblingFirstChild);
+				rightSiblingFirstChild.serializeNode(); 
 				parent.deleteAt(ptr);
 				parent.insertRightAt(ptr, rightSibling.getFirstKey(), rightSibling);
 				rightSibling.deleteAt(0, 0);

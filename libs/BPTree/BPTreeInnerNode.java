@@ -234,8 +234,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 		{
 			if(isRoot())
 			{
-				this.getFirstChild().setRoot(true);
-				getFirstChild().serializeNode();
+				BPTreeNode<T> fstChild = this.getFirstChild(); 
+				fstChild.setRoot(true);
+				fstChild.serializeNode();
 				this.setRoot(false);
 				return done;
 			}
@@ -306,8 +307,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			BPTreeInnerNode<T> leftSibling = (BPTreeInnerNode<T>) parent.getChild(ptr-1);
 			if(leftSibling.numberOfKeys > leftSibling.minKeys())
 			{
-				this.insertLeftAt(0, parent.getKey(ptr-1), leftSibling.getLastChild());
-				leftSibling.getLastChild().serializeNode(); 
+				BPTreeNode leftSiblingLastChild = leftSibling.getLastChild();
+				this.insertLeftAt(0, parent.getKey(ptr-1), leftSiblingLastChild);
+				leftSiblingLastChild.serializeNode(); 
 				parent.deleteAt(ptr-1);
 				parent.insertRightAt(ptr-1, leftSibling.getLastKey(), this);
 				leftSibling.deleteAt(leftSibling.numberOfKeys - 1);
@@ -322,8 +324,9 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			BPTreeInnerNode<T> rightSibling = (BPTreeInnerNode<T>) parent.getChild(ptr+1);
 			if(rightSibling.numberOfKeys > rightSibling.minKeys())
 			{
-				this.insertRightAt(this.numberOfKeys, parent.getKey(ptr), rightSibling.getFirstChild());
-				rightSibling.getFirstChild().serializeNode(); 
+				BPTreeNode rightSiblingFirstChild = rightSibling.getFirstChild();
+				this.insertRightAt(this.numberOfKeys, parent.getKey(ptr), rightSiblingFirstChild);
+				rightSiblingFirstChild.serializeNode(); 
 				parent.deleteAt(ptr);
 				parent.insertRightAt(ptr, rightSibling.getFirstKey(), rightSibling);
 				rightSibling.deleteAt(0, 0);

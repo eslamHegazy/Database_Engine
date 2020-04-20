@@ -38,7 +38,7 @@ public class OverflowPage implements Serializable{
 		next = null;
 		//treeName=tree;
 		String lastin=getFromMetaDataTree();
-		pageName="Node"+lastin;	
+		pageName="OverflowPage"+lastin;	
 	} 
 	public Vector<Ref> getRefs() {
 		return refs;

@@ -46,7 +46,7 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 		index = nextIdx++;
 		numberOfKeys = 0;
 		this.order = order;
-		nodeName=getFromMetaDataTree();
+		nodeName="Node"+getFromMetaDataTree();
 		//nodeName=treeName+lastin;
 	}
 	
