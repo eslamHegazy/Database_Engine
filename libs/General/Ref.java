@@ -63,10 +63,10 @@ public class Ref extends GeneralReference implements Serializable
 		return pageNo+"";
 	}
 
-	public void updateRef(String oldpage, String newpage, int tableNameLength) {
-		updateRef(oldpage, newpage);
-	}
-	
+//	public void updateRef(String oldpage, String newpage, int tableNameLength) {
+//		updateRef(oldpage, newpage);
+//	}
+//	
 	public void updateRef(String oldpage, String newpage) {
 		pageNo=newpage;
 		
