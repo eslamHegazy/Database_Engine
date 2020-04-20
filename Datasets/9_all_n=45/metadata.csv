@@ -1,6 +1,0 @@
-Schema,gpa,java.lang.Double,False,False,
-Schema,shape,java.awt.Polygon,False,False,
-Schema,name,java.lang.String,False,True,
-Schema,male,java.lang.Boolean,False,True,
-Schema,birth,java.util.Date,False,True,
-Schema,id,java.lang.Integer,True,False,

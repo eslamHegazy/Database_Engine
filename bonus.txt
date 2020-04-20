@@ -1,0 +1,68 @@
+We applied the concept fo serialization on the BPlus Tree also as the 
+relation Pages to approach more to the real life application , we 
+designed handling duplicates by making the reference of a value point 
+to an overflow bucket that contains all page references that contains 
+this value(in case no duplicates value has a direct reference to the page) 
+respecting the maximum node size for each overflow bucket.
+
+We did serialize each node in the B+ Tree and the descendant overflow 
+buckets from the tree to the disk and only the root is in the memory.
+
+Whenever we wanted to access a node in computation such as 
+search/insertion/deletion we deserialize the node by its name, 
+we identified all the nodes with a unique name, 
+Node+(unique number) 
+This happened for example in lines {
+*BPTreeInnerNode.java:-
+**in helper methods: 	40,62,72
+**insertions: 		96
+**deletion:		223,229-262,268
+*search:			403-410-425-430-465
+*BPTreeLeafNode.java:-
+*helper methods:		35
+*search:			506-518
+}
+
+
+When we finished computation if we adjusted in any node we re-serialize 
+that node into the disk; such as insertion in lines {
+*BPTree.java:-
+**updateRef			46
+**insert			69
+*BPTreeInnerNode.java:-
+**insert			110,111,120
+**delete			225,231,239-264,270,278
+***borrow(helper for delete)	312,316,329,333
+***merge (helper for delete)	353,361
+*BPTreeLeafNode.java:-
+**insert			140
+***borrow(helper for delete)	393,407
+***merge (helper for delete)	428,436
+**updateRef			565
+}	
+
+But if we didn't change anything we just leave it as the serialized object 
+has the same value to reduce I/Os (such as search) in lines {
+BPTree.java
+[80:83],[105:107],[201:203],[204:206]
+BPTreeInnerNode.java
+[401:407],[408:414],[424:428],[429:433],[444:448]
+BPTreeLeafNode.java
+[232:238],[240:273][488:521]
+}
+The implementaion of reading and writing nodes to pages in disk is in
+BPTreeNode.java
+[223:238]	(write)		public void serializeNode() throws DBAppException 	
+[239:258]	(read)		public BPTreeNode<T> deserializeNode(String name) throws DBAppException
+
+
+The orginal implementation:
+https://github.com/AhmadElsagheer/DBMS/tree/master/SagSolheeriman-A1/src/BPTree
+((Many methods were added to that implementation to fit for our implementation; like different new methods to ease searching in the BPTree))
+
+
+We added to it some new classes for handling duplicates 
+*libs.General.OverflowReference.java
+*libs.General.OverflowPage.java
+*libs.General.GeneralReference.java
+and implemented paging for the overflow buckets as well.

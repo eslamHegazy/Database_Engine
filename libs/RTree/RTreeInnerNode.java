@@ -241,12 +241,12 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 			}
 			//1.try to borrow
 			if(borrow(parent, ptr)) {
-				parent.serializeNode();
+//				parent.serializeNode();
 				return done;
 			}
 			//2.merge
 			merge(parent, ptr);
-		    parent.serializeNode();
+//		    parent.serializeNode();
 		}
 		return done;
 	}
@@ -283,12 +283,12 @@ public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTree
 			}
 			//1.try to borrow
 			if(borrow(parent, ptr)) {
-				parent.serializeNode();
+//				parent.serializeNode();
 				return done;
 			}
 			//2.merge
 			merge(parent, ptr);
-		    parent.serializeNode();
+//		    parent.serializeNode();
 		}
 		return done;
 	}

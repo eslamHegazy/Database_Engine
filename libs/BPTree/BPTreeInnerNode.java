@@ -242,12 +242,12 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			}
 			//1.try to borrow
 			if(borrow(parent, ptr)) {
-				parent.serializeNode();
+//				parent.serializeNode();
 				return done;
 			}
 			//2.merge
 			merge(parent, ptr);
-		    parent.serializeNode();
+//		    parent.serializeNode();
 		}
 		return done;
 	}
@@ -281,12 +281,12 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 			}
 			//1.try to borrow
 			if(borrow(parent, ptr)) {
-				parent.serializeNode();
+//				parent.serializeNode();
 				return done;
 			}
 			//2.merge
 			merge(parent, ptr);
-		    parent.serializeNode();
+//		    parent.serializeNode();
 		}
 		return done;
 	}

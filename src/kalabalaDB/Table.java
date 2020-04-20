@@ -804,7 +804,7 @@ public class Table implements Serializable {
 	 * @param strTableName
 	 * @param strKey
 	 * 
-	 * @return
+	 * @return 
 	 * @throws DBAppException
 	 */
 	public String SearchInTable(String strTableName, Object strKey) throws DBAppException {
