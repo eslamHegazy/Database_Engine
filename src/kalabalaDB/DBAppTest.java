@@ -29,11 +29,11 @@ public class DBAppTest {
 	public static void main(String[] args)throws Exception {
 //		clear();
 		
-//		schema();
-//		indices();
+		schema();
+		indices();
 //		faUpTs();
 		long st = System.nanoTime();
-//		fill();
+		fill();
 		DBApp  dbApp= new DBApp(); dbApp.init();
 //		Hashtable htblColNameValue = new Hashtable();
 //		
