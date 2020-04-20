@@ -887,7 +887,9 @@ public class Table implements Serializable {
 			int linearScGu = linearScanGuranteed(arrSQLTerms, strarrOperators);
 			// System.out.println();
 			System.out.println((linearScGu == 1) ? "linear scan"
-					: (linearScGu == 2) ? "binary and indx only" : "sweet lovely indices");
+					: (linearScGu == 2) ? "binary and indx only" 
+							: "sweet lovely indices");
+			
 			if (linearScGu == 1) {
 				// at least non indexed column preceeded by or/xor , question if only the
 				// cluster is the non indexed
@@ -1575,8 +1577,13 @@ public class Table implements Serializable {
 			throws DBAppException {
 		Page x = deserialize(pagename);
 		for (int i = 0; i < x.getTuples().size(); i++) {
-			if (((Comparable) _objValue).compareTo((Comparable) x.getTuples().get(i).getAttributes().get(pos)) == 0)
-				res.add(x.getTuples().get(i));
+			Comparable objValue = (Comparable) _objValue; 
+			Tuple currentTuple = x.getTuples().get(i);
+			Comparable currentKey = (Comparable) currentTuple.getAttributes().get(pos);
+			if (objValue.compareTo(currentKey) == 0) {
+				if (! (objValue instanceof Polygons) || objValue.equals(currentKey))
+					res.add(x.getTuples().get(i));
+			}
 			// else
 			// if(((Comparable)_objValue).compareTo((Comparable)x.getTuples().get(i).getAttributes().get(pos))<0)
 			// {

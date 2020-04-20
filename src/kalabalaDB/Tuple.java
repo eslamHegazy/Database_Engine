@@ -26,7 +26,7 @@ public class Tuple implements Serializable {
 
 	public String toString() {
 		String str = "";
-		for (int i=0;i<attributes.size();i++) {//-1 to not show our ID for tuple
+		for (int i=0;i<attributes.size()-1;i++) {//-1 to not show our ID for tuple
 			Object y = attributes.get(i);
 			if (y == null) {
 				System.out.println("null");

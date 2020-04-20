@@ -27,23 +27,75 @@ import General.Ref;
 public class DBAppTest {
 	
 	public static void main(String[] args)throws Exception {
-		clear();
+//		clear();
 		
-		schema();
-		indices();
-		
+//		schema();
+//		indices();
+//		faUpTs();
 		long st = System.nanoTime();
-		fill();
-
-//		DBApp  d= new DBApp(); d.init(); 
+//		fill();
+		DBApp  dbApp= new DBApp(); dbApp.init();
+//		Hashtable htblColNameValue = new Hashtable();
+//		
+//		
+//		htblColNameValue.put("id", new Integer( 1234151242 ));
+//		htblColNameValue.put("name", new String("Eslam Testing" ) );
+//		htblColNameValue.put("gpa", 1.0*(int)(Math.random()*100)/100 );
+//		htblColNameValue.put("shape", randomPolygon());
+//		dbApp.insertIntoTable( "Student", htblColNameValue );
+		SQLTerm[] arrSQLTerms = new SQLTerm[6];
+//		Polygon p = Polygons.parsePolygon("(4,27),(0,2),(6,19),(35,20),(5,40),(24,39)");
+//		Polygon p = Polygons.parsePolygon("(1,9),(8,0)");
+		Polygon p = Polygons.parsePolygon("(8,0),(1,9)");
+		arrSQLTerms[0] = new SQLTerm();
+		arrSQLTerms[0]._objValue = 1.0;//p;//new Polygon();
+		arrSQLTerms[0]._strColumnName="gpa";
+		arrSQLTerms[0]._strOperator = ">=";
+		arrSQLTerms[0]._strTableName="Schema";
+		String[] strarrOperators = {"AnD","AND","AND","AND","AND"};
+		arrSQLTerms[1] = new SQLTerm();
+		arrSQLTerms[1]._objValue = p;//new Polygon();
+		arrSQLTerms[1]._strColumnName="shape";
+		arrSQLTerms[1]._strOperator = "<=";
+		arrSQLTerms[1]._strTableName="Schema";
+		
+		arrSQLTerms[2] = new SQLTerm();
+		arrSQLTerms[2]._objValue = "Arousiiii";
+		arrSQLTerms[2]._strColumnName="name";
+		arrSQLTerms[2]._strOperator = "!=";
+		arrSQLTerms[2]._strTableName="Schema";
+		
+		arrSQLTerms[3] = new SQLTerm();
+		arrSQLTerms[3]._objValue = 17;
+		arrSQLTerms[3]._strColumnName="id";
+		arrSQLTerms[3]._strOperator = ">";
+		arrSQLTerms[3]._strTableName="Schema";
+		
+		arrSQLTerms[4] = new SQLTerm();
+		arrSQLTerms[4]._objValue = true;
+		arrSQLTerms[4]._strColumnName="male";
+		arrSQLTerms[4]._strOperator = "=";
+		arrSQLTerms[4]._strTableName="Schema";
+		
+		arrSQLTerms[5] = new SQLTerm();
+		arrSQLTerms[5]._objValue = 2.5;//DBApp.parseDate("2000-04-05");
+		arrSQLTerms[5]._strColumnName="gpa";
+		arrSQLTerms[5]._strOperator = ">";
+		arrSQLTerms[5]._strTableName="Schema";
+		
+		
 //		Hashtable h = new Hashtable<>();
-//		h.put("id", new Integer(7));
+//		h.put("id", (int)(Math.random()*50));
 //		h.put("name",randomAlphaNumeric(3));
 //		h.put("gpa", new Double( 1.0*(int)(Math.random()*100)/100 ));
-//		h.put("birth", randomDate());
+
+		//		h.put("birth", randomDate());
 //		h.put("male", (int)(Math.random()*2)==0 );
-//		h.put("shape", randomPolygon());
-//		d.insertIntoTable("Schema", h); 
+		
+//		Polygon pk = Polygons.parsePolygon("(8,0),(1,9)");//new Polygon();
+//		pk.addPoint(1, 9); pk.addPoint(8, 0);
+//		h.put("shape", pk);
+//		dbApp.insertIntoTable("Student", h); 
 
 //		select();
       	//tryDel();
@@ -51,10 +103,10 @@ public class DBAppTest {
 		
 		
 		long end = System.nanoTime(); 
-		showAt0s();
-		
-		
-		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
+//		showAt0s();
+		showit(dbApp.selectFromTable(arrSQLTerms, strarrOperators));
+//		showit(s8());
+//		System.err.printf("Taken %.3f sec\n",(end-st)/1e9);
 
 //		Boolean b1 = true;
 //		Boolean b2 = false;
@@ -96,9 +148,9 @@ public class DBAppTest {
 		String strTableName = "Schema";
 		String strClusteringKey = "id";
 		Hashtable h = new Hashtable<>();
-		d.createBTreeIndex(strTableName, "id");
+//		d.createBTreeIndex(strTableName, "id");
 //		d.createBTreeIndex(strTableName, "name");
-//		d.createBTreeIndex(strTableName, "gpa");
+		d.createBTreeIndex(strTableName, "gpa");
 //		d.createBTreeIndex(strTableName, "birth");
 //		d.createBTreeIndex(strTableName, "male");
 		
@@ -153,6 +205,36 @@ public class DBAppTest {
 		h.put("id", 1);
 		h.put("t", 6);
 		d.deleteFromTable("tb", h);
+	}
+	static Iterator<Tuple> s8() throws Exception{
+		DBApp d = new DBApp(); d.init();
+		String strTableName="Schema";
+		SQLTerm[] arrSQLTerms = new SQLTerm[3];
+		String[] strarrOperators = {"xor","and"};
+		
+		arrSQLTerms[0] = new SQLTerm();
+		SQLTerm s = arrSQLTerms[0];
+		s._strTableName=strTableName;
+		s._strColumnName="gpa";
+		s._strOperator = ">";
+		s._objValue = 0.5;
+		
+		arrSQLTerms[2] = new SQLTerm();
+		s = arrSQLTerms[2];
+		s._strTableName=strTableName;
+		s._strColumnName="gpa";
+		s._strOperator = "<";
+		s._objValue = 0.8;
+		
+		arrSQLTerms[1] = new SQLTerm();
+		s = arrSQLTerms[1];
+		s._strTableName=strTableName;
+		s._strColumnName="name";
+		s._strOperator = "<";
+		s._objValue = "Esso";
+		
+//		s._objValue = DBApp.parseDate("2019-04-30");
+		return d.selectFromTable(arrSQLTerms, strarrOperators);
 	}
 	static Iterator<Tuple> s1() throws Exception{
 		DBApp d = new DBApp(); d.init();
