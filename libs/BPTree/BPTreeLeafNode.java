@@ -13,10 +13,8 @@ import kalabalaDB.DBAppException;
 
 public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> implements Serializable,LeafNode<T>{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 4383926020940981754L;
 	private GeneralReference[] records;
 	private String next;
 	@SuppressWarnings("unchecked")
@@ -36,7 +34,11 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	{
 		return (next==null)?null:((BPTreeLeafNode)deserializeNode(next)); //TODO wth
 	}
-	
+	public String getNextname() throws DBAppException
+	{
+		return next;
+	}
+
 	/**
 	 * sets the next leaf node
 	 * @param node the next leaf node
@@ -45,7 +47,9 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 	{
 		this.next = (node!=null)?node.nodeName:null;
 	}
-	
+	public void setNextname(String nodeName) {
+		this.next = nodeName;
+	}
 	/**
 	 * @param index the index to find its record
 	 * @return the reference of the queried index
@@ -133,7 +137,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		{
 			BPTreeNode<T> newNode = this.split(key, recordReference);
 			Comparable<T> newKey = newNode.getFirstKey();
-			newNode.serializeNode(); //TODO type cast or create in BPTreeNode
+			newNode.serializeNode();
 			return new PushUp<T>(newNode, newKey);
 		}
 		else
@@ -193,10 +197,14 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			newNode.insertAt(keyIndex - midIndex, key, recordReference);
 		
 		//set next pointers
-		newNode.setNext(this.getNext());
-		if(this.getNext() != null)
-			this.getNext().serializeNode();
-		this.setNext(newNode);
+				//				newNode.setNext(this.getNext());
+				//				if(this.getNext() != null)
+				//					this.getNext().serializeNode();
+				//				this.setNext(newNode);
+		//TODO: MAKE SURE
+		newNode.setNextname(this.getNextname());
+		this.setNextname(newNode.nodeName);
+		//newNode is serialized after returning ; inside insert (Y) 
 		
 		return newNode;
 	}
@@ -335,13 +343,12 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 				{
 					//1.try to borrow
 					if(borrow(parent, ptr)) {
-						//this node isn't serialized yet; just left/right sibiling
-						parent.serializeNode();
+//						parent.serializeNode();
 						return true;
 					}
 					//2.merge
-					parent.serializeNode();
 					merge(parent, ptr);
+//					parent.serializeNode();
 				}
 				//else: parent isn't serialized if entered the previous if
 				return true;
@@ -417,7 +424,8 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			//merge with left
 			BPTreeLeafNode<T> leftSibling = (BPTreeLeafNode<T>) parent.getChild(ptr-1);
 			leftSibling.merge(this);
-			parent.deleteAt(ptr-1);			
+			parent.deleteAt(ptr-1);
+			leftSibling.serializeNode();
 		}
 		else
 		{
@@ -425,6 +433,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 			BPTreeLeafNode<T> rightSibling = (BPTreeLeafNode<T>) parent.getChild(ptr+1);
 			this.merge(rightSibling);
 			parent.deleteAt(ptr);
+			rightSibling.serializeNode();
 		}
 		
 	}
@@ -439,7 +448,7 @@ public class BPTreeLeafNode<T extends Comparable<T>> extends BPTreeNode<T> imple
 		for(int i = 0; i < foreignNode.numberOfKeys; ++i)
 			this.insertAt(numberOfKeys, foreignNode.getKey(i), foreignNode.getRecord(i));
 		
-		this.setNext(foreignNode.getNext());
+		this.setNextname(foreignNode.getNextname());
 		//TODO: Have the removed node been deleted from disk
 	}
 	

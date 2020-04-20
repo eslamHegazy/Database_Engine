@@ -17,12 +17,11 @@ import kalabalaDB.Polygons;
 
 public class RTree<Polygons extends Comparable<Polygons>> implements Serializable,TreeIndex<Polygons>{
 
+
 	/**
 	 * 
 	 */
-	//TODO meta data containing treename accompained with lastin
-	//protected String treeName;
-	protected static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 7813578715232321129L;
 	protected int order;
 	protected RTreeNode<Polygons> root;
 	protected int lastin; 

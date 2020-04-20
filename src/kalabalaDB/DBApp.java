@@ -276,6 +276,8 @@ public class DBApp {
 			}
 			
 			// check validity of the hashtable entries
+			if(htblColNameValue.contains(key_column_name))
+				throw new DBAppException("Trying to update the value of the clustring Key");
 			Set<String> hashtableKeys = htblColNameValue.keySet();
 			for (String str : hashtableKeys) 
 			{

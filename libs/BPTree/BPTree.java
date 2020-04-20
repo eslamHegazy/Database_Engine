@@ -12,13 +12,12 @@ import General.TreeIndex;
 import kalabalaDB.DBAppException;
 
 public class BPTree<T extends Comparable<T>> implements Serializable,TreeIndex<T> {
- 
+
+	
 	/**
 	 * 
 	 */
-	//TODO meta data containing treename accompained with lastin
-	//protected String treeName;
-	protected static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 8783764523572260399L;
 	protected int order;
 	protected BPTreeNode<T> root;
 	protected int lastin; 

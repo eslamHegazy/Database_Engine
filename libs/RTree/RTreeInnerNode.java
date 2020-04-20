@@ -9,11 +9,12 @@ import kalabalaDB.DBAppException;
 
 public class RTreeInnerNode<Polygons extends Comparable<Polygons>> extends RTreeNode<Polygons>  implements Serializable
 {
-	/**
+
+/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-//	private RTreeNode<T>[] children;
+	private static final long serialVersionUID = -7848283290220820039L;
+	//	private RTreeNode<T>[] children;
 	private String[]childrenName;
 	/**
 	 * create RTreeNode given order.

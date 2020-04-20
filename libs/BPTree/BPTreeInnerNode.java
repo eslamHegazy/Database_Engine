@@ -12,7 +12,8 @@ public class BPTreeInnerNode<T extends Comparable<T>> extends BPTreeNode<T>  imp
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -3768562665814994927L;
+
 //	private BPTreeNode<T>[] children;
 	private String[]childrenName;
 	/**

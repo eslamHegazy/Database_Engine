@@ -58,8 +58,12 @@ public class OverflowReference extends GeneralReference implements Serializable
 		firstPage.addRecord(recordRef);
 		firstPage.serialize();
 	}
+	public void deleteRef(String page_name) throws DBAppException{
+		deleteRefORIGINAL(page_name);
+//		deleteRefNEW(page_name);
+	}
 	
-	public void deleteRef(String page_name) throws DBAppException 
+	public void deleteRefORIGINAL(String page_name) throws DBAppException 
 	{
 		OverflowPage firstPage=deserializeOverflowPage(firstPageName);
 		firstPage.deleteRecord(page_name);
@@ -74,6 +78,32 @@ public class OverflowReference extends GeneralReference implements Serializable
 			}
 		//shouldn't this be in an else part ?
 		firstPage.serialize();
+	}
+	
+	public void deleteRefNEW(String page_name) throws DBAppException 
+	{
+		OverflowPage first_ovp=deserializeOverflowPage(firstPageName);
+		first_ovp.deleteRecord(page_name);
+		if(first_ovp.getRefs().size() == 0)
+			{
+			// TODO delete overflow page with name (firstPageName) 
+//			File f = new File("data/"+firstPageName+".class");
+//			System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+firstPageName);
+//			f.delete();
+//			firstPageName = first_ovp.getNext();
+//			first_ovp=deserializeOverflowPage(firstPageName); //TODO:why? shouldn't return here; this next page hasn't been edited or anything
+			String second_ovp_name = first_ovp.getNext();
+			OverflowPage second_ovp = deserializeOverflowPage(second_ovp_name);
+			{//delete file
+				File f = new File("data/"+second_ovp_name+".class");
+				System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+second_ovp_name);
+				f.delete();
+			}
+			second_ovp.setPageName(firstPageName);
+			first_ovp = second_ovp;
+			}
+		//shouldn't this be in an else part ?
+		first_ovp.serialize();
 	}
 	
 	public int getTotalSize() throws DBAppException

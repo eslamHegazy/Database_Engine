@@ -225,97 +225,97 @@ public class Page implements Serializable {
 
 	}
 
-	public static void deleteFromOverFlow(OverflowReference ofr, String pageName, TreeIndex tree, Object value)
-			throws DBAppException {
-		//System.out.println(ofr.getFirstPageName());
-		//System.out.println("hamada");
-		//System.out.println(ofr.getFirstPageName());
-		File tmpDir = new File("data/" + ofr.getFirstPageName() + ".class");
-		
-		boolean exists = tmpDir.exists();
-		if (exists) {
-			//System.out.println(ofr.getFirstPageName());
-			
-			OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
-			//System.out.println("hamada1");
-			for (int i = 0; i < ofp.getRefs().size(); i++) {
-				if (ofp.getRefs().get(i).getPage().equals(pageName)) {
-					ofp.getRefs().remove(i);
-					//System.out.println("hello");
-					if (ofp.getRefs().size() == 0) {
-						//System.out.println("hello World");
-						if (ofp.getNext() == null) {
-							tree.delete((Comparable) value);
-							//System.out.println("asdasdasdasd");
-						} 
-						else {
-							//System.out.println("ayhaga");
-							ofr.setFirstPageName(ofp.getNext());
-							//TODO: reserialize the leaf
-						}
-							
-						File f = new File("data/" + ofp.getPageName() + ".class");
-						//System.out.println("deleted");
-						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+ofp.getPageName());
-						f.delete();
-					} 
-					else {
-						ofp.serialize();
-					}
-					return;
-				}
-			}
-				
-				OverflowPage currOFP = ofp.deserialize(ofp.getNext());
-				OverflowPage before = ofp;
-				boolean notNull = true;
-				while (notNull) {
-					for (int i = 0; i < currOFP.getRefs().size(); i++) {
-						if (currOFP.getRefs().get(i).getPage().equals(pageName)) {
-							currOFP.getRefs().remove(i);
-							if (currOFP.getRefs().size() == 0 && currOFP.getNext() != null) {
-								before.setNext(currOFP.getNext());
-								before.serialize();
-								File f = new File("data/" + currOFP.getPageName() + ".class");
-								System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+currOFP.getPageName());
-								f.delete();
-								//notNull = false;
-							} 
-							if(currOFP.getRefs().size() == 0 && currOFP.getNext() == null)
-							{
-								before.setNext(null);
-								before.serialize();
-								File f = new File("data/" + currOFP.getPageName() + ".class");
-								System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+currOFP.getPageName());
-								f.delete();
-								//notNull = false;
-							}
-							else {
-								currOFP.serialize();
-								//before.serialize();
-								//notNull = false;
-							}
-							return;
-						}
-					}
-					if (currOFP.getNext() != null) {
-						//System.out.println("asdads");
-						//before.serialize();
-						before = currOFP;
-						//currOFP.serialize();
-						currOFP = currOFP.deserialize(currOFP.getNext());
-					} else {
-						
-						notNull = false;
-					}
-				}
-			
-		}
-		else //recently removed
-		{
-			tree.delete((Comparable) value);
-		}
-	}
+//	public static void deleteFromOverFlow(OverflowReference ofr, String pageName, TreeIndex tree, Object value)
+//			throws DBAppException {
+//		//System.out.println(ofr.getFirstPageName());
+//		//System.out.println("hamada");
+//		//System.out.println(ofr.getFirstPageName());
+//		File tmpDir = new File("data/" + ofr.getFirstPageName() + ".class");
+//		
+//		boolean exists = tmpDir.exists();
+//		if (exists) {
+//			//System.out.println(ofr.getFirstPageName());
+//			
+//			OverflowPage ofp = ofr.deserializeOverflowPage(ofr.getFirstPageName());
+//			//System.out.println("hamada1");
+//			for (int i = 0; i < ofp.getRefs().size(); i++) {
+//				if (ofp.getRefs().get(i).getPage().equals(pageName)) {
+//					ofp.getRefs().remove(i);
+//					//System.out.println("hello");
+//					if (ofp.getRefs().size() == 0) {
+//						//System.out.println("hello World");
+//						if (ofp.getNext() == null) {
+//							tree.delete((Comparable) value);
+//							//System.out.println("asdasdasdasd");
+//						} 
+//						else {
+//							//System.out.println("ayhaga");
+//							ofr.setFirstPageName(ofp.getNext());
+//							//TODO: reserialize the leaf
+//						}
+//							
+//						File f = new File("data/" + ofp.getPageName() + ".class");
+//						//System.out.println("deleted");
+//						System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+ofp.getPageName());
+//						f.delete();
+//					} 
+//					else {
+//						ofp.serialize();
+//					}
+//					return;
+//				}
+//			}
+//				
+//				OverflowPage currOFP = ofp.deserialize(ofp.getNext());
+//				OverflowPage before = ofp;
+//				boolean notNull = true;
+//				while (notNull) {
+//					for (int i = 0; i < currOFP.getRefs().size(); i++) {
+//						if (currOFP.getRefs().get(i).getPage().equals(pageName)) {
+//							currOFP.getRefs().remove(i);
+//							if (currOFP.getRefs().size() == 0 && currOFP.getNext() != null) {
+//								before.setNext(currOFP.getNext());
+//								before.serialize();
+//								File f = new File("data/" + currOFP.getPageName() + ".class");
+//								System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+currOFP.getPageName());
+//								f.delete();
+//								//notNull = false;
+//							} 
+//							if(currOFP.getRefs().size() == 0 && currOFP.getNext() == null)
+//							{
+//								before.setNext(null);
+//								before.serialize();
+//								File f = new File("data/" + currOFP.getPageName() + ".class");
+//								System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting file "+currOFP.getPageName());
+//								f.delete();
+//								//notNull = false;
+//							}
+//							else {
+//								currOFP.serialize();
+//								//before.serialize();
+//								//notNull = false;
+//							}
+//							return;
+//						}
+//					}
+//					if (currOFP.getNext() != null) {
+//						//System.out.println("asdads");
+//						//before.serialize();
+//						before = currOFP;
+//						//currOFP.serialize();
+//						currOFP = currOFP.deserialize(currOFP.getNext());
+//					} else {
+//						
+//						notNull = false;
+//					}
+//				}
+//			
+//		}
+//		else //recently removed
+//		{
+//			tree.delete((Comparable) value);
+//		}
+//	}
 
 	public void deleteInPageWithBS(Hashtable<String, Object> htblColNameValue, Vector<String[]> metaOfTable,
 			String clusteringKeyValue, int primaryPos, String clusteringKey) {

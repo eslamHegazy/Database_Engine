@@ -1692,6 +1692,9 @@ public class Table implements Serializable {
 			throws DBAppException {
 		// boolean clusterHasIndex=false;
 		for (SQLTerm x : arrSQLTerms) {
+			if (x==null) {
+				throw new DBAppException("Null SQLTerm !");
+			}
 			int i;
 			if (!validOp(x._strOperator))
 				throw new DBAppException("Wrong or unsupported operator " + x._strOperator);

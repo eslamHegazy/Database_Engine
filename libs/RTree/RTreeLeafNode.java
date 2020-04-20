@@ -12,10 +12,8 @@ import kalabalaDB.DBAppException;
 
 public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeNode<Polygons> implements Serializable,LeafNode<Polygons>{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 4132983078147825491L;
 	private GeneralReference[] records;
 	private String next;
 	@SuppressWarnings("unchecked")
@@ -26,7 +24,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		records = new GeneralReference[n];
 
 	}
-	
+
 	/**
 	 * @return the next leaf node
 	 * @throws DBAppException 
@@ -35,6 +33,11 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	{
 		return (next==null)?null:((RTreeLeafNode)deserializeNode(next)); //TODO wth
 	}
+	public String getNextname() throws DBAppException
+	{
+		return next;
+	}
+
 	
 	/**
 	 * sets the next leaf node
@@ -44,7 +47,9 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 	{
 		this.next = (node!=null)?node.nodeName:null;
 	}
-	
+	public void setNextname(String nodeName) {
+		this.next = nodeName;
+	}
 	/**
 	 * @param index the index to find its record
 	 * @return the reference of the queried index
@@ -132,7 +137,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		{
 			RTreeNode<Polygons> newNode = this.split(key, recordReference);
 			Comparable<Polygons> newKey = newNode.getFirstKey();
-			newNode.serializeNode(); //TODO type cast or create in RTreeNode
+			newNode.serializeNode();
 			return new PushUp<Polygons>(newNode, newKey);
 		}
 		else
@@ -192,10 +197,14 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 			newNode.insertAt(keyIndex - midIndex, key, recordReference);
 		
 		//set next pointers
-		newNode.setNext(this.getNext());
-		if(this.getNext() != null)
-			this.getNext().serializeNode();
-		this.setNext(newNode);
+//				newNode.setNext(this.getNext());
+//				if(this.getNext() != null)
+//					this.getNext().serializeNode();
+//				this.setNext(newNode);
+
+		newNode.setNextname(this.getNextname());
+		this.setNextname(newNode.nodeName);
+		//newNode is serialized after returning ; inside insert (Y) 
 		
 		return newNode;
 	}
@@ -330,12 +339,13 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 					//1.try to borrow
 					if(borrow(parent, ptr)) {
 						//this node isn't serialized yet; just left/right sibiling
-						parent.serializeNode();
+//						parent.serializeNode();
 						return true;
 					}
 					//2.merge
 					merge(parent, ptr);
-					parent.serializeNode();
+//					parent.serializeNode();
+
 				}
 				return true;
 			}
@@ -409,7 +419,8 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 			//merge with left
 			RTreeLeafNode<Polygons> leftSibling = (RTreeLeafNode<Polygons>) parent.getChild(ptr-1);
 			leftSibling.merge(this);
-			parent.deleteAt(ptr-1);			
+			parent.deleteAt(ptr-1);
+			leftSibling.serializeNode();
 		}
 		else
 		{
@@ -417,6 +428,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 			RTreeLeafNode<Polygons> rightSibling = (RTreeLeafNode<Polygons>) parent.getChild(ptr+1);
 			this.merge(rightSibling);
 			parent.deleteAt(ptr);
+			rightSibling.serializeNode();
 		}
 	}
 	
@@ -430,7 +442,7 @@ public class RTreeLeafNode<Polygons extends Comparable<Polygons>> extends RTreeN
 		for(int i = 0; i < foreignNode.numberOfKeys; ++i)
 			this.insertAt(numberOfKeys, foreignNode.getKey(i), foreignNode.getRecord(i));
 		
-		this.setNext(foreignNode.getNext());
+		this.setNextname(foreignNode.getNextname());
 		//TODO: Have the removed node been deleted from disk ?
 	}
 	

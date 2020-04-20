@@ -1,6 +1,7 @@
 package BPTree;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -257,5 +258,10 @@ public abstract class BPTreeNode<T extends Comparable<T>> implements Serializabl
 	}
 
 	public abstract BPTreeLeafNode searchForUpdateRef(T key) throws DBAppException;
-
+	
+	public boolean deleteFile() {
+		System.out.println("/////||||\\\\\\\\\\\\\\\\\\deleting node:"+nodeName);
+		File f = new File("data/"+nodeName+".class");
+		return f.delete();
+	}
 }
