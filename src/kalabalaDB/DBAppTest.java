@@ -26,6 +26,10 @@ import General.Ref;
 
 public class DBAppTest {
 	
+	public static void main(String[] args) throws DBAppException{
+		DBApp d = new DBApp(); d.init();
+	}
+	/*
 	public static void main(String[] args)throws Exception {
 //		clear();
 		
@@ -132,7 +136,7 @@ public class DBAppTest {
 //		deleteTest();
 	}
 
-	
+	*/
 	static void schema() throws Exception{
 		String strTableName = "Schema";
 		String strClusteringKey = "id";
