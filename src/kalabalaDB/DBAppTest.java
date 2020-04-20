@@ -27,16 +27,19 @@ import General.Ref;
 public class DBAppTest {
 	
 	public static void main(String[] args)throws Exception {
-		clear();
+//		clear();
 		
-		schema();
-		indices();
+//		schema();
+//		indices();
 //		faUpTs();
 		long st = System.nanoTime();
-		fill();
+//		fill();
 		DBApp dbApp= new DBApp(); dbApp.init();
 //		Hashtable htblColNameValue = new Hashtable();
-//		
+//		Hashtable h = new Hashtable();
+//		h.put("id", 9321321);
+//		String strClusteringKey = "20";
+//		dbApp.updateTable("Schema", strClusteringKey, h);
 //		
 //		htblColNameValue.put("id", new Integer( 1234151242 ));
 //		htblColNameValue.put("name", new String("Eslam Testing" ) );
@@ -48,21 +51,21 @@ public class DBAppTest {
 //		Polygon p = Polygons.parsePolygon("(1,9),(8,0)");
 		Polygon p = Polygons.parsePolygon("(8,0),(1,9)");
 		arrSQLTerms[0] = new SQLTerm();
-		arrSQLTerms[0]._objValue = 1.0;//p;//new Polygon();
-		arrSQLTerms[0]._strColumnName="gpa";
+		arrSQLTerms[0]._objValue = DBApp.parseDate("1990-04-31");//p;//new Polygon();
+		arrSQLTerms[0]._strColumnName="birth";
 		arrSQLTerms[0]._strOperator = ">=";
 		arrSQLTerms[0]._strTableName="Schema";
 		String[] strarrOperators = {"AnD","AND","AND","AND","AND"};
 		arrSQLTerms[1] = new SQLTerm();
 		arrSQLTerms[1]._objValue = p;//new Polygon();
 		arrSQLTerms[1]._strColumnName="shape";
-		arrSQLTerms[1]._strOperator = "<=";
+		arrSQLTerms[1]._strOperator = ">=";
 		arrSQLTerms[1]._strTableName="Schema";
 		
 		arrSQLTerms[2] = new SQLTerm();
 		arrSQLTerms[2]._objValue = "Arousiiii";
 		arrSQLTerms[2]._strColumnName="name";
-		arrSQLTerms[2]._strOperator = "!=";
+		arrSQLTerms[2]._strOperator = "<";
 		arrSQLTerms[2]._strTableName="Schema";
 		
 		arrSQLTerms[3] = new SQLTerm();
@@ -78,7 +81,7 @@ public class DBAppTest {
 		arrSQLTerms[4]._strTableName="Schema";
 		
 		arrSQLTerms[5] = new SQLTerm();
-		arrSQLTerms[5]._objValue = 2.5;//DBApp.parseDate("2000-04-05");
+		arrSQLTerms[5]._objValue = 0.8;//DBApp.parseDate("2000-04-05");
 		arrSQLTerms[5]._strColumnName="gpa";
 		arrSQLTerms[5]._strOperator = ">";
 		arrSQLTerms[5]._strTableName="Schema";
